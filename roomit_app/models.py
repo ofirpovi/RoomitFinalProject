@@ -3,7 +3,7 @@ from django.db.models import JSONField
 
 
 class Users(models.Model):
-    User_ID = models.FloatField(primary_key=True)
+    ID = models.FloatField(primary_key=True)
     Email = models.CharField(max_length=100, unique=True)
     Password = models.CharField(max_length=30)
 

@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import HomePageView
+from .views import HomePageView, RegistrationView
 
-app_name = 'roomit_app'
 
 urlpatterns = [
+    path('signup/', RegistrationView.as_view(), name='signup'),
     path('', HomePageView.as_view(), name='home'),
 ]

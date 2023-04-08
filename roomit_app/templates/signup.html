@@ -1,0 +1,10 @@
+<!-- templates/home.html -->
+<h1>Signup_page</h1>
+<form action="{% url 'signup' %}" method="POST">
+  {% csrf_token %}
+  <label for="Email">Email: </label>
+  <input id="Email" type="text" name="Email" />
+  <label for="Password">Password: </label>
+  <input id="Password" type="text" name="Password" />
+  <input type="submit" value="Signup" />
+</form>
