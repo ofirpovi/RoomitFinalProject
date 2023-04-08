@@ -25,13 +25,18 @@ class RegistrationView(APIView):
         return render(request, "signup.html")
 
     def post(self, request):
-        # form_data = {
-        #     'Email': request.POST.get('Email'),
-        #     'Password': request.POST.get('Password')}
-        serializer = serializers.UserProfileSerializer(data=request.POST)
+        print("post: {}".format(request.POST))
+        serializer = serializers.UserSerializer(data=request.POST)
         if serializer.is_valid():
-            print("Try to save")
-            user = serializer.save()
-            return Response({'user_id': user.id}, status=status.HTTP_201_CREATED)
+            serializer.save()
+            return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginUser():
+    pass
+
+
+class LogoutUser():
+    pass
