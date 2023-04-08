@@ -43,7 +43,10 @@ def signin(request):
         user = auth.authenticate(Email=username, Password=password)
         if user is not None:
             auth.login(request, user)
-            return redirect('create_profile')
+            # TODO change to get the matches of the user
+            user_matches = models.Roommates.objects.all
+            context = {'my_matches': user_matches}
+            return render(request, 'user_homepage.html', context)
         else:
             messages.info(request, 'Invalid Username or Password')
             return redirect('signin')
@@ -51,8 +54,9 @@ def signin(request):
         return render(request, 'signin.html')
 
 
-class LogoutUser():
-    pass
+def signout(request):
+    auth.logout(request)
+    return redirect('home')
 
 
 class FormProfileView(APIView):
@@ -61,5 +65,5 @@ class FormProfileView(APIView):
 
 
 class UserHomepageView(APIView):
-    def post(self, request):
+    def get(self, request):
         return render(request, 'user_homepage.html')
