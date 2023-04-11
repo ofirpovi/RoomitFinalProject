@@ -5,9 +5,9 @@ from . import views
 
 urlpatterns = [
     path('home/', views.HomePageView.as_view(), name='home'),
-    path('signup/', views.SignupView.as_view(), name='signup'),
+    path('signup/', views.signup, name='signup'),
     path('signin/', views.signin, name='signin'),
     path('signout/', views.signout, name='signout'),
-    path('create_profile/', views.FormProfileView.as_view(), name='create_profile'),
+    path('info_form/', views.FormProfileView.as_view(), name='info_form'),
     path('user_homepage/', views.UserHomepageView.as_view(), name='user_homepage'),
 ]

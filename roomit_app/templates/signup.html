@@ -1,11 +1,12 @@
 <h1>Signup page</h1>
 <form action="{% url 'signup' %}" method="POST">
   {% csrf_token %}
-  <label for="Email">Email: </label>
-  <input id="Email" type="text" name="Email" />
-  <label for="Password">Password: </label>
-  <input id="Password" type="text" name="Password" />
+  <label for="email">Email: </label>
+  <input id="email" type="text" name="email" />
+  <label for="password">Password: </label>
+  <input id="password" type="text" name="password" />
   <label for="confirm_password">Confirm password: </label>
   <input id="confirm_password" type="text" name="confirm_password" />
+  <input type="hidden" name="action" value="create_user" />
   <input type="submit" value="Signup" />
 </form>
