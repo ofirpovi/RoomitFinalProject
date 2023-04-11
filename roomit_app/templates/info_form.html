@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Profile Form</title>
+  </head>
+  <body>
+    <h1>Profile Form</h1>
+    <form method="post" action="{% url 'info' %}">
+      {% csrf_token %}
+      <label for="first_name">First Name:</label>
+      <input type="text" id="first_name" name="first_name" /><br />
+      <label for="last_name">Last Name:</label>
+      <input type="text" id="last_name" name="last_name" /><br />
+      <label for="birthdate">Birthdate:</label>
+      <input type="date" id="birthdate" name="birthdate" /><br />
+      <label for="phone_number">Phone Number:</label>
+      <input type="tel" id="phone_number" name="phone_number" /><br />
+      <label for="gender">Gender:</label>
+      <select id="gender" name="gender">
+        <option value="F">Female</option>
+        <option value="M">Male</option>
+        <option value="N">Not Defined</option></select
+      ><br />
+      <label for="occupation">Occupation:</label>
+      <select id="occupation" name="occupation">
+        <option value="F">Full-time job</option>
+        <option value="S">Student</option>
+        <option value="P">Part-time job</option>
+        <option value="D">Doesn't matter</option></select
+      ><br />
+      <label for="smoker">Smoker:</label>
+      <input type="radio" id="smoker_yes" name="smoker" value="Yes" />
+      <label for="smoker_yes">Yes</label>
+      <input type="radio" id="smoker_no" name="smoker" value="No" />
+      <label for="smoker_no">No</label>
+      <input
+        type="radio"
+        id="smoker_occasionally"
+        name="smoker"
+        value="Occasionally"
+      />
+      <label for="smoker_occasionally">Occasionally</label>
+      <input type="radio" id="smoker_socially" name="smoker" value="Socially" />
+      <label for="smoker_socially">Socially</label><br />
+      <label for="diet">Diet:</label>
+      <input type="radio" id="diet_carnivore" name="diet" value="Carnivore" />
+      <label for="diet_carnivore">Carnivore</label>
+      <input
+        type="radio"
+        id="diet_pescetarian"
+        name="diet"
+        value="Pescetarian"
+      />
+      <label for="diet_pescetarian">Pescetarian</label>
+      <input type="radio" id="diet_vegan" name="diet" value="Vegan" />
+      <label for="diet_vegan">Vegan</label>
+      <input type="radio" id="diet_vegetarian" name="diet" value="Vegetarian" />
+      <label for="diet_vegetarian">Vegetarian</label>
+      <input
+        type="radio"
+        id="diet_raw_veganism"
+        name="diet"
+        value="Raw Veganism"
+      />
+      <label for="diet_raw_veganism">Raw Veganism</label><br />
+      <label for="status">Status:</label>
+      <input type="radio" id="Single" name="status" value="Single" />
+      <label for="status_single">Single</label>
+      <input type="radio" id="Married" name="status" value="Married" />
+      <label for="status_married">Married</label>
+      <input
+        type="radio"
+        id="In a relationship"
+        name="status"
+        value="In a relationship"
+      />
+      <label for="status_relationship">In a relationship</label><br />
+      <label for="status">Expense Management:</label>
+      <input type="radio" id="L" name="Love" value="L" />
+      <label for="expense_love">Love</label>
+      <input type="radio" id="P" name="expense_menegment" value="prefer_not" />
+      <label for="status_married">Pefer Not</label><br />
+      <label for="hospitality">Hospitality:</label>
+      <input
+        type="checkbox"
+        id="hospitality"
+        name="hospitality"
+        value="true"
+        checked
+      />
+      <label for="kosher">Kosher:</label>
+      <input type="checkbox" id="kosher" name="kosher" value="true" />
+    </form>
+  </body>
+</html>

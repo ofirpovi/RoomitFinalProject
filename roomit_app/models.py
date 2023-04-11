@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import JSONField
 
+
 from django.contrib.auth.models import User
 
 class Roommates(models.Model):
@@ -56,8 +57,7 @@ class Info(models.Model):
                                                     ])
     Status = models.CharField(max_length=20, choices=[('Single', 'Single'),
                                                       ('Married', 'Married'),
-                                                      ('In a relationship',
-                                                       'In a relationship')
+                                                      ('In a relationship', 'In a relationship'),
                                                       ])
     Hospitality = models.BooleanField(max_length=15, default=True)
     Kosher = models.BooleanField(default=False)

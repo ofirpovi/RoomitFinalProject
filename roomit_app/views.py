@@ -14,11 +14,13 @@ from django.urls import reverse
 
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 from . import serializers
 from . import models
 from . import permissions
-from .forms import InfoForm
+#from .forms import InfoForm
 
 
 class HomePageView(TemplateView):
@@ -36,84 +38,109 @@ def signup(request):
             return Response(data={'request': request, 'error_message': e}, status=status.HTTP_400_BAD_REQUEST)
 
         user = serializer.save()
-        data = {'user': 'user'}
+        data = {'user': user}
         return Response(data, status=status.HTTP_201_CREATED)
 
     elif request.method == 'GET':
         return render(request, 'signup.html')
 
-
+@api_view(['GET', 'POST'])
 def signin(request):
     if request.method == 'POST':
         print(request.POST)
-        username = request.POST['Email']
-        password = request.POST['Password']
-        user = auth.authenticate(Email=username, Password=password)
+        username = request.POST["email"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
         if user is not None:
-            auth.login(request, user)
-            # TODO change to get the matches of the user
-            user_matches = models.Roommates.objects.all
-            context = {'my_matches': user_matches}
-            return render(request, 'user_homepage.html', context)
+            print("Enter if")
+            login(request, user)
+            context = {'user': user}
+            return Response(context= context, status= status.HTTP_200_OK)
         else:
-            messages.info(request, 'Invalid Username or Password')
-            return redirect('signin')
-    else:
+            return Response(status= status.HTTP_406_NOT_ACCEPTABLE)
+           
+    elif request.method == 'GET':
         return render(request, 'signin.html')
 
 
 def signout(request):
-    auth.logout(request)
-    return redirect('home')
+    logout(request)
+    return Response(status= status.HTTP_200_OK)
 
 
-class FormProfileView(APIView):
-    def get(self, request):
-        return render(request, 'info_form')
 
-    def post(self, request):
-        form = InfoForm(request.POST)
-        if form.is_valid():
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            phone_number = form.cleaned_data['phone_number']
-            birthdate = form.cleaned_data['birthdate']
-            gender = form.cleaned_data['gender']
-            occupation = form.cleaned_data['occupation']
-            smoking = form.cleaned_data['smoking']
-            diet = form.cleaned_data['diet']
-            kosher = form.cleaned_data['kosher']
-            single = form.cleaned_data['single']
-            hospitality = form.cleaned_data['hospitality']
-            shopping = form.cleaned_data['shopping']
+@api_view(['GET', 'PUT'])
+@login_required
+def profile_info(request):
+    try:
+        profile = models.Info.objects.get(User_ID=request.user)
+    except models.Info.DoesNotExist:
+        profile = None
 
-            # Create the personal info object and associate it with the user object
-            try:
-                serializer = serializers.InfoSerializer(data={'first_name': first_name,
-                                                              'last_name': last_name,
-                                                              'phone_number': phone_number,
-                                                              'birthdate': birthdate,
-                                                              'gender': gender,
-                                                              'occupation': occupation,
-                                                              'smoking': smoking,
-                                                              'diet': diet,
-                                                              'kosher': kosher,
-                                                              'single': single,
-                                                              'hospitality': hospitality,
-                                                              'shopping': shopping, })
-                serializer.is_valid(raise_exception=True)
-            except (serializers.ValidationError, AttributeError) as e:
-                return render(self.request, 'info_form', {'error_message': "This is an Error"}, status=status.HTTP_400_BAD_REQUEST)
-            info = models.Info(first_name=first_name, last_name=last_name, phone_number=phone_number, bitrhdate=bitrhdate, gender=gender,
-                               occupation=occupation, smoking=smoking, diet=diet, kosher=kosher, single=single, hospitality=hospitality, shopping=shopping)
-            info.save()
+    if request.method == 'GET':
+        serializer = serializers.InfoSerializer(profile)
+        #return Response(serializer.data)
+        return render(request, 'info_form') 
 
-            # Store the user ID in the form data so we can check if the user has already been created
-            # self.storage.extra_data['user_id'] = user.id
+    elif request.method == 'PUT':
+        serializer =serializers.InfoSerializer(profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            # Return a response to the user
-            return render(self.request, 'user_homepage')
-        return render(request, 'info_form.html', {'form': form})
+
+
+
+
+# class FormProfileView(APIView):
+#     def get(self, request):
+#         return render(request, 'info_form')
+
+#     def post(self, request):
+#         form = InfoForm(request.POST)
+#         if form.is_valid():
+#             first_name = form.cleaned_data['first_name']
+#             last_name = form.cleaned_data['last_name']
+#             phone_number = form.cleaned_data['phone_number']
+#             birthdate = form.cleaned_data['birthdate']
+#             gender = form.cleaned_data['gender']
+#             occupation = form.cleaned_data['occupation']
+#             smoking = form.cleaned_data['smoking']
+#             diet = form.cleaned_data['diet']
+#             kosher = form.cleaned_data['kosher']
+#             single = form.cleaned_data['single']
+#             hospitality = form.cleaned_data['hospitality']
+#             shopping = form.cleaned_data['shopping']
+
+#             # Create the personal info object and associate it with the user object
+#             try:
+#                 serializer = serializers.InfoSerializer(data={'first_name': first_name,
+#                                                               'last_name': last_name,
+#                                                               'phone_number': phone_number,
+#                                                               'birthdate': birthdate,
+#                                                               'gender': gender,
+#                                                               'occupation': occupation,
+#                                                               'smoking': smoking,
+#                                                               'diet': diet,
+#                                                               'kosher': kosher,
+#                                                               'single': single,
+#                                                               'hospitality': hospitality,
+#                                                               'shopping': shopping, })
+#                 serializer.is_valid(raise_exception=True)
+#             except (serializers.ValidationError, AttributeError) as e:
+#                 return render(self.request, 'info_form', {'error_message': "This is an Error"}, status=status.HTTP_400_BAD_REQUEST)
+#             info = models.Info(first_name=first_name, last_name=last_name, phone_number=phone_number, bitrhdate=bitrhdate, gender=gender,
+#                                occupation=occupation, smoking=smoking, diet=diet, kosher=kosher, single=single, hospitality=hospitality, shopping=shopping)
+#             info.save()
+
+#             # Store the user ID in the form data so we can check if the user has already been created
+#             # self.storage.extra_data['user_id'] = user.id
+
+#             # Return a response to the user
+#             return render(self.request, 'user_homepage')
+#         return render(request, 'info_form.html', {'form': form})
 
 
 class UserHomepageView(APIView):

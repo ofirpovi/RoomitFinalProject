@@ -1,0 +1,9 @@
+<h1>Signin page</h1>
+<form action="{% url 'signin' %}" method="POST">
+  {% csrf_token %}
+  <label for="email">Email: </label>
+  <input id="email" type="text" name="email" />
+  <label for="password">Password: </label>
+  <input id="password" type="text" name="password" />
+  <input type="submit" value="Signin" />
+</form>

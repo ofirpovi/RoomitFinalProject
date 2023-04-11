@@ -1,0 +1,9 @@
+<h1>User Homepage</h1>
+<table>
+  {% for obj in my_matches %}
+  <tr>
+    <td>{{ obj.id }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<a href="{% url 'signout' %}">signout</a>
