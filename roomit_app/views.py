@@ -69,8 +69,8 @@ def signout(request):
 
 
 
-@api_view(['GET', 'PUT'])
-@login_required
+@api_view(['GET', 'POST'])
+#@login_required
 def profile_info(request):
     try:
         profile = models.Info.objects.get(User_ID=request.user)
@@ -80,18 +80,22 @@ def profile_info(request):
     if request.method == 'GET':
         serializer = serializers.InfoSerializer(profile)
         #return Response(serializer.data)
-        return render(request, 'info_form') 
+        return render(request, 'info_form.html') 
 
-    elif request.method == 'PUT':
-        serializer =serializers.InfoSerializer(profile, data=request.data)
+    elif request.method == 'POST':
+        serializer =serializers.InfoSerializer(data=request.POST)
+        print('Before')
         if serializer.is_valid():
+            print('After')
+            #print(serializer)
             serializer.save(user=request.user)
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
+def profile(request):
+    return render(request, 'profile.html')
 
 
 # class FormProfileView(APIView):
