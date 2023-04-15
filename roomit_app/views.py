@@ -23,8 +23,8 @@ from . import permissions
 #from .forms import InfoForm
 
 
-class HomePageView(TemplateView):
-    template_name = "home.html"
+def home(request):
+    return render(request, 'roomit_app/home.html')
 
 
 @api_view(['POST', 'GET'])
