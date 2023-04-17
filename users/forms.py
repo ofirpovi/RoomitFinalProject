@@ -22,4 +22,5 @@ class UserUpdateForm(forms.ModelForm):
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['image']
+        fields = ['image', 'first_name', 'last_name', 'gender', 'occupation', 'smoker', 'diet', 'status', 'hospitality', 'kosher', 'expense_management']
+        exclude = ['profile_status']
