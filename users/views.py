@@ -18,14 +18,14 @@ def register(request):
             new_user = authenticate(username=form.cleaned_data['username'],
                                     password=form.cleaned_data['password1'],)
             login(request, new_user)
-            return redirect('create_profile')
+            return redirect('profile', new_user.username)
     else:
         form = UserRegisterForm()
     return render(request, 'users/register.html', {'form': form})
 
 
 @login_required
-def profile(request):
+def profile(request, username):
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(request.POST,
@@ -35,7 +35,7 @@ def profile(request):
             u_form.save()
             p_form.save()
             messages.success(request, f'Your account has been updated!')
-            return redirect('profile')
+            return redirect('profile', request.POST['username'])
 
     else:
         u_form = UserUpdateForm(instance=request.user)
