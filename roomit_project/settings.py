@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'verify_email.apps.VerifyEmailConfig',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
