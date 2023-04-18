@@ -1,8 +1,9 @@
 from django.db import models
 from django.db.models import JSONField
-
-
 from django.contrib.auth.models import User
+from django.db import models
+# from django.contrib.postgres.fields import ArrayField
+
 
 class Roommates(models.Model):
     Roommate_ID = models.FloatField(primary_key=True)
@@ -103,3 +104,37 @@ class Scores(models.Model):
             models.UniqueConstraint(
                 fields=['Roommate1_ID', 'Roommate2_ID'], name='unique_scores'),
         ]
+
+
+class RequirementsP(models.Model):
+    Requirement_ID = models.AutoField(primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    Type = models.CharField(max_length=1, choices=[('P', 'Property'), ('R', 'Roommate')])
+    Country = models.CharField(max_length=25, default='', blank=True)
+    City = models.CharField(max_length=25, default='', blank=True)
+    Neighborhood = models.CharField(max_length=25, default='', blank=True)
+    MinRent = models.IntegerField(null=True, default=None, blank=True)
+    MaxRent = models.IntegerField(null=True, default=None, blank=True)
+    MinRooms = models.IntegerField(null=True, default=None, blank=True)
+    MaxRooms = models.IntegerField(null=True, default=None, blank=True)
+    MaxRoommates = models.IntegerField(null=True, default=None, blank=True)
+    MinRoommates = models.IntegerField(null=True, default=None, blank=True)
+    MinToilets = models.IntegerField(null=True, default=None, blank=True)
+    MinShowers = models.IntegerField(null=True, default=None, blank=True)
+
+    def save(self, *args, **kwargs):
+        super(RequirementsP, self).save(*args, **kwargs)
+
+    # # Define the predefined list of choices
+    # CHOICES_LIST = (
+    #     ('choice1', 'Choice 1'),
+    #     ('choice2', 'Choice 2'),
+    #     ('choice3', 'Choice 3'),
+    # )
+
+    # # Define the field that holds the restricted list of strings
+    # restricted_list = ArrayField(
+    #     models.CharField(choices=CHOICES_LIST, max_length=10),
+    #     default=list,
+    # )
+

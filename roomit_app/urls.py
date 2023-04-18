@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views as app_views
-from django.contrib.auth import views as auth_views 
+from django.contrib.auth import views as auth_views
+from django.urls import path, re_path
+from . import views
 # .views import HomePageView, SignupView, FormProfileView, signin, UserHomepageView
 
 
@@ -12,4 +14,5 @@ urlpatterns = [
     path('info_form/', app_views.profile_info, name='info_form'),
     path('user_homepage/', app_views.UserHomepageView.as_view(), name='user_homepage'),
     path('', app_views.home, name='home'),
+    path('requirements/<str:username>/', app_views.requirements, name='requirements'),
 ]

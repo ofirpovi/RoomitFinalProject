@@ -18,7 +18,7 @@ class Profile(models.Model):
                                                                    ('M', 'Male'),
                                                                    ('N', 'Not Defined'),
                                                                    ])
-    occupation = models.CharField(max_length=30,  blank=True, choices=[('F', 'Full-time jobe'),
+    occupation = models.CharField(max_length=30,  blank=True, choices=[('F', 'Full-time job'),
                                                                        ('S', 'Student'),
                                                                        ('P', 'Part-time job'),
                                                                        ('D', "Doesn't matter"),
