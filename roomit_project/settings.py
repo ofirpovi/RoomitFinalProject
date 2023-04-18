@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'crispy_forms',
     'crispy_bootstrap5',
+    'verify_email.apps.VerifyEmailConfig',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
@@ -136,9 +138,4 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-#EMAIL_FILE_PATH = 'C:/Users/ofirp/FinaleProject/RoomitFinaleProject/emails'
-# EMAIL_POST   = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # development ONLY
