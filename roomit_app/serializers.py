@@ -32,8 +32,8 @@ class UserSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        print("create: {}".format(validated_data))
-        print(validated_data)
+        #print("create: {}".format(validated_data))
+        #print(validated_data)
         email = validated_data['email']
         password = make_password(validated_data['password'])
         user = User.objects.create_user(username=email, email=email, password=password)
@@ -46,8 +46,10 @@ class InfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Info
         fields = '__all__'
+        
 
-    def validate(self, data):
+    def validate(self,data):
+        print('validate')
         if self.instance is None:
             # if this is a new instance, we need to validate the user_id field
             if Info.objects.filter(User_ID=data['User_ID']).exists():
