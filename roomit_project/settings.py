@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'verify_email.apps.VerifyEmailConfig',
     'phonenumber_field',
+    'djmoney',
+    'django.contrib.postgres',
 ]
 
 MIDDLEWARE = [
