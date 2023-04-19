@@ -121,9 +121,9 @@ def get_upload_path(instance, filename):
     return f'property_pics/{directory}/{filename}'
 
 class PropertyImage(models.Model):
-    property = models.ForeignKey(PropertyForOffer, on_delete=models.CASCADE)
+    property = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to= 'property_pics')
-    #default = models.BooleanField(default=False)
+    default = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} Property imges".format(self.user.username)
