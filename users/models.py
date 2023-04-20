@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from PIL import Image
+from PIL import Image as pilImage
 from phonenumber_field.modelfields import PhoneNumberField
 from djmoney.models.fields import MoneyField
 import os
@@ -10,8 +10,8 @@ import os
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
-    profile_status = models.CharField(max_length=15, default=' ', help_text='What are you looking for', choices=[('StatusInsert', 'Roomate'),
-                                                                                                                 ('StatusEnter', 'Appartment'),])
+    profile_status = models.CharField(max_length=15, default=' ', help_text='What are you looking for', choices=[('StatusInsert', 'insert in'),
+                                                                                                                 ('StatusEnter', 'enter in'),])
     first_name = models.CharField(max_length=30, default='')
     last_name = models.CharField(max_length=30, default='')
     birthdate = models.DateField(null=True, blank=False)
@@ -56,7 +56,7 @@ class Profile(models.Model):
     kosher = models.CharField(max_length=15, blank=True, choices=[('Y', 'Yes'),
                                                                   ('N', 'No'),])
     expense_management = models.CharField(max_length=15, blank=True, choices=[('Y', 'Prefer'),
-                                                                              ('N', 'Prefer not'),])
+                                                                            ('N', 'Prefer not'),])
 
     def __str__(self):
         return "{} Profile".format(self.user.username)
@@ -64,7 +64,7 @@ class Profile(models.Model):
     def save(self, *args, **kwargs):
         super(Profile, self).save(*args, **kwargs)
 
-        img = Image.open(self.image.path)
+        img = pilImage.open(self.image.path)
 
 class PropertyForOffer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -110,25 +110,30 @@ class PropertyForOffer(models.Model):
     def save(self, *args, **kwargs):
         super(PropertyForOffer, self).save(*args, **kwargs)
 
+class Image(models.Model):
+    property = models.ForeignKey(PropertyForOffer, on_delete=models.CASCADE)
+    image = models.ImageField(null=True, blank=True, upload_to='property_pics')
+
+# def get_upload_path(instance, filename):
+#     # Get the name of the file without the extension
+#     name, ext = os.path.splitext(filename)
+#     # Use the name of the file as the directory name
+#     directory = name
+#     # Return the path to the file
+#     return f'property_pics/{directory}/{filename}'
 
 
-def get_upload_path(instance, filename):
-    # Get the name of the file without the extension
-    name, ext = os.path.splitext(filename)
-    # Use the name of the file as the directory name
-    directory = name
-    # Return the path to the file
-    return f'property_pics/{directory}/{filename}'
 
-class PropertyImage(models.Model):
-    property = models.ForeignKey(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='default.jpg', upload_to= 'property_pics')
-    default = models.BooleanField(default=False)
 
-    def __str__(self):
-        return "{} Property imges".format(self.user.username)
+# class PropertyImage(models.Model):
+#     property = models.ForeignKey(User, on_delete=models.CASCADE)
+#     image = models.ImageField(default='default.jpg', upload_to= 'property_pics/')
+#     default = models.BooleanField(default=False)
 
-    def save(self, *args, **kwargs):
-        super(PropertyImage, self).save(*args, **kwargs)
+#     def __str__(self):
+#         return "{} Property imges".format(self.user.username)
 
-        img = Image.open(self.image.path)
+#     def save(self, *args, **kwargs):
+#         super(PropertyImage, self).save(*args, **kwargs)
+
+#         img = Image.open(self.image.path)

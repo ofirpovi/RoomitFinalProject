@@ -1,0 +1,14 @@
+{% extends "roomit_app/base.html"%}
+{% block content %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>What you are looking for?</title>
+  </head>
+  <body>
+    <h1>Click a Button to Render Another Page</h1>
+    <a href="{% url 'set-status' %}?status=insert in">Looking for a roommate</a>
+    <a href="{% url 'set-status' %}?status=enter in">Looking for a property</a>
+  </body>
+</html>
+{% endblock content %}

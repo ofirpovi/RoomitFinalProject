@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.forms.widgets import DateInput
-from .models import Profile, PropertyForOffer, PropertyImage
+from .models import Profile, PropertyForOffer, Image#, PropertyImage
 
 
 class UserRegisterForm(UserCreationForm):
@@ -66,6 +66,15 @@ class OfferPropertyForm(forms.ModelForm):
                                                     (3, '3'),
                                                     (4, '4'),
                                                     (5, '5'),], label= 'Number of toilets:')
+
+class ImageForm(forms.ModelForm):
+    image=forms.ImageField(label='image', 
+                           widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    class Meta:
+        model= Image
+        fields=['image',]
+        
+
 # class PropertyImage(forms.ModelForm):
 #     class Meta:
 #         model = PropertyImage

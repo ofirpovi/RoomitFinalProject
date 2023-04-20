@@ -2,10 +2,11 @@ from django.http import HttpResponse
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, OfferPropertyForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, OfferPropertyForm, ImageForm
 from django.contrib.auth import authenticate, login
+
 from django.contrib.auth.decorators import login_required
-from .models import PropertyForOffer, PropertyImage
+from .models import PropertyForOffer, Image, Profile
 
 # Create your views here.
 
@@ -59,7 +60,8 @@ def info(request, username):
             if p_form.is_valid():
                 p_form.save()
                 messages.success(request, "Your personal details have been saved and your profile has been created. You can see your profile and edit it at any time by clicking on the 'profile' tab on the top right of the screen.")
-                return redirect('profile', username=request.user.username, permanent=False)
+                return render(request, 'users/choose_status.html')
+                #return redirect('profile', username=request.user.username, permanent=False)
 
     else:
         p_form = ProfileUpdateForm(instance=request.user.profile)
@@ -72,25 +74,36 @@ def info(request, username):
 @login_required
 def insert_in_status(request):
     user = request.user
-    property = request.user.propertyforoffer
     if request.method == 'POST':
-        images= request.FILES.getlist('images')
-        form = OfferPropertyForm(request.POST, request.FILES, instance= property)
+        form = OfferPropertyForm(request.POST)
+        images= request.FILES.getlist('image')
         if form.is_valid():
             # set the user for the PropertyForOffer instance
             property = form.save(commit=False)
             property.user = user
-            property = form.save()
-
-            # # Save the Image objects using the formset
-            # images_formset = ImageFormSet(request.POST, request.FILES, instance= property)
-            # if images_formset.is_valid():
-            #     images_formset.save()
+            form.save()
             for image in images:
-                p_image= PropertyImage.objects.create(property, image)
-
+                Image.objects.create(property= property, image= image)
+            messages.success(request, "Your peoperty info is save")    
             # Redirect to the property detail page
             return redirect('home')
     else:
-        form = OfferPropertyForm(instance=property)
-    return render(request, 'users/let_in_form.html', {'form': form})
+        try: 
+            property = get_object_or_404(PropertyForOffer, user=user)
+            form = OfferPropertyForm(instance=property)
+            imageform = ImageForm()
+        except:
+            form = OfferPropertyForm()
+            imageform = ImageForm()
+        
+    return render(request, 'users/let_in_form.html', {'form': form, 'imageform': imageform})
+
+def set_status(request):
+    user = request.user
+    if request.method == 'GET':
+        #profile['status'] = request.POST['status']
+        profile = Profile.objects.get(user=user)
+        profile.status = request.GET['status']
+        profile.save()
+        if request.GET['status'] == 'insert in':
+            return redirect('insert-in-status-form')
