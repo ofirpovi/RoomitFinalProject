@@ -30,6 +30,7 @@ class ProfileUpdateForm(forms.ModelForm):
         widgets = {
         'birthdate': DateInput(attrs={'type': 'date'})
     }
+
         
 class OfferPropertyForm(forms.ModelForm):
     class Meta:
@@ -74,8 +75,3 @@ class ImageForm(forms.ModelForm):
         model= Image
         fields=['image',]
         
-
-# class PropertyImage(forms.ModelForm):
-#     class Meta:
-#         model = PropertyImage
-#         fields = ['Image']

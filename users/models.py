@@ -15,7 +15,7 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=30, default='')
     last_name = models.CharField(max_length=30, default='')
     birthdate = models.DateField(null=True, blank=False)
-    phone_number = PhoneNumberField()
+    phone_number = PhoneNumberField(help_text= 'Enter a valid phone number (e.g. +12125552368)')
     gender = models.CharField(max_length=10, blank=False, choices=[('F', 'Female'),
                                                                    ('M', 'Male'),
                                                                    ('N', 'Not Defined'),
