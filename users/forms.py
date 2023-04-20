@@ -24,11 +24,11 @@ class UserUpdateForm(forms.ModelForm):
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['image', 'first_name', 'last_name', 'birthdate', 'phone_number', 'gender',
+        fields = ['image', 'profile_status', 'first_name', 'last_name', 'birthdate', 'phone_number', 'gender',
                   'occupation', 'smoker', 'diet', 'status', 'hospitality', 'kosher', 'expense_management']
-        exclude = ['profile_status']
+        #exclude = ['profile_status']
         widgets = {
-        'birthdate': DateInput(attrs={'type': 'date'})
+        'birthdate': DateInput(attrs={'type': 'date'}) 
     }
 
         

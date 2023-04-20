@@ -10,7 +10,7 @@ import os
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
-    profile_status = models.CharField(max_length=15, default=' ', help_text='What are you looking for', choices=[('StatusInsert', 'insert in'),
+    profile_status = models.CharField(max_length=15, default=' ', help_text='What you are looking for', choices=[('StatusInsert', 'insert in'),
                                                                                                                  ('StatusEnter', 'enter in'),])
     first_name = models.CharField(max_length=30, default='')
     last_name = models.CharField(max_length=30, default='')

@@ -101,9 +101,8 @@ def insert_in_status(request):
 def set_status(request):
     user = request.user
     if request.method == 'GET':
-        #profile['status'] = request.POST['status']
-        profile = Profile.objects.get(user=user)
-        profile.status = request.GET['status']
-        profile.save()
+        Profile.objects.filter(user= user).update(profile_status= request.GET['status'])
         if request.GET['status'] == 'insert in':
+            return redirect('insert-in-status-form')
+        else:
             return redirect('insert-in-status-form')
