@@ -1,0 +1,23 @@
+{% extends "roomit_app/base.html" %}
+{% block content %}
+{% load infinite_scroll %}
+<h1> This is a sample page </h1>
+        <p>
+            An infinite scroll should load below.
+            <br>
+            Scroll down to check if it's working...
+        </p>
+        <div class="item-box">
+            {% for item in feed %}
+            <img style="width:50%;length:50%;horizontal-align:middle" alt="{{ item.first_name }} {{ item.last_name }}" src="{{ item.profile.image.url }}">
+            <p>{{ item.first_name }} {{ item.last_name }}</p><br>
+            {% endfor %}
+        </div>
+        <p> here will render more and more data</p>
+        <div class="item-box">
+            {% infinite_scroll_box %}
+            <!--{#% DEPRECATED include 'infscroll/scroll_box.html' %#}-->
+        </div>
+            {% set_infinite_scroll %}
+        <!-- {#% DEPRECATED include 'infscroll/scroll.html' %#}-->
+{% endblock content%}

@@ -1,10 +1,12 @@
 from django.http import HttpResponse
 from django.urls import reverse
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, OfferPropertyForm, ImageForm
 from django.contrib.auth import authenticate, login
+
 from django.contrib.auth.decorators import login_required
+from .models import PropertyForOffer, Image, Profile
 
 # Create your views here.
 
@@ -28,9 +30,7 @@ def register(request):
 
 @login_required
 def profile(request, username):
-    print('start')
     if request.method == 'POST':
-        print('post')
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(request.POST,
                                    request.FILES,
@@ -42,7 +42,6 @@ def profile(request, username):
             return redirect('profile', request.user)
 
     else:
-        print('else')
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=request.user.profile)
 
@@ -52,7 +51,7 @@ def profile(request, username):
     }
     return render(request, 'users/profile.html', context)
 
-
+@login_required
 def info(request, username):
     if request.method == 'POST':
             p_form = ProfileUpdateForm(request.POST,
@@ -61,7 +60,8 @@ def info(request, username):
             if p_form.is_valid():
                 p_form.save()
                 messages.success(request, "Your personal details have been saved and your profile has been created. You can see your profile and edit it at any time by clicking on the 'profile' tab on the top right of the screen.")
-                return redirect('profile', username=request.user.username, permanent=False)
+                return render(request, 'users/choose_status.html')
+                #return redirect('profile', username=request.user.username, permanent=False)
 
     else:
         p_form = ProfileUpdateForm(instance=request.user.profile)
@@ -70,3 +70,39 @@ def info(request, username):
         'p_form': p_form
     }
     return render(request, 'users/fill_info.html', context)
+
+@login_required
+def insert_in_status(request):
+    user = request.user
+    if request.method == 'POST':
+        form = OfferPropertyForm(request.POST)
+        images= request.FILES.getlist('image')
+        if form.is_valid():
+            # set the user for the PropertyForOffer instance
+            property = form.save(commit=False)
+            property.user = user
+            form.save()
+            for image in images:
+                Image.objects.create(property= property, image= image)
+            messages.success(request, "Your peoperty info is save")    
+            # Redirect to the property detail page
+            return redirect('home')
+    else:
+        try: 
+            property = get_object_or_404(PropertyForOffer, user=user)
+            form = OfferPropertyForm(instance=property)
+            imageform = ImageForm()
+        except:
+            form = OfferPropertyForm()
+            imageform = ImageForm()
+        
+    return render(request, 'users/let_in_form.html', {'form': form, 'imageform': imageform})
+
+def set_status(request):
+    user = request.user
+    if request.method == 'GET':
+        Profile.objects.filter(user= user).update(profile_status= request.GET['status'])
+        if request.GET['status'] == 'insert in':
+            return redirect('insert-in-status-form')
+        else:
+            return redirect('insert-in-status-form')

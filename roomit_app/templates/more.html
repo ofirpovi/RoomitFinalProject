@@ -1,0 +1,11 @@
+
+{% load infinite_scroll %}
+{% for item in feed %}
+<p> in post_list </p>
+            <img style="width:50%;length:50%;horizontal-align:middle" alt="{{ item.first_name }} {{ item.last_name }}" src="{{ item.profile.image.url }}">
+            <p>{{ item.first_name }} {{ item.last_name }}</p><br>
+{% endfor %}
+{% infinite_scroll_tags %}
+<!--{#% DEPRECATED include 'infscroll/scroll_tags.html' %#}-->
+
+
