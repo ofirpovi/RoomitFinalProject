@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 from rest_framework import status
 from rest_framework.views import APIView
@@ -10,17 +11,23 @@ from django.views import View
 from django.contrib import messages
 # from formtools.wizard.views import SessionWizardView
 from django.urls import reverse
-from .forms import CreateRequirementsPForm, UpdateRequirementsPForm
+from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
+from infscroll.utils import get_pagination
+from django.core.paginator import Paginator
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.template.loader import render_to_string
+from infscroll.views import more_items
 from . import serializers
 from . import models
 from . import permissions
-from .models import RequirementsP
-
+from .models import RequirementsP, RequirementsR, Scores
+from users.models import Profile
+from .requirements import Requirement, RangReq, ListReq, YNReq
 
 #from .forms import InfoForm
 
@@ -100,24 +107,88 @@ def profile(request):
     return render(request, 'profile.html')
 
 
-def requirements(request, username):
-    user = User.objects.get(username=username)
-    requirements = RequirementsP.objects.get(user=user)
+@login_required
+def requirementsP(request, username):
+    user = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user)
+    if profile.profile_status == 'StatusInsert':
+        return redirect(requirementsR, request.user)
+    else:
+        try:
+            requirements = RequirementsP.objects.get(user=user)
+        except RequirementsP.DoesNotExist:
+            requirements = RequirementsP(user=request.user)
+            requirements.save()
+
+        if request.method == 'POST':
+            form = UpdateRequirementsPForm(request.POST, instance=requirements)
+            if form.is_valid():
+                form.save()
+                return redirect('requirementsR', request.user)
+        else:
+            form = UpdateRequirementsPForm(instance=requirements)
+        return render(request, 'requirementsP.html', {'form': form})
+
+
+@login_required
+def requirementsR(request, username):
+    user = User.objects.get(username=request.user.username)
+    try:
+        requirements = RequirementsR.objects.get(user=user)
+    except RequirementsR.DoesNotExist:
+        requirements = RequirementsR(user=request.user)
+        requirements.save()
 
     if request.method == 'POST':
-        form = UpdateRequirementsPForm(request.POST, instance=requirements)
+        form = UpdateRequirementsRForm(request.POST, instance=requirements)
         if form.is_valid():
             form.save()
             messages.success(request, f'Your Requirements have been updated!')
             return redirect('profile', request.user)
-
     else:
-        form = UpdateRequirementsPForm(instance=requirements)
+        form = UpdateRequirementsRForm(instance=requirements)
 
-    context = {
-        'form': form,
-    }
-    return render(request, 'requirements.html', context)
+    return render(request, 'requirementsR.html', {'form': form})
+
+@login_required
+def more(request, page):
+    # This is the list that will be paginated.
+    list_items = User.objects.all()
+    return more_items(request, list_items,template='more.html')
+
+@login_required
+def post_list(request, page):
+    scores = User.objects.all()
+    paginated = get_pagination(request, scores)
+    page += 1
+    data = {
+            'more_posts_url': reverse('more', kwargs={"page": page}),
+            }
+    data.update(paginated)
+    return render(request, 'post_list.html', data)
+
+def updateScores(request):
+    username = request.user.username
+    Scores.objects.filter(username1=username).delete()
+    Scores.objects.filter(username2=username).delete()
+    profile = Profile.objects.get(username=username)
+    status_match = 'StatusEnter' if profile.profile_status == 'StatusInsert' else 'StatusInsert'
+    potential_profiles = Profile.objects.filter(profile_status=status_match)
+    requirements = []
+    if profile.profile_status == 'StatusEnter':
+        requirementP = RequirementsP.objects.get(user=request.user)
+        requirements.append(ListReq(True, requirementP.Weight, "Country", requirementP.Country))
+        requirements.append(ListReq(True, requirementP.Weight, "City", requirementP.City))
+        requirements.append(ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
+        requirements.append(RangReq(False, requirementP.Weight, "Rent", requirementP.MinRent, requirementP.MaxRent))
+        requirements.append(RangReq(False, requirementP.Weight, "Number of rooms", requirementP.MinRooms, requirementP.MaxRooms))
+        requirements.append(RangReq(False, requirementP.Weight, "Number of roommates", requirementP.MinRoommates, requirementP.MaxRoommates))
+        requirements.append(RangReq(False, requirementP.Weight, "Number of toilets", requirementP.MinToilets, None))
+        requirements.append(RangReq(False, requirementP.Weight, "Number of showers", requirementP.MinShowers, None))
+    requirementR = RequirementsR.objects.get(user=request.user)
+    requirements.append()
+
+
 
 
 class UserHomepageView(APIView):

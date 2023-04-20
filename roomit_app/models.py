@@ -60,6 +60,7 @@ class Info(models.Model):
                                                       ('Married', 'Married'),
                                                       ('In a relationship', 'In a relationship'),
                                                       ])
+
     Hospitality = models.BooleanField(max_length=15, default=True)
     Kosher = models.BooleanField(default=False)
     Expense_Management = models.CharField(max_length=15, default='P', choices=[('L', 'Love'),
@@ -84,17 +85,23 @@ class Requirements(models.Model):
 
 
 class Offers(models.Model):
-    Offer_ID = models.FloatField(primary_key=True)
-    Roommates_ID = models.FloatField()
-    Content = JSONField()
-    Roommate = models.ForeignKey('Roommates', on_delete=models.CASCADE)
+    Offer_ID = models.AutoField(primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default=None)
+    Country = models.CharField(max_length=25, default='', blank=True)
+    City = models.CharField(max_length=25, default='', blank=True)
+    Neighborhood = models.CharField(max_length=25, default='', blank=True)
+    Rent = models.IntegerField(null=True, default=None, blank=True)
+    Rooms = models.IntegerField(null=True, default=None, blank=True)
+    Roomates = models.IntegerField(null=True, default=None, blank=True)
+    Toilets = models.IntegerField(null=True, default=None, blank=True)
+    Showers = models.IntegerField(null=True, default=None, blank=True)
 
 
 class Scores(models.Model):
-    Roommate1_ID = models.ForeignKey(
-        Roommates, on_delete=models.CASCADE, related_name='roommate1_scores')
-    Roommate2_ID = models.ForeignKey(
-        Roommates, on_delete=models.CASCADE, related_name='roommate2_scores')
+    Username1 = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='roommate1_scores')
+    Username2 = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='roommate2_scores')
     Roommate1_score = models.FloatField()
     Roommate2_score = models.FloatField()
     Total_Score = models.FloatField()
@@ -102,7 +109,7 @@ class Scores(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['Roommate1_ID', 'Roommate2_ID'], name='unique_scores'),
+                fields=['Username1', 'Username2'], name='unique_scores'),
         ]
 
 
@@ -121,9 +128,56 @@ class RequirementsP(models.Model):
     MinRoommates = models.IntegerField(null=True, default=None, blank=True)
     MinToilets = models.IntegerField(null=True, default=None, blank=True)
     MinShowers = models.IntegerField(null=True, default=None, blank=True)
+    Weight = models.FloatField(null=True, default=100/5, blank=True)
 
     def save(self, *args, **kwargs):
         super(RequirementsP, self).save(*args, **kwargs)
+
+
+class RequirementsR(models.Model):
+    Requirement_ID = models.AutoField(primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    Occupation = models.CharField(max_length=30,  blank=True, null=True, default=None, choices=[('F', 'Full-time job'),
+                                                                      ('S', 'Student'),
+                                                                       ('P', 'Part-time job'),
+                                                                       ('D', "Doesn't matter"),
+                                                                       ('empty',
+                                                                        '---'),
+                                                                       ])
+    MinAge = models.IntegerField(null=True, default=None, blank=True)
+    MaxAge = models.IntegerField(null=True, default=None, blank=True)
+    Gender = models.CharField(max_length=10, null=True, default=None, blank=True, choices=[('F', 'Female'),
+                                                                   ('M', 'Male'),
+                                                                   ('N', 'Not Defined'),
+                                                                   ])
+    Smoker = models.CharField(max_length=15, null=True, default=None, blank=True, choices=[('Yes', 'Yes'),
+                                                                  ('No', 'No'),
+                                                                  ('Occasionally',
+                                                                   'Occasionally'),
+                                                                  ('Socially',
+                                                                   'Socially'),
+                                                                  ])
+    Diet = models.CharField(max_length=15, null=True, default=None, blank=True, choices=[('Carnivore', 'Carnivore'),
+                                                                ('Pescetarian',
+                                                                 'Pescetarian'),
+                                                                ('Vegan', 'Vegan'),
+                                                                ('Vegetarian',
+                                                                 'Vegetarian'),
+                                                                ('Raw Veganism',
+                                                                 'Raw Veganism'),
+                                                                ])
+    Kosher = models.CharField(max_length=15, null=True, default=None, blank=True, choices=[('Y', 'Yes'),
+                                                                  ('N', 'No'),])
+    Status = models.CharField(max_length=20, null=True, default=None, blank=True, choices=[('Single', 'Single'),
+                                                                  ('Married',
+                                                                   'Married'),
+                                                                  ('In a relationship',
+                                                                   'In a relationship'),
+                                                                  ('D', "Doesn't matter"),])
+    Weight = Weight = models.FloatField(null=True, default=100/7, blank=True)
+
+    def save(self, *args, **kwargs):
+        super(RequirementsR, self).save(*args, **kwargs)
 
     # # Define the predefined list of choices
     # CHOICES_LIST = (

@@ -82,3 +82,16 @@ body {
   .account-heading {
     font-size: 2.5rem;
   }
+
+  #post-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    }
+
+    #post-list img {
+        height: 50%;
+        max-length: 100px;
+        margin: 10px;
+    }

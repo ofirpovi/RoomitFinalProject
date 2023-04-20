@@ -14,5 +14,9 @@ urlpatterns = [
     path('info_form/', app_views.profile_info, name='info_form'),
     path('user_homepage/', app_views.UserHomepageView.as_view(), name='user_homepage'),
     path('', app_views.home, name='home'),
-    path('requirements/<str:username>/', app_views.requirements, name='requirements'),
+    path('requirementsR/<str:username>/', app_views.requirementsR, name='requirementsR'),
+    path('requirementsP/<str:username>/', app_views.requirementsP, name='requirementsP'),
+    path('post_list/<int:page>', app_views.post_list, name='post_list_page'),
+    path('more/<int:page>', app_views.more, name='more'),
+
 ]

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Info, RequirementsP
+from .models import Info, RequirementsP, RequirementsR
 from django.forms import TextInput, RadioSelect, CheckboxInput, DateInput
 
 
@@ -44,12 +44,18 @@ class InfoForm(forms.ModelForm):
                                                               ('P', 'Prefer not')]), }
 
 
-class CreateRequirementsPForm(forms.ModelForm):
+class UpdateRequirementsRForm(forms.ModelForm):
     class Meta:
-        model = RequirementsP
-        fields = ['Country', 'Neighborhood', 'MinRent', 'MaxRent', 'MinRooms', 'MaxRooms',
-                  'MaxRoommates', 'MinRoommates', 'MinToilets', 'MinShowers']
-        exclude = ['Requirement_ID', 'Roommates_ID', 'Type']
+        model = RequirementsR
+        fields = ['Occupation', 'MinAge', 'MaxAge', 'Gender', 'Smoker', 'Diet', 'Kosher', 'Status']
+        exclude = ['Requirement_ID', 'Roommates_ID']
+        labels = {
+                     'Occupation': 'Occupation',
+                     'MinAge': 'Min Age',
+                     'MaxAge': 'Max Age',
+                     'Gender': 'Gender',
+                     'Status': 'Relationship Status'
+        }
 
 
 class UpdateRequirementsPForm(forms.ModelForm):
