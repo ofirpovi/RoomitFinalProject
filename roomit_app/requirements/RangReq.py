@@ -46,10 +46,10 @@ class RangeReq(Requirement):
             else:
                 return (1-0.05*ans_stde)*self._weight
 
-    def convert_answer_to_str(self, answer):
-        if self._distance:
-            answer = self.calculate_distance(answer, self._address)
-        return answer
+    # def convert_answer_to_str(self, answer):
+    #     if self._distance:
+    #         answer = self.calculate_distance(answer, self._address)
+    #     return answer
 
     # def calculate_distance(self, address1, address2):
     #     # create a geolocator object

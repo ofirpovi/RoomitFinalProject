@@ -1,8 +1,6 @@
-from . import views as app_views
-from django.contrib.auth import views as auth_views
 from django.urls import path
 
-
+from . import views as app_views
 
 urlpatterns = [
     path('', app_views.post_list, name='post_list_page'),

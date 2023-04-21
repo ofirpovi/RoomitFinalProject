@@ -1,23 +1,17 @@
-from django.shortcuts import redirect
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from django.contrib import messages
-from django.urls import reverse
-from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
-from django.contrib.auth.models import User
-from rest_framework.decorators import api_view
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from infscroll.utils import get_pagination
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
 from django.shortcuts import render
+from django.urls import reverse
+from infscroll.utils import get_pagination
 from infscroll.views import more_items
-from . import serializers
-from . import models
-from .models import RequirementsP, RequirementsR, Scores
-from users.models import Profile, PropertyForOffer
-from .requirements import ListReq, RangReq
+from rest_framework.views import APIView
 
+from users.models import Profile, PropertyForOffer
+from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
+from .models import RequirementsP, RequirementsR, Scores
+from .requirements import ListReq, RangReq
 
 
 def home(request):
