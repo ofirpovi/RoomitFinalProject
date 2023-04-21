@@ -1,6 +1,4 @@
-
 import math
-import sys
 
 from .Requirement import Requirement
 # from geopy.geocoders import Nominatim

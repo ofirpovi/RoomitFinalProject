@@ -7,7 +7,7 @@ class InfoForm(forms.ModelForm):
     class Meta:
         model = Info
         fields = ['First_Name', 'Last_Name', 'Birthdate', 'Phone_Number', 'Gender', 'Occupation',
-                  'Smoker', 'Diet', 'Status', 'Hospitality', 'Kosher', 'Expense_Management',]
+                  'Smoker', 'Diet', 'Status', 'Hospitality', 'Kosher', 'Expense_Management']
         widgets = {'First_Name': TextInput(),
                    'Last_Name': TextInput(),
                    'Birthdate': DateInput(),
@@ -47,14 +47,16 @@ class InfoForm(forms.ModelForm):
 class UpdateRequirementsRForm(forms.ModelForm):
     class Meta:
         model = RequirementsR
-        fields = ['Occupation', 'MinAge', 'MaxAge', 'Gender', 'Smoker', 'Diet', 'Kosher', 'Status']
+        fields = ['Occupation', 'MinAge', 'MaxAge', 'Gender', 'Smoker', 'Diet', 'Kosher', 'Status', 'Expense_Management']
         exclude = ['Requirement_ID', 'Roommates_ID']
         labels = {
                      'Occupation': 'Occupation',
                      'MinAge': 'Min Age',
                      'MaxAge': 'Max Age',
                      'Gender': 'Gender',
-                     'Status': 'Relationship Status'
+                     'Status': 'Relationship Status',
+                     'Expense_Management': 'Shared Expenses'
+
         }
 
 
@@ -62,7 +64,8 @@ class UpdateRequirementsPForm(forms.ModelForm):
     class Meta:
         model = RequirementsP
         fields = ['Country', 'City', 'Neighborhood', 'MinRent', 'MaxRent', 'MinRooms', 'MaxRooms',
-                  'MaxRoommates', 'MinRoommates', 'MinToilets', 'MinShowers']
+                  'MaxRoommates', 'MinRoommates', 'MinToilets', 'MinShowers', 'Renovated',
+                  'Shelter_Inside', 'Shelter_Nearby', 'Furnished', 'Shared_Living_Room']
         exclude = ['Requirement_ID', 'Roommates_ID', 'Type']
         labels = {
             'Country': 'Country',
@@ -75,5 +78,10 @@ class UpdateRequirementsPForm(forms.ModelForm):
             'MaxRoommates': 'Max Roommates',
             'MinRoommates': 'Min Roommates',
             'MinToilets': 'Min Toilets',
-            'MinShowers': 'Min Showers'
+            'MinShowers': 'Min Showers',
+            'Renovated': 'Renovated',
+            'Shelter_Inside': 'Shelter Inside',
+            'Shelter_Nearby': 'Shelter_Nearby',
+            'Furnished': 'Furnished',
+            'Shared_Living_Room': 'Shared Living Room'
         }

@@ -88,7 +88,7 @@ def insert_in_status(request):
             messages.success(request, "Your peoperty info is save")
             update_scores(request)
             # Redirect to the property detail page
-            return redirect('home')
+            return redirect('')
     else:
         try: 
             property = get_object_or_404(PropertyForOffer, user=user)

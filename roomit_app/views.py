@@ -26,8 +26,8 @@ from . import serializers
 from . import models
 from . import permissions
 from .models import RequirementsP, RequirementsR, Scores
-from users.models import Profile
-from .requirements import Requirement, RangReq, ListReq, YNReq
+from users.models import Profile, PropertyForOffer
+from .requirements import ListReq, RangReq
 
 #from .forms import InfoForm
 
@@ -206,11 +206,11 @@ def update_scores(request):
     online_status = profile.profile_status
     status_match = 'StatusEnter' if online_status == 'StatusInsert' else 'StatusInsert'
     potential_profiles = Profile.objects.filter(profile_status=status_match)
-    requirementsR = make_requirementsR(request.user)
+    reqR = make_requirementsR(request.user)
     if online_status == 'StatusEnter':
-        requirementsP = make_requirementsP(request.user)
+        reqP = make_requirementsP(request.user)
         for user in potential_profiles:
-            score_enter = update_scores_enter(requirementsR, requirementsP, user)
+            score_enter = update_scores_enter(reqR, reqP, user)
             requirement = make_requirementsR(user.user)
             score_insert = update_scores_insert(requirement, online_user.profile)
             score = Scores(Username_enter=online_user, Username_insert=user.user, Enter_score=score_enter, Insert_score=score_insert)
@@ -219,17 +219,26 @@ def update_scores(request):
     else:
         for user in potential_profiles:
             requirement = make_requirementsR(user.user)
-            requirementsP = make_requirementsP(user.user)
-            score_enter = update_scores_enter(requirement, requirementsP, online_user.profile)
-            score_insert = update_scores_insert(requirementsR, user)
+            reqP = make_requirementsP(user.user)
+            score_enter = update_scores_enter(requirement, reqP, online_user.profile)
+            score_insert = update_scores_insert(reqR, user)
             score = Scores(Username_enter=user.user, Username_insert=online_user, Enter_score=score_enter, Insert_score=score_insert)
             print("\n\nscore updated\n\n")
             score.save()
 
 
 def update_scores_enter(requirementsR, requirementsP, user):
-    if requirementsR is None or requirementsP is None:
-        return -1
+    if requirementsR is None and requirementsP is None:
+        print("\n\nboth none\n\n")
+        return 100
+    elif requirementsR is None:
+        personal_scoreP = calculate_score(requirementsP, user)
+        print("\n\nrequirementsR none\n\n")
+        return personal_scoreP
+    elif requirementsP is None:
+        personal_score = calculate_score(requirementsR, user)
+        print("\n\nrequirementsP none\n\n")
+        return personal_score
     else:
         personal_score = calculate_score(requirementsR, user)
         personal_scoreP = calculate_score(requirementsP, user)
@@ -239,33 +248,42 @@ def update_scores_enter(requirementsR, requirementsP, user):
 
 def update_scores_insert(requirementsR, user):
     if requirementsR is None:
-        return -1
+        print("\n\nstatus insert score - requirementsR none\n\n")
+        return 100
     else:
         personal_score = calculate_score(requirementsR, user)
         return personal_score
 
 
 def make_requirementsP(user):
-    try:
-        reqP = []
-        requirementP = RequirementsP.objects.get(user=user)
-        reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
-        reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
-        reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
-        reqP.append(RangReq.RangReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
-        reqP.append(RangReq.RangReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
-        reqP.append(RangReq.RangReq(False, requirementP.Weight, "roommates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
-        reqP.append(RangReq.RangReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
-        reqP.append(RangReq.RangReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-        return reqP
-    except RequirementsP.DoesNotExist:
-        return None
+    # try:
+    reqP = []
+    print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
+    requirementP = RequirementsP.objects.get(user=user)
+    print("-------------------------------------------------------------------------------------------")
+    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
+    reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
+    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
+    # rq =
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roommates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+    return reqP
+    # except:
+    #     return None
 
 
 def make_requirementsR(user):
     try:
         reqR = []
-        requirementR = RequirementsR.objects.get(user=user)
+        print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
+
+        requirementR = RequirementsR.objects.get(user=user.username)
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))
@@ -273,18 +291,36 @@ def make_requirementsR(user):
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "status", requirementR.Status))
         # reqR.append(ListReq.ListReq(False, requirementR.Weight, "hospitality", requirementR.hospitality))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "kosher", requirementR.Kosher))
-        # reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "renovated", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shelter_inside", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shelter_nerbay", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "furnished", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shared_livingroom", requirementR.expense_management))
         # reqR.append(ListReq.ListReq(False, requirementR.Weight, "age", requirementR.age))
+
         return reqR
-    except RequirementsR.DoesNotExist:
+    except :
         return None
 
 def calculate_score(reqs, user):
-    score = 0, 0
+    score = 0
     answers_info = {}
+    try:
+        property = PropertyForOffer.objects.get(user=user)
+    except:
+        property = None
     for req in reqs:
         req_text = req._text
-        req_count, req_score = req.calculate_score(getattr(user, req_text))
+        try:
+            req_score = req.calculate_score(getattr(user, req_text))
+        except AttributeError:
+            try:
+                req_score = req.calculate_score(getattr(property, req_text))
+            except AttributeError:
+                req_score = 0
+
+
         score += req_score
 
     # return weight, score, answers_info

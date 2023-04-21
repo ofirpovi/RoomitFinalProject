@@ -65,36 +65,7 @@ class Info(models.Model):
     Kosher = models.BooleanField(default=False)
     Expense_Management = models.CharField(max_length=15, default='P', choices=[('L', 'Love'),
                                                                                ('P', 'Prefer not')])
-    # Roommate_ID = models.OneToOneField(Roommates, on_delete=models.CASCADE)
-
-
-# class Requirements(models.Model):
-#     Requirement_ID = models.FloatField(primary_key=True)
-#     Roommates_ID = models.FloatField()
-#     Type = models.CharField(max_length=1, choices=[('P', 'P'), ('R', 'R')])
-#     Content = models.CharField(max_length=50)
-#     Category = models.CharField(max_length=10, choices=[('yn', 'yn'),
-#                                                         ('list', 'list'),
-#                                                         ('range', 'range')
-#                                                         ])
-#     Min_Value = models.IntegerField()
-#     Max_Value = models.IntegerField()
-#     Disqualifier = models.BooleanField()
-#     Weight = models.FloatField()
-#     Roommate = models.ForeignKey('Roommates', on_delete=models.CASCADE)
-
-
-class Offers(models.Model):
-    Offer_ID = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, default=None)
-    Country = models.CharField(max_length=25, default='', blank=True)
-    City = models.CharField(max_length=25, default='', blank=True)
-    Neighborhood = models.CharField(max_length=25, default='', blank=True)
-    Rent = models.IntegerField(null=True, default=None, blank=True)
-    Rooms = models.IntegerField(null=True, default=None, blank=True)
-    Roomates = models.IntegerField(null=True, default=None, blank=True)
-    Toilets = models.IntegerField(null=True, default=None, blank=True)
-    Showers = models.IntegerField(null=True, default=None, blank=True)
+    # Roommate_ID = models.OneToOneField(Roommates, on_delete=models.CASCADE
 
 
 class Scores(models.Model):
@@ -124,6 +95,11 @@ class RequirementsP(models.Model):
     MinToilets = models.IntegerField(null=True, default=None, blank=True)
     MinShowers = models.IntegerField(null=True, default=None, blank=True)
     Weight = models.FloatField(null=True, default=100/5, blank=True)
+    Renovated = models.BooleanField(blank= True, default=False)
+    Shelter_Inside = models.BooleanField(blank= True, default=False)
+    Shelter_Nearby = models.BooleanField(blank= True, default=False)
+    Furnished = models.BooleanField(blank= True, default=False)
+    Shared_Living_Room = models.BooleanField(blank= True, default=False)
 
     def save(self, *args, **kwargs):
         super(RequirementsP, self).save(*args, **kwargs)
@@ -170,6 +146,9 @@ class RequirementsR(models.Model):
                                                                    'In a relationship'),
                                                                   ('D', "Doesn't matter"),])
     Weight = Weight = models.FloatField(null=True, default=100/7, blank=True)
+    Expense_Management = models.CharField(max_length=15, default='P', choices=[('L', 'Love'),
+                                                                           ('P', 'Prefer not')])
+
 
     def save(self, *args, **kwargs):
         super(RequirementsR, self).save(*args, **kwargs)
