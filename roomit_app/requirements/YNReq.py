@@ -7,7 +7,7 @@ class YNReq(Requirement):
         self._desired_answer = desired_answer
 
     def calculate_score(self, answer):
-        if answer == self._desired_answer:
+        if self._desired_answer is None or answer == self._desired_answer:
             return self._weight
         else:
             return 0

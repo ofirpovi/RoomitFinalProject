@@ -7,7 +7,7 @@ class ListReq(Requirement):
         self._desired_answer = desired_answer
 
     def calculate_score(self, answer):
-        if answer is not None and self._desired_answer is not None and not set(answer).isdisjoint(self._desired_answer):
+        if answer is not None and (self._desired_answer is None or self._desired_answer == 'D' or not set(answer).isdisjoint(self._desired_answer)):
             return self._weight
         else:
             return 0

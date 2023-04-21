@@ -258,7 +258,7 @@ def make_requirementsP(user):
         reqP.append(RangReq.RangReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
         reqP.append(RangReq.RangReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
         return reqP
-    except:
+    except RequirementsP.DoesNotExist:
         return None
 
 
@@ -276,20 +276,17 @@ def make_requirementsR(user):
         # reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.expense_management))
         # reqR.append(ListReq.ListReq(False, requirementR.Weight, "age", requirementR.age))
         return reqR
-    except:
+    except RequirementsR.DoesNotExist:
         return None
 
 def calculate_score(reqs, user):
-    weight, score = 0, 0
+    score = 0, 0
     answers_info = {}
     for req in reqs:
         req_text = req._text
-        req_weight = req._weight
-        weight += req_weight
-        req_score = req.calculate_score(getattr(user, req_text))
+        req_count, req_score = req.calculate_score(getattr(user, req_text))
         score += req_score
-        answers_info[req_text] = [req_text, req_score,
-                                req_weight, req.convert_answer_to_str(getattr(user, req_text))]
+
     # return weight, score, answers_info
     return score
 
