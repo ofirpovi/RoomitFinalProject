@@ -68,20 +68,20 @@ class Info(models.Model):
     # Roommate_ID = models.OneToOneField(Roommates, on_delete=models.CASCADE)
 
 
-class Requirements(models.Model):
-    Requirement_ID = models.FloatField(primary_key=True)
-    Roommates_ID = models.FloatField()
-    Type = models.CharField(max_length=1, choices=[('P', 'P'), ('R', 'R')])
-    Content = models.CharField(max_length=50)
-    Category = models.CharField(max_length=10, choices=[('yn', 'yn'),
-                                                        ('list', 'list'),
-                                                        ('range', 'range')
-                                                        ])
-    Min_Value = models.IntegerField()
-    Max_Value = models.IntegerField()
-    Disqualifier = models.BooleanField()
-    Weight = models.FloatField()
-    Roommate = models.ForeignKey('Roommates', on_delete=models.CASCADE)
+# class Requirements(models.Model):
+#     Requirement_ID = models.FloatField(primary_key=True)
+#     Roommates_ID = models.FloatField()
+#     Type = models.CharField(max_length=1, choices=[('P', 'P'), ('R', 'R')])
+#     Content = models.CharField(max_length=50)
+#     Category = models.CharField(max_length=10, choices=[('yn', 'yn'),
+#                                                         ('list', 'list'),
+#                                                         ('range', 'range')
+#                                                         ])
+#     Min_Value = models.IntegerField()
+#     Max_Value = models.IntegerField()
+#     Disqualifier = models.BooleanField()
+#     Weight = models.FloatField()
+#     Roommate = models.ForeignKey('Roommates', on_delete=models.CASCADE)
 
 
 class Offers(models.Model):
@@ -98,20 +98,15 @@ class Offers(models.Model):
 
 
 class Scores(models.Model):
-    Username1 = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='roommate1_scores')
-    Username2 = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='roommate2_scores')
-    Roommate1_score = models.FloatField()
-    Roommate2_score = models.FloatField()
-    Total_Score = models.FloatField()
+    Username_enter = models.ForeignKey(User, related_name='scores_entered', on_delete=models.CASCADE)
+    Username_insert = models.ForeignKey(User, related_name='scores_inserted', on_delete=models.CASCADE)
+    Enter_score = models.FloatField()
+    Insert_score = models.FloatField()
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=['Username1', 'Username2'], name='unique_scores'),
+            models.UniqueConstraint(fields=['Username_enter', 'Username_insert'], name='unique_scores')
         ]
-
 
 class RequirementsP(models.Model):
     Requirement_ID = models.AutoField(primary_key=True)

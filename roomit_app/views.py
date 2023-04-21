@@ -124,6 +124,8 @@ def requirementsP(request, username):
             form = UpdateRequirementsPForm(request.POST, instance=requirements)
             if form.is_valid():
                 form.save()
+                print("\n\nrequirementR saved\n\n")
+                update_scores(request)
                 return redirect('requirementsR', request.user)
         else:
             form = UpdateRequirementsPForm(instance=requirements)
@@ -144,52 +146,154 @@ def requirementsR(request, username):
         if form.is_valid():
             form.save()
             messages.success(request, f'Your Requirements have been updated!')
+            print("\n\nrequirementR saved\n\n")
+            update_scores(request)
             return redirect('profile', request.user)
     else:
         form = UpdateRequirementsRForm(instance=requirements)
 
     return render(request, 'requirementsR.html', {'form': form})
 
-@login_required
-def more(request, page):
-    # This is the list that will be paginated.
-    list_items = User.objects.all()
-    return more_items(request, list_items,template='more.html')
 
 @login_required
-def post_list(request, page):
-    scores = User.objects.all()
-    paginated = get_pagination(request, scores)
-    page += 1
+def more(request):
+    # This is the list that will be paginated.
+    users = User.objects.all()
+    list_items = Scores.objects.all()
+    print("\n\nin more\n\n")
+    profile = Profile.objects.get(user=request.user)
+    # list_items = list_items.filter(Username_insert=request.user) | list_items.filter(Username_enter=request.user)
+    # # list_items = list_items.order_by('-Insert_score')
+    if profile.profile_status == 'StatusInsert':
+        list_items = list_items.filter(Username_insert=request.user)
+        list_items = list_items.order_by('-Insert_score')
+    else:
+        list_items = list_items.filter(Username_enter=request.user)
+        list_items = list_items.order_by('-Enter_score')
+    return more_items(request, list_items, template='more.html')
+    # return more_items(request, users,
+    #                       # (optional) your custom template
+    #                       template='more.html')
+
+
+@login_required
+def post_list(request):
+    list_items = User.objects.all()
+    list_items = Scores.objects.all()
+    username = request.user.username
+    print("\n\nin post_list\n\n")
+    profile = Profile.objects.get(user=request.user)
+    if profile.profile_status == 'StatusInsert':
+        list_items = list_items.filter(Username_insert=request.user)
+        list_items = list_items.order_by('-Insert_score')
+    else:
+        list_items = list_items.filter(Username_enter=request.user)
+        list_items = list_items.order_by('-Enter_score')
+    paginated = get_pagination(request, list_items)
     data = {
-            'more_posts_url': reverse('more', kwargs={"page": page}),
-            }
+        'more_posts_url': reverse('more'),
+        }
     data.update(paginated)
+    print("\n\nout of post_list\n\n")
     return render(request, 'post_list.html', data)
 
-def updateScores(request):
-    username = request.user.username
-    Scores.objects.filter(username1=username).delete()
-    Scores.objects.filter(username2=username).delete()
-    profile = Profile.objects.get(username=username)
-    status_match = 'StatusEnter' if profile.profile_status == 'StatusInsert' else 'StatusInsert'
+
+def update_scores(request):
+    online_user = request.user
+    Scores.objects.filter(Username_enter=online_user).delete()
+    Scores.objects.filter(Username_insert=online_user).delete()
+    # Scores.objects.filter(Username_enter=username).delete()
+    # Scores.objects.filter(Username_insert=username).delete()
+    profile = Profile.objects.get(user=online_user)
+    online_status = profile.profile_status
+    status_match = 'StatusEnter' if online_status == 'StatusInsert' else 'StatusInsert'
     potential_profiles = Profile.objects.filter(profile_status=status_match)
-    requirements = []
-    if profile.profile_status == 'StatusEnter':
-        requirementP = RequirementsP.objects.get(user=request.user)
-        requirements.append(ListReq(True, requirementP.Weight, "Country", requirementP.Country))
-        requirements.append(ListReq(True, requirementP.Weight, "City", requirementP.City))
-        requirements.append(ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
-        requirements.append(RangReq(False, requirementP.Weight, "Rent", requirementP.MinRent, requirementP.MaxRent))
-        requirements.append(RangReq(False, requirementP.Weight, "Number of rooms", requirementP.MinRooms, requirementP.MaxRooms))
-        requirements.append(RangReq(False, requirementP.Weight, "Number of roommates", requirementP.MinRoommates, requirementP.MaxRoommates))
-        requirements.append(RangReq(False, requirementP.Weight, "Number of toilets", requirementP.MinToilets, None))
-        requirements.append(RangReq(False, requirementP.Weight, "Number of showers", requirementP.MinShowers, None))
-    requirementR = RequirementsR.objects.get(user=request.user)
-    requirements.append()
+    requirementsR = make_requirementsR(request.user)
+    if online_status == 'StatusEnter':
+        requirementsP = make_requirementsP(request.user)
+        for user in potential_profiles:
+            score_enter = update_scores_enter(requirementsR, requirementsP, user)
+            requirement = make_requirementsR(user.user)
+            score_insert = update_scores_insert(requirement, online_user.profile)
+            score = Scores(Username_enter=online_user, Username_insert=user.user, Enter_score=score_enter, Insert_score=score_insert)
+            print("\n\nscore updated\n\n")
+            score.save()
+    else:
+        for user in potential_profiles:
+            requirement = make_requirementsR(user.user)
+            requirementsP = make_requirementsP(user.user)
+            score_enter = update_scores_enter(requirement, requirementsP, online_user.profile)
+            score_insert = update_scores_insert(requirementsR, user)
+            score = Scores(Username_enter=user.user, Username_insert=online_user, Enter_score=score_enter, Insert_score=score_insert)
+            print("\n\nscore updated\n\n")
+            score.save()
 
 
+def update_scores_enter(requirementsR, requirementsP, user):
+    if requirementsR is None or requirementsP is None:
+        return -1
+    else:
+        personal_score = calculate_score(requirementsR, user)
+        personal_scoreP = calculate_score(requirementsP, user)
+        personal_score = (personal_score + personal_scoreP)/2
+        return personal_score
 
+
+def update_scores_insert(requirementsR, user):
+    if requirementsR is None:
+        return -1
+    else:
+        personal_score = calculate_score(requirementsR, user)
+        return personal_score
+
+
+def make_requirementsP(user):
+    try:
+        reqP = []
+        requirementP = RequirementsP.objects.get(user=user)
+        reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
+        reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
+        reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
+        reqP.append(RangReq.RangReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
+        reqP.append(RangReq.RangReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
+        reqP.append(RangReq.RangReq(False, requirementP.Weight, "roommates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
+        reqP.append(RangReq.RangReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
+        reqP.append(RangReq.RangReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+        return reqP
+    except:
+        return None
+
+
+def make_requirementsR(user):
+    try:
+        reqR = []
+        requirementR = RequirementsR.objects.get(user=user)
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "diet", requirementR.Diet))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "status", requirementR.Status))
+        # reqR.append(ListReq.ListReq(False, requirementR.Weight, "hospitality", requirementR.hospitality))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "kosher", requirementR.Kosher))
+        # reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.expense_management))
+        # reqR.append(ListReq.ListReq(False, requirementR.Weight, "age", requirementR.age))
+        return reqR
+    except:
+        return None
+
+def calculate_score(reqs, user):
+    weight, score = 0, 0
+    answers_info = {}
+    for req in reqs:
+        req_text = req._text
+        req_weight = req._weight
+        weight += req_weight
+        req_score = req.calculate_score(getattr(user, req_text))
+        score += req_score
+        answers_info[req_text] = [req_text, req_score,
+                                req_weight, req.convert_answer_to_str(getattr(user, req_text))]
+    # return weight, score, answers_info
+    return score
 
 class UserHomepageView(APIView):
     def get(self, request):
