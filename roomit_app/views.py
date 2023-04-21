@@ -33,7 +33,7 @@ from .requirements import Requirement, RangReq, ListReq, YNReq
 
 
 def home(request):
-    return render(request, 'roomit_app/home.html')
+    return render(request, 'roomit_app/post_list.html')
 
 
 @api_view(['POST', 'GET'])
@@ -171,9 +171,7 @@ def more(request):
         list_items = list_items.filter(Username_enter=request.user)
         list_items = list_items.order_by('-Enter_score')
     return more_items(request, list_items, template='more.html')
-    # return more_items(request, users,
-    #                       # (optional) your custom template
-    #                       template='more.html')
+
 
 
 @login_required
@@ -297,4 +295,4 @@ def calculate_score(reqs, user):
 
 class UserHomepageView(APIView):
     def get(self, request):
-        return render(request, 'user_homepage.html')
+        return render(request, 'post_list.html')

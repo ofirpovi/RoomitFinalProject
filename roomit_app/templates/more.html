@@ -1,15 +1,24 @@
 {% load infinite_scroll %}
  {% for item in feed %}
-    <p> in more </p>
 <!--                {{ item }}<br>-->
         {% if request.user == item.Username_insert %}
-            <img style="width:50%;length:50%;horizontal-align:middle" alt="{{ item.Username_enter }}" src="{{ item.Username_enter.profile.image.url }}">
-            <p>Name - {{ item.Username_enter }}</p>
-            <p>Score - {{ item.Insert_score }}</p><br>
+            <a href="user/profile/{{item.Username_insert}}">
+              <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="{{ item.Username_enter.profile.image.url }}" alt="{{ item.Username_enter }}" style="max-width: 100%; height: auto;">
+                <h2 style="text-align: center; margin-top: 20px;">{{ item.Username_enter }}</h2>
+                <p style="text-align: center;">Score: {{ item.Insert_score }}%</p>
+              </div>
+            </a>
+
         {% else %}
-            <img style="width:50%;length:50%;horizontal-align:middle" alt="{{ item.Username_insert }}" src="{{ item.Username_insert.profile.image.url }}">
-            <p>Name - {{ item.Username_insert }}</p>
-            <p>Score - {{ item.Enter_score }}</p><br>
+            <a href="user/profile/{{item.Username_enter}}">
+              <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="{{ item.Username_insert.profile.image.url }}" alt="{{ item.Username_insert }}" style="max-width: 100%; height: auto;">
+                <h2 style="text-align: center; margin-top: 20px;">{{ item.Username_insert }}</h2>
+                <p style="text-align: center;">Score: {{ item.Enter_score }}</p>
+              </div>
+            </a>
+
         {% endif %}
     {% endfor %}
 {% infinite_scroll_tags %}
