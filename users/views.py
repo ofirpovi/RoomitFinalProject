@@ -1,12 +1,12 @@
-from django.http import HttpResponse
-from django.urls import reverse
 from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib import messages
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, OfferPropertyForm, ImageForm
 from django.contrib.auth import authenticate, login
-
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render, redirect
+
+from roomit_app.views import update_scores
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, OfferPropertyForm, ImageForm
 from .models import PropertyForOffer, Image, Profile
+
 
 # Create your views here.
 
@@ -38,6 +38,7 @@ def profile(request, username):
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
+            update_scores(request)
             messages.success(request, f'Your profile has been updated!')
             return redirect('profile', request.user)
 
@@ -84,9 +85,10 @@ def insert_in_status(request):
             form.save()
             for image in images:
                 Image.objects.create(property= property, image= image)
-            messages.success(request, "Your peoperty info is save")    
+            messages.success(request, "Your peoperty info is save")
+            update_scores(request)
             # Redirect to the property detail page
-            return redirect('home')
+            return redirect('')
     else:
         try: 
             property = get_object_or_404(PropertyForOffer, user=user)

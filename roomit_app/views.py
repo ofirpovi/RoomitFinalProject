@@ -1,152 +1,241 @@
-from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
-from rest_framework import status
-from rest_framework.views import APIView
-# from rest_framework import viewsets
-from rest_framework.response import Response
-
-from rest_framework.authentication import TokenAuthentication
-from django.contrib.auth.models import auth
-from django.views import View
 from django.contrib import messages
-# from formtools.wizard.views import SessionWizardView
-from django.urls import reverse
-
-from django.contrib.auth.models import User
-from rest_framework.decorators import api_view
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.urls import reverse
+from infscroll.utils import get_pagination
+from infscroll.views import more_items
+from rest_framework.views import APIView
 
-from . import serializers
-from . import models
-from . import permissions
-#from .forms import InfoForm
+from users.models import Profile, PropertyForOffer
+from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
+from .models import RequirementsP, RequirementsR, Scores
+from .requirements import ListReq, RangReq
 
 
 def home(request):
-    return render(request, 'roomit_app/home.html')
+    return render(request, 'roomit_app/post_list.html')
 
-
-@api_view(['POST', 'GET'])
-def signup(request):
-    if request.method == 'POST':
+@login_required
+def requirementsP(request, username):
+    user = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user)
+    if profile.profile_status == 'StatusInsert':
+        return redirect(requirementsR, request.user)
+    else:
         try:
-            serializer = serializers.UserSerializer(data=request.POST)
-            serializer.is_valid(raise_exception=True)
+            requirements = RequirementsP.objects.get(user=user)
+        except RequirementsP.DoesNotExist:
+            requirements = RequirementsP(user=request.user)
+            requirements.save()
 
-        except (serializers.ValidationError) as e:
-            return Response(data={'request': request, 'error_message': e}, status=status.HTTP_400_BAD_REQUEST)
-
-        user = serializer.save()
-        data = {'user': user}
-        return Response(data, status=status.HTTP_201_CREATED)
-
-    elif request.method == 'GET':
-        return render(request, 'signup.html')
-
-@api_view(['GET', 'POST'])
-def signin(request):
-    if request.method == 'POST':
-        print(request.POST)
-        username = request.POST["email"]
-        password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            print("Enter if")
-            login(request, user)
-            context = {'user': user}
-            return Response(context= context, status= status.HTTP_200_OK)
+        if request.method == 'POST':
+            form = UpdateRequirementsPForm(request.POST, instance=requirements)
+            if form.is_valid():
+                form.save()
+                print("\n\nrequirementR saved\n\n")
+                update_scores(request)
+                return redirect('requirementsR', request.user)
         else:
-            return Response(status= status.HTTP_406_NOT_ACCEPTABLE)
-           
-    elif request.method == 'GET':
-        return render(request, 'signin.html')
+            form = UpdateRequirementsPForm(instance=requirements)
+        return render(request, 'requirementsP.html', {'form': form})
 
 
-def signout(request):
-    logout(request)
-    return Response(status= status.HTTP_200_OK)
-
-
-
-@api_view(['GET', 'POST'])
-#@login_required
-def profile_info(request):
+@login_required
+def requirementsR(request, username):
+    user = User.objects.get(username=request.user.username)
     try:
-        profile = models.Info.objects.get(User_ID=request.user)
-    except models.Info.DoesNotExist:
-        profile = None
+        requirements = RequirementsR.objects.get(user=user)
+    except RequirementsR.DoesNotExist:
+        requirements = RequirementsR(user=request.user)
+        requirements.save()
 
-    if request.method == 'GET':
-        serializer = serializers.InfoSerializer(profile)
-        #return Response(serializer.data)
-        return render(request, 'info_form.html') 
+    if request.method == 'POST':
+        form = UpdateRequirementsRForm(request.POST, instance=requirements)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Your Requirements have been updated!')
+            print("\n\nrequirementR saved\n\n")
+            update_scores(request)
+            return redirect('profile', request.user)
+    else:
+        form = UpdateRequirementsRForm(instance=requirements)
 
-    elif request.method == 'POST':
-        serializer =serializers.InfoSerializer(data=request.POST)
-        print('Before')
-        if serializer.is_valid():
-            print('After')
-            #print(serializer)
-            serializer.save(user=request.user)
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return render(request, 'requirementsR.html', {'form': form})
 
 
-def profile(request):
-    return render(request, 'profile.html')
+@login_required
+def more(request):
+    # This is the list that will be paginated.
+    users = User.objects.all()
+    list_items = Scores.objects.all()
+    print("\n\nin more\n\n")
+    profile = Profile.objects.get(user=request.user)
+    # list_items = list_items.filter(Username_insert=request.user) | list_items.filter(Username_enter=request.user)
+    # # list_items = list_items.order_by('-Insert_score')
+    if profile.profile_status == 'StatusInsert':
+        list_items = list_items.filter(Username_insert=request.user)
+        list_items = list_items.order_by('-Insert_score')
+    else:
+        list_items = list_items.filter(Username_enter=request.user)
+        list_items = list_items.order_by('-Enter_score')
+    return more_items(request, list_items, template='more.html')
 
 
-# class FormProfileView(APIView):
-#     def get(self, request):
-#         return render(request, 'info_form')
 
-#     def post(self, request):
-#         form = InfoForm(request.POST)
-#         if form.is_valid():
-#             first_name = form.cleaned_data['first_name']
-#             last_name = form.cleaned_data['last_name']
-#             phone_number = form.cleaned_data['phone_number']
-#             birthdate = form.cleaned_data['birthdate']
-#             gender = form.cleaned_data['gender']
-#             occupation = form.cleaned_data['occupation']
-#             smoking = form.cleaned_data['smoking']
-#             diet = form.cleaned_data['diet']
-#             kosher = form.cleaned_data['kosher']
-#             single = form.cleaned_data['single']
-#             hospitality = form.cleaned_data['hospitality']
-#             shopping = form.cleaned_data['shopping']
+@login_required
+def post_list(request):
+    list_items = User.objects.all()
+    list_items = Scores.objects.all()
+    username = request.user.username
+    print("\n\nin post_list\n\n")
+    profile = Profile.objects.get(user=request.user)
+    if profile.profile_status == 'StatusInsert':
+        list_items = list_items.filter(Username_insert=request.user)
+        list_items = list_items.order_by('-Insert_score')
+    else:
+        list_items = list_items.filter(Username_enter=request.user)
+        list_items = list_items.order_by('-Enter_score')
+    paginated = get_pagination(request, list_items)
+    data = {
+        'more_posts_url': reverse('more'),
+        }
+    data.update(paginated)
+    print("\n\nout of post_list\n\n")
+    return render(request, 'post_list.html', data)
 
-#             # Create the personal info object and associate it with the user object
-#             try:
-#                 serializer = serializers.InfoSerializer(data={'first_name': first_name,
-#                                                               'last_name': last_name,
-#                                                               'phone_number': phone_number,
-#                                                               'birthdate': birthdate,
-#                                                               'gender': gender,
-#                                                               'occupation': occupation,
-#                                                               'smoking': smoking,
-#                                                               'diet': diet,
-#                                                               'kosher': kosher,
-#                                                               'single': single,
-#                                                               'hospitality': hospitality,
-#                                                               'shopping': shopping, })
-#                 serializer.is_valid(raise_exception=True)
-#             except (serializers.ValidationError, AttributeError) as e:
-#                 return render(self.request, 'info_form', {'error_message': "This is an Error"}, status=status.HTTP_400_BAD_REQUEST)
-#             info = models.Info(first_name=first_name, last_name=last_name, phone_number=phone_number, bitrhdate=bitrhdate, gender=gender,
-#                                occupation=occupation, smoking=smoking, diet=diet, kosher=kosher, single=single, hospitality=hospitality, shopping=shopping)
-#             info.save()
 
-#             # Store the user ID in the form data so we can check if the user has already been created
-#             # self.storage.extra_data['user_id'] = user.id
+def update_scores(request):
+    online_user = request.user
+    Scores.objects.filter(Username_enter=online_user).delete()
+    Scores.objects.filter(Username_insert=online_user).delete()
+    # Scores.objects.filter(Username_enter=username).delete()
+    # Scores.objects.filter(Username_insert=username).delete()
+    profile = Profile.objects.get(user=online_user)
+    online_status = profile.profile_status
+    status_match = 'StatusEnter' if online_status == 'StatusInsert' else 'StatusInsert'
+    potential_profiles = Profile.objects.filter(profile_status=status_match)
+    reqR = make_requirementsR(request.user)
+    if online_status == 'StatusEnter':
+        reqP = make_requirementsP(request.user)
+        for user in potential_profiles:
+            score_enter = update_scores_enter(reqR, reqP, user)
+            requirement = make_requirementsR(user.user)
+            score_insert = update_scores_insert(requirement, online_user.profile)
+            score = Scores(Username_enter=online_user, Username_insert=user.user, Enter_score=score_enter, Insert_score=score_insert)
+            print("\n\nscore updated\n\n")
+            score.save()
+    else:
+        for user in potential_profiles:
+            requirement = make_requirementsR(user.user)
+            reqP = make_requirementsP(user.user)
+            score_enter = update_scores_enter(requirement, reqP, online_user.profile)
+            score_insert = update_scores_insert(reqR, user)
+            score = Scores(Username_enter=user.user, Username_insert=online_user, Enter_score=score_enter, Insert_score=score_insert)
+            print("\n\nscore updated\n\n")
+            score.save()
 
-#             # Return a response to the user
-#             return render(self.request, 'user_homepage')
-#         return render(request, 'info_form.html', {'form': form})
 
+def update_scores_enter(requirementsR, requirementsP, user):
+    if requirementsR is None and requirementsP is None:
+        print("\n\nboth none\n\n")
+        return 100
+    elif requirementsR is None:
+        personal_scoreP = calculate_score(requirementsP, user)
+        print("\n\nrequirementsR none\n\n")
+        return personal_scoreP
+    elif requirementsP is None:
+        personal_score = calculate_score(requirementsR, user)
+        print("\n\nrequirementsP none\n\n")
+        return personal_score
+    else:
+        personal_score = calculate_score(requirementsR, user)
+        personal_scoreP = calculate_score(requirementsP, user)
+        personal_score = (personal_score + personal_scoreP)/2
+        return personal_score
+
+
+def update_scores_insert(requirementsR, user):
+    if requirementsR is None:
+        print("\n\nstatus insert score - requirementsR none\n\n")
+        return 100
+    else:
+        personal_score = calculate_score(requirementsR, user)
+        return personal_score
+
+
+def make_requirementsP(user):
+    # try:
+    reqP = []
+    print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
+    requirementP = RequirementsP.objects.get(user=user)
+    print("-------------------------------------------------------------------------------------------")
+    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
+    reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
+    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
+    # rq =
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roommates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+    return reqP
+    # except:
+    #     return None
+
+
+def make_requirementsR(user):
+    try:
+        reqR = []
+        print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
+
+        requirementR = RequirementsR.objects.get(user=user.username)
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "diet", requirementR.Diet))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "status", requirementR.Status))
+        # reqR.append(ListReq.ListReq(False, requirementR.Weight, "hospitality", requirementR.hospitality))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "kosher", requirementR.Kosher))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "renovated", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shelter_inside", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shelter_nerbay", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "furnished", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shared_livingroom", requirementR.expense_management))
+        # reqR.append(ListReq.ListReq(False, requirementR.Weight, "age", requirementR.age))
+
+        return reqR
+    except :
+        return None
+
+def calculate_score(reqs, user):
+    score = 0
+    answers_info = {}
+    try:
+        property = PropertyForOffer.objects.get(user=user)
+    except:
+        property = None
+    for req in reqs:
+        req_text = req._text
+        try:
+            req_score = req.calculate_score(getattr(user, req_text))
+        except AttributeError:
+            try:
+                req_score = req.calculate_score(getattr(property, req_text))
+            except AttributeError:
+                req_score = 0
+
+
+        score += req_score
+
+    # return weight, score, answers_info
+    return score
 
 class UserHomepageView(APIView):
     def get(self, request):
-        return render(request, 'user_homepage.html')
+        return render(request, 'post_list.html')

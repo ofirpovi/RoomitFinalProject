@@ -1,9 +1,10 @@
-from django.db import models
-from django.contrib.auth.models import User
 from PIL import Image as pilImage
-from phonenumber_field.modelfields import PhoneNumberField
+from django.contrib.auth.models import User
+from django.db import models
 from djmoney.models.fields import MoneyField
-import os
+from phonenumber_field.modelfields import PhoneNumberField
+
+
 # Create your models here.
 
 
@@ -20,7 +21,7 @@ class Profile(models.Model):
                                                                    ('M', 'Male'),
                                                                    ('N', 'Not Defined'),
                                                                    ])
-    occupation = models.CharField(max_length=30,  blank=True, choices=[('F', 'Full-time jobe'),
+    occupation = models.CharField(max_length=30,  blank=True, choices=[('F', 'Full-time job'),
                                                                        ('S', 'Student'),
                                                                        ('P', 'Part-time job'),
                                                                        ('D', "Doesn't matter"),
