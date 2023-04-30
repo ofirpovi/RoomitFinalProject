@@ -56,7 +56,7 @@ def requirementsR(request, username):
         if form.is_valid():
             form.save()
             messages.success(request, f'Your Requirements have been updated!')
-            print("\n\nrequirementR saved\n\n")
+            # print("\n\nrequirementR saved\n\n")
             update_scores(request)
             return redirect('profile', request.user)
     else:
@@ -118,8 +118,6 @@ def update_scores(request):
     potential_profiles = Profile.objects.filter(profile_status=status_match)
     reqR = make_requirementsR(online_user)
     if online_status == 'StatusEnter':
-        if reqR is None:
-            print("----------------------------------- NONE")
         reqP = make_requirementsP(request.user)
         for user in potential_profiles:
             score_enter = update_scores_enter(reqR, reqP, user)
@@ -140,18 +138,18 @@ def update_scores(request):
 
 
 def update_scores_enter(requirementsR, requirementsP, user):
-    print("\n\nupdate_scores_enter  -  ", user.first_name)
-    print("type  -  ", type(user), "")
+    # print("\n\nupdate_scores_enter  -  ", user.first_name)
+    # print("type  -  ", type(user), "")
     if requirementsR is None and requirementsP is None:
-        print("both none\n \n")
+        # print("both none\n \n")
         return 100
     elif requirementsR is None:
         personal_scoreP = calculate_score(requirementsP, user)
-        print("requirementsR none\n\n")
+        # print("requirementsR none\n\n")
         return (personal_scoreP + 100) / 2
     elif requirementsP is None:
         personal_score = calculate_score(requirementsR, user)
-        print("requirementsP none\n\n")
+        # print("requirementsP none\n\n")
         return (personal_score + 100) / 2
     else:
         personal_scoreR = calculate_score(requirementsR, user)
@@ -161,10 +159,10 @@ def update_scores_enter(requirementsR, requirementsP, user):
 
 
 def update_scores_insert(requirementsR, user):
-    print("\n\nupdate_scores_insert  -  ", user.first_name)
-    print("type  -  ", type(user), "")
+    # print("\n\nupdate_scores_insert  -  ", user.first_name)
+    # print("type  -  ", type(user), "")
     if requirementsR is None:
-        print("status insert score - requirementsR none\n\n")
+        # print("status insert score - requirementsR none\n\n")
         return 100
     else:
         personal_score = calculate_score(requirementsR, user)
@@ -174,9 +172,9 @@ def update_scores_insert(requirementsR, user):
 def make_requirementsP(user):
     # try:
     reqP = []
-    print("--------------------------------     make_requirementsP  -->  ", user.username, "     -----------------------------------------------------------")
+    # print("--------------------------------     make_requirementsP  -->  ", user.username, "     -----------------------------------------------------------")
     requirementP = RequirementsP.objects.get(user=user)
-    print("-------------------------------------------------------------------------------------------")
+    # print("-------------------------------------------------------------------------------------------")
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
@@ -199,7 +197,7 @@ def make_requirementsP(user):
 def make_requirementsR(user):
     try:
         reqR = []
-        print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
+        # print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
 
         requirementR = RequirementsR.objects.get(user=user)
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
@@ -214,7 +212,7 @@ def make_requirementsR(user):
         return reqR
     except Exception as e:
         print(e)
-        print(reqR)
+        # print(reqR)
         return reqR
 
 def calculate_score(reqs, user):
