@@ -74,10 +74,14 @@ class Scores(models.Model):
     Enter_score = models.FloatField()
     Insert_score = models.FloatField()
 
+    def save(self, *args, **kwargs):
+        super(Scores, self).save(*args, **kwargs)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['Username_enter', 'Username_insert'], name='unique_scores')
         ]
+
 
 class RequirementsP(models.Model):
     Requirement_ID = models.AutoField(primary_key=True)
@@ -153,16 +157,18 @@ class RequirementsR(models.Model):
     def save(self, *args, **kwargs):
         super(RequirementsR, self).save(*args, **kwargs)
 
-    # # Define the predefined list of choices
-    # CHOICES_LIST = (
-    #     ('choice1', 'Choice 1'),
-    #     ('choice2', 'Choice 2'),
-    #     ('choice3', 'Choice 3'),
-    # )
 
-    # # Define the field that holds the restricted list of strings
-    # restricted_list = ArrayField(
-    #     models.CharField(choices=CHOICES_LIST, max_length=10),
-    #     default=list,
-    # )
+class Likes(models.Model):
+    User_insert = models.OneToOneField(User, on_delete=models.CASCADE)
+    User_enter = models.OneToOneField(User, on_delete=models.CASCADE)
+    enter_likes_insert = models.BooleanField(blank= True, default=False)
+    insert_likes_enter = models.BooleanField(blank= True, default=False)
+
+    def save(self, *args, **kwargs):
+        super(Likes, self).save(*args, **kwargs)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['User_insert', 'User_enter'], name='unique_likes')
+        ]
 

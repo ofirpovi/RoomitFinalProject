@@ -34,7 +34,7 @@ def requirementsP(request, username):
             form = UpdateRequirementsPForm(request.POST, instance=requirements)
             if form.is_valid():
                 form.save()
-                print("\n\nrequirementR saved\n\n")
+                print("\n\nrequirementsP saved\n\n")
                 update_scores(request)
                 return redirect('requirementsR', request.user)
         else:
@@ -70,7 +70,7 @@ def more(request):
     # This is the list that will be paginated.
     users = User.objects.all()
     list_items = Scores.objects.all()
-    print("\n\nin more\n\n")
+    # print("\n\nin more\n\n")
     profile = Profile.objects.get(user=request.user)
     # list_items = list_items.filter(Username_insert=request.user) | list_items.filter(Username_enter=request.user)
     # # list_items = list_items.order_by('-Insert_score')
@@ -89,7 +89,7 @@ def post_list(request):
     list_items = User.objects.all()
     list_items = Scores.objects.all()
     username = request.user.username
-    print("\n\nin post_list\n\n")
+    # print("\n\nin post_list\n\n")
     profile = Profile.objects.get(user=request.user)
     if profile.profile_status == 'StatusInsert':
         list_items = list_items.filter(Username_insert=request.user)
@@ -102,7 +102,7 @@ def post_list(request):
         'more_posts_url': reverse('more'),
         }
     data.update(paginated)
-    print("\n\nout of post_list\n\n")
+    # print("\n\nout of post_list\n\n")
     return render(request, 'post_list.html', data)
 
 
@@ -116,15 +116,17 @@ def update_scores(request):
     online_status = profile.profile_status
     status_match = 'StatusEnter' if online_status == 'StatusInsert' else 'StatusInsert'
     potential_profiles = Profile.objects.filter(profile_status=status_match)
-    reqR = make_requirementsR(request.user)
+    reqR = make_requirementsR(online_user)
     if online_status == 'StatusEnter':
+        if reqR is None:
+            print("----------------------------------- NONE")
         reqP = make_requirementsP(request.user)
         for user in potential_profiles:
             score_enter = update_scores_enter(reqR, reqP, user)
             requirement = make_requirementsR(user.user)
             score_insert = update_scores_insert(requirement, online_user.profile)
             score = Scores(Username_enter=online_user, Username_insert=user.user, Enter_score=score_enter, Insert_score=score_insert)
-            print("\n\nscore updated\n\n")
+            # print("\n\nscore updated\n\n")
             score.save()
     else:
         for user in potential_profiles:
@@ -133,32 +135,36 @@ def update_scores(request):
             score_enter = update_scores_enter(requirement, reqP, online_user.profile)
             score_insert = update_scores_insert(reqR, user)
             score = Scores(Username_enter=user.user, Username_insert=online_user, Enter_score=score_enter, Insert_score=score_insert)
-            print("\n\nscore updated\n\n")
+            # print("\n\nscore updated\n\n")
             score.save()
 
 
 def update_scores_enter(requirementsR, requirementsP, user):
+    print("\n\nupdate_scores_enter  -  ", user.first_name)
+    print("type  -  ", type(user), "")
     if requirementsR is None and requirementsP is None:
-        print("\n\nboth none\n\n")
+        print("both none\n \n")
         return 100
     elif requirementsR is None:
         personal_scoreP = calculate_score(requirementsP, user)
-        print("\n\nrequirementsR none\n\n")
-        return personal_scoreP
+        print("requirementsR none\n\n")
+        return (personal_scoreP + 100) / 2
     elif requirementsP is None:
         personal_score = calculate_score(requirementsR, user)
-        print("\n\nrequirementsP none\n\n")
-        return personal_score
+        print("requirementsP none\n\n")
+        return (personal_score + 100) / 2
     else:
-        personal_score = calculate_score(requirementsR, user)
+        personal_scoreR = calculate_score(requirementsR, user)
         personal_scoreP = calculate_score(requirementsP, user)
-        personal_score = (personal_score + personal_scoreP)/2
+        personal_score = (personal_scoreR + personal_scoreP)/2
         return personal_score
 
 
 def update_scores_insert(requirementsR, user):
+    print("\n\nupdate_scores_insert  -  ", user.first_name)
+    print("type  -  ", type(user), "")
     if requirementsR is None:
-        print("\n\nstatus insert score - requirementsR none\n\n")
+        print("status insert score - requirementsR none\n\n")
         return 100
     else:
         personal_score = calculate_score(requirementsR, user)
@@ -168,7 +174,7 @@ def update_scores_insert(requirementsR, user):
 def make_requirementsP(user):
     # try:
     reqP = []
-    print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
+    print("--------------------------------     make_requirementsP  -->  ", user.username, "     -----------------------------------------------------------")
     requirementP = RequirementsP.objects.get(user=user)
     print("-------------------------------------------------------------------------------------------")
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
@@ -177,12 +183,14 @@ def make_requirementsP(user):
     # rq =
     reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
     reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roommates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roomates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
     reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
     reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_inside", requirementP.MinShowers, None))
+    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_nerbay", requirementP.MinShowers, None))
+    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "furnished", requirementP.MinShowers, None))
+    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "renovated", requirementP.MinShowers, None))
+    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shared_livingroom", requirementP.MinShowers, None))
     return reqP
     # except:
     #     return None
@@ -193,7 +201,7 @@ def make_requirementsR(user):
         reqR = []
         print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
 
-        requirementR = RequirementsR.objects.get(user=user.username)
+        requirementR = RequirementsR.objects.get(user=user)
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))
@@ -201,17 +209,13 @@ def make_requirementsR(user):
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "status", requirementR.Status))
         # reqR.append(ListReq.ListReq(False, requirementR.Weight, "hospitality", requirementR.hospitality))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "kosher", requirementR.Kosher))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.expense_management))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "renovated", requirementR.expense_management))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shelter_inside", requirementR.expense_management))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shelter_nerbay", requirementR.expense_management))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "furnished", requirementR.expense_management))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shared_livingroom", requirementR.expense_management))
-        # reqR.append(ListReq.ListReq(False, requirementR.Weight, "age", requirementR.age))
-
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.Expense_Management))
+        # reqR.append(RangReq.RangeReq(False, requirementR.Weight, "age", requirementR.age))
         return reqR
-    except :
-        return None
+    except Exception as e:
+        print(e)
+        print(reqR)
+        return reqR
 
 def calculate_score(reqs, user):
     score = 0

@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
-
+from django.contrib import messages
 from roomit_app.views import update_scores
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, OfferPropertyForm, ImageForm
 from .models import PropertyForOffer, Image, Profile

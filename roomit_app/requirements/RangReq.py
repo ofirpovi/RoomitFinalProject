@@ -14,6 +14,9 @@ class RangeReq(Requirement):
         self._address = address
 
     def calculate_score(self, answer):
+        print("calc score")
+        if answer is None:
+            print("ans is None!!!!!!!!!!!!!")
         if self._max is None and self._min is None:
             return self._weight
         # if self._distance:
@@ -23,15 +26,13 @@ class RangeReq(Requirement):
                 return 0
             else:
                 return self._weight
-        if answer < 0:
-            raise ValueError("Answer could not be a negative value")
+        # if answer < 0:
+        #     raise ValueError("Answer could not be a negative value")
         if type(answer) is not int:
             raise TypeError("Answer should be a number")
-        if self._max is None and self._min > answer:
-            return self._weight
-
-        if self._min is None and self._max < answer:
-            return self._weight
+        # if self._max is None and self._min >= answer:
+        #     print("self._max is None and self._min >= answer  -- working")
+        #     return self._weight
 
         if answer in range(self._min, self._max):
             return self._weight
@@ -46,10 +47,10 @@ class RangeReq(Requirement):
             else:
                 return (1-0.05*ans_stde)*self._weight
 
-    # def convert_answer_to_str(self, answer):
-    #     if self._distance:
-    #         answer = self.calculate_distance(answer, self._address)
-    #     return answer
+    def convert_answer_to_str(self, answer):
+        # if self._distance:
+        #     answer = self.calculate_distance(answer, self._address)
+        return answer
 
     # def calculate_distance(self, address1, address2):
     #     # create a geolocator object
