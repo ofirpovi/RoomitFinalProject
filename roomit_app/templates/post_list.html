@@ -5,7 +5,7 @@
 <div class="item-box">
     {% for item in feed %}
         {% if request.user == item.Username_insert %}
-            <a href="user/profile/{{item.Username_insert}}">
+            <a href="user/profile/{{item.Username_enter}}">
               <div style="display: flex; flex-direction: column; align-items: center;">
                 <img src="{{ item.Username_enter.profile.image.url }}" alt="{{ item.Username_enter }}" style="max-width: 75%; height: auto;">
                 <h2 style="text-align: center; margin-top: 20px;">{{ item.Username_enter.profile.first_name }} {{ item.Username_enter.profile.last_name }}</h2>
@@ -14,7 +14,7 @@
             </a>
 
         {% else %}
-            <a href="user/profile/{{item.Username_enter}}">
+            <a href="user/profile/{{item.Username_insert}}">
               <div style="display: flex; flex-direction: column; align-items: center;">
                 <img src="{{ item.Username_insert.profile.image.url }}" alt="{{ item.Username_insert }}" style="max-width: 75%; height: auto;">
                 <h2 style="text-align: center; margin-top: 20px;">{{ item.Username_insert.profile.first_name }} {{ item.Username_insert.profile.last_name }}</h2>

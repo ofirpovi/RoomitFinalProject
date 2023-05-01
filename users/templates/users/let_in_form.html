@@ -1,21 +1,23 @@
 {% extends "roomit_app/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-      <h1 class="display-10 fw-bold">Create Your Property Info</h1>
       <div class="col-lg-20 mx-auto">
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">     
-          <form id="post_form" method="post" action="" enctype="multipart/form-data">
+          <form id="post_form" method="post" action="{% url 'property-offer-create' %}" enctype="multipart/form-data">
             {% csrf_token %}
             {% for hidden in form.hidden_fields %}
                 {{ hidden }}
             {% endfor %}
-            {{form |crispy}}
-            {{ imageform.management_form }}
-            {% for form in imageform %}
-                {{ form }}
+            <h1 class="display-10 fw-bold">Fill Your Property Info</h1>
+            {{pOffer_form |crispy}}
+            {{ image_form.management_form }}
+            {% for image in image_form %}
+                {{ image }}
             {% endfor %}
             <br><br>
-            <input type="submit" name="submit" value="Submit" />
+            <div class="form-group">
+              <button class="btn btn-outline-info" type="submit">Next</button>
+          </div>
           </form>
         </div>
       </div>

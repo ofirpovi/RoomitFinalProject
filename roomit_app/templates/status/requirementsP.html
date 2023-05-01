@@ -3,18 +3,10 @@
 {% block content %}
     <div class="row">
         <div class="col-md-8" style="margin-right: 50%">
-            <div class="content-section">
-                <div class="media">
-                    <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
-                    <div class="media-body">
-                        <h2 class="account-heading">{{ user.username }}</h2>
-                        <p class="text-secondary">{{ user.email }}</p>
-                    </div>
-                </div>
                <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <fieldset class="form-group">
-                        <legend class="border-bottom mb-4">Property Requirements:</legend>
+                        <h1 class="display-10 fw-bold">My Dream Appartment</h1>
                         {{ form.Country|as_crispy_field }}
                         {{ form.City|as_crispy_field }}
                         {{ form.Neighborhood|as_crispy_field }}

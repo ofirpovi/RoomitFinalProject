@@ -10,7 +10,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    image = models.ImageField(default='default_for_profile.jpg', upload_to='profile_pics')
     profile_status = models.CharField(max_length=15, default=' ', help_text='What you are looking for', choices=[('StatusInsert', 'insert in'),
                                                                                                                  ('StatusEnter', 'enter in'),])
     first_name = models.CharField(max_length=30, default='')
@@ -70,7 +70,7 @@ class Profile(models.Model):
 class PropertyForOffer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rent = MoneyField(max_digits=14, decimal_places=2, default_currency='Israeli New Shekel')
-    square_meters = models.FloatField(blank= True)
+    square_meters = models.FloatField(blank= True, null= True)
     description = models.TextField()
     renovated = models.BooleanField(blank= True, default=False)
     shelter_inside = models.BooleanField(blank= True, default=False)
@@ -113,28 +113,5 @@ class PropertyForOffer(models.Model):
 
 class Image(models.Model):
     property = models.ForeignKey(PropertyForOffer, on_delete=models.CASCADE)
-    image = models.ImageField(null=True, blank=True, upload_to='property_pics')
+    image = models.ImageField(default='default_for_property.jpg', upload_to='property_pics')
 
-# def get_upload_path(instance, filename):
-#     # Get the name of the file without the extension
-#     name, ext = os.path.splitext(filename)
-#     # Use the name of the file as the directory name
-#     directory = name
-#     # Return the path to the file
-#     return f'property_pics/{directory}/{filename}'
-
-
-
-
-# class PropertyImage(models.Model):
-#     property = models.ForeignKey(User, on_delete=models.CASCADE)
-#     image = models.ImageField(default='default.jpg', upload_to= 'property_pics/')
-#     default = models.BooleanField(default=False)
-
-#     def __str__(self):
-#         return "{} Property imges".format(self.user.username)
-
-#     def save(self, *args, **kwargs):
-#         super(PropertyImage, self).save(*args, **kwargs)
-
-#         img = Image.open(self.image.path)

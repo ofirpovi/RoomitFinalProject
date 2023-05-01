@@ -21,7 +21,7 @@ def home(request):
 def requirementsP(request, username):
     user = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user)
-    if profile.profile_status == 'StatusInsert':
+    if profile.profile_status == 'insert in':
         return redirect(requirementsR, request.user)
     else:
         try:
@@ -39,7 +39,7 @@ def requirementsP(request, username):
                 return redirect('requirementsR', request.user)
         else:
             form = UpdateRequirementsPForm(instance=requirements)
-        return render(request, 'requirementsP.html', {'form': form})
+        return render(request, 'status/requirementsP.html', {'form': form})
 
 
 @login_required
@@ -62,7 +62,7 @@ def requirementsR(request, username):
     else:
         form = UpdateRequirementsRForm(instance=requirements)
 
-    return render(request, 'requirementsR.html', {'form': form})
+    return render(request, 'status/requirementsR.html', {'form': form})
 
 
 @login_required
@@ -86,7 +86,7 @@ def more(request):
 
 @login_required
 def post_list(request):
-    list_items = User.objects.all()
+    #list_items = User.objects.all()
     list_items = Scores.objects.all()
     username = request.user.username
     print("\n\nin post_list\n\n")
@@ -236,6 +236,5 @@ def calculate_score(reqs, user):
     # return weight, score, answers_info
     return score
 
-class UserHomepageView(APIView):
-    def get(self, request):
-        return render(request, 'post_list.html')
+def search(request):
+    return render(request, 'post_list.html')
