@@ -39,22 +39,37 @@
                             The more information you enter in the system,
                             the more accurate results we can find for you!</p>
                         {{ p_form|crispy }}
-                    </fieldset>
-                {% endif %}    
+                    </fieldset> 
+                {% endif %}   
             </div>
         </div>
-        <div class="col-md-4" style="margin-right: -50%">
-            <div class="content-section">
-                <h3>ROOMIT</h3>
-                <p class='text-muted'>
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-light">My Matches</li>
-                        <li class="list-group-item list-group-item-light">My Likes</li>
-                        <li class="list-group-item list-group-item-light">Who Likes Me</li>
-                        <a href="requirementsP/{{ user_profile.username }}"class="btn btn-outline-secondary bg-white text-secondary">Matching Information</a>
-                    </ul>
-                </p>
+        {% if not read_only %}
+            <div class="col-md-4" style="margin-right: -50%">
+                <div class="profile-menu-section">
+                    <h3>ROOMIT </h3>
+                    <p class='text-muted'>
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-light">My Matches</li>
+                            <li class="list-group-item list-group-item-light">My Likes</li>
+                            <li class="list-group-item list-group-item-light">Who Likes Me</li>
+                            <li class="list-group-item list-group-item-light">
+                                <button class="btn dropdown-toggle dropdown-toggle-sidebar" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Matching Info</button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    {% if user.profile.profile_status == "insert in" %}
+                                        <a class="dropdown-item" href="{% url 'property-offer-create' %}">Property Info</a>
+                                    {%else%}    
+                                        <a class="dropdown-item" href="{% url 'requirementsP' username=user_profile.username %}">Property Requirements</a>
+                                    {%endif%} 
+                                    <a class="dropdown-item" href="{% url 'requirementsR' username=user_profile.username %}">Roommate Requirements</a>
+                                </div>
+                            </li>
+                            <li class="list-group-item list-group-item-light">
+                                <a href="{% url 'requirementsP' username=user_profile.username %}" class="bg-white text-secondary">Matching Information</a>
+                            </li>
+                        </ul>
+                    </p>
+                </div>
             </div>
-        </div>
+        {%endif%}
     </div>
 {% endblock content %}
