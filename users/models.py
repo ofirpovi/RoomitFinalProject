@@ -7,8 +7,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(
-        default='default_for_profile.jpg', upload_to='profile_pics')
+    image = models.ImageField(help_text='Choose your profile-picture', default='default_for_profile.jpg', upload_to='profile_pics')
     profile_status = models.CharField(max_length=15, default=' ', help_text='What you are looking for', choices=[('StatusInsert', 'insert in'),
                                                                                                                  ('StatusEnter', 'enter in'),])
     first_name = models.CharField(max_length=30, default='')

@@ -7,11 +7,22 @@
             <div class="content-section">
                 <div class="media">
                     <img class="rounded-circle account-img" src="{{ user_profile.profile.image.url }}">
-                    <div class="media-body">
-                        <h2 class="account-heading">{{ user_profile.username }}</h2>
-                        <p class="text-secondary">{{ user_profile.email }}</p>
-                    </div>
+                    <div>
+                        <h2 class="account-heading" style="margin-top: 40px; margin-right: 50px;">{{ user_profile.username }}</h2>
+                        {%if user_profile.profile.profile_status == 'insert in'%}
+                            <h9 class="account-heading" style="margin-top: 40px; margin-right: 50px; font-size: 20px;">Looking for a Roommate</h9>
+                            {%if user.username == user_profile.username%}      
+                                <a class="account-heading nav-link" style= "margin-right: 40px; font-size: 14px;" href="{% url 'change-status'%}">Looking for an Apartment?</a>
+                            {%endif%}
+                        {%else%}
+                            <h9 class="account-heading" style="margin-top: 40px; margin-right: 50px; font-size: 20px;">Looking for an Apartment</h9>
+                            {%if user.username == user_profile.username%}      
+                                <a class="account-heading nav-link" style= " margin-right: 40px; font-size: 14px;" href="{% url 'change-status'%}">Looking for a Roommate?</a>
+                            {%endif%}
+                        {%endif%}     
+                    </div>    
                 </div>
+
                 {% if not read_only %}
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -62,9 +73,6 @@
                                     {%endif%} 
                                     <a class="dropdown-item" href="{% url 'roomi-reqs-display' user_profile.username %}">Roommate Requirements</a>
                                 </div>
-                            </li>
-                            <li class="list-group-item list-group-item-light">
-                                <a href="{% url 'requirementsP' username=user_profile.username %}" class="bg-white text-secondary">Matching Information</a>
                             </li>
                         </ul>
                     </p>

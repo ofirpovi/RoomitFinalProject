@@ -6,7 +6,7 @@
                <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <fieldset class="form-group">
-                        <h1 class="display-10 fw-bold">My Dream Appartment</h1>
+                        <h1 class="display-10 fw-bold">My Dream Apartment</h1>
                         {{ form.Country|as_crispy_field }}
                         {{ form.City|as_crispy_field }}
                         {{ form.Neighborhood|as_crispy_field }}
