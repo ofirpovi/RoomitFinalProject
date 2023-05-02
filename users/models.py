@@ -5,9 +5,6 @@ from djmoney.models.fields import MoneyField
 from phonenumber_field.modelfields import PhoneNumberField
 
 
-# Create your models here.
-
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(
@@ -81,7 +78,6 @@ class PropertyForOffer(models.Model):
     shelter_nerbay = models.BooleanField(blank=True, default=False)
     furnished = models.BooleanField(blank=True, default=False)
     shared_livingroom = models.BooleanField(blank=True, default=False)
-
     rooms_number = models.FloatField(max_length=3, choices=[(1.0, '1'),
                                                             (1.5, '1.5'),
                                                             (2.0, '2'),
@@ -116,9 +112,10 @@ class PropertyForOffer(models.Model):
         super(PropertyForOffer, self).save(*args, **kwargs)
 
 
+
+
 def property_image_upload_path(instance, filename):
     return f"property_pics/{instance.property.user.username}/{filename}"
-
 
 class Image(models.Model):
     property = models.ForeignKey(

@@ -177,7 +177,7 @@ def display_property_offer(request, username):
                 'property_form': property,
                 'image_form': image_form,
             }
-        return render(request, 'users\property_offer_display.html', context)
+        return render(request, 'users/for_display/property_offer_display.html', context)
 
 
 @login_required
@@ -207,7 +207,7 @@ def display_property_reqs(request, username):
             'user_profile': user,
             'property_form': property_form,
         }
-        return render(request, 'users/property_reqs_display.html', context)
+        return render(request, 'users/for_display/property_reqs_display.html', context)
 
 @login_required
 def display_roomi_reqs(request, username):
@@ -243,4 +243,4 @@ def display_roomi_reqs(request, username):
             'user_profile': user,
             'form': roomi_form,
         }
-        return render(request, 'users/roomi_reqs_display.html', context)
+        return render(request, 'users/for_display/roomi_reqs_display.html', context)
