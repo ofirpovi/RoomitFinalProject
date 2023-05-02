@@ -15,5 +15,8 @@ urlpatterns = [
     path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name= 'users/password_reset_confirm.html'), name='password_reset_confirm'),
     path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(template_name= 'users/password_reset_complete.html'), name='password_reset_complete'),
     path('set-status/', users_views.set_status, name='set-status'),
-    path('property-offer-create/', users_views.create_property_offer_view, name='property-offer-create'),
+    path('property-offer-create/<str:username>/', users_views.create_property_offer_view, name='property-offer-create'),
+    path('property-offer-display/<str:username>/', users_views.display_property_offer, name='property-offer-display'),
+    path('property-reqs-display/<str:username>/', users_views.display_property_reqs, name='property-reqs-display'),
+    path('roomi-reqs-display/<str:username>/', users_views.display_roomi_reqs, name='roomi-reqs-display'),
 ] + static(settings.MEDIA_URL, dcoumrnt_root=settings.MEDIA_ROOT)

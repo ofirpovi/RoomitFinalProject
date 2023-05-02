@@ -17,6 +17,7 @@ from .requirements import ListReq, RangReq
 def home(request):
     return render(request, 'roomit_app/post_list.html')
 
+
 @login_required
 def requirementsP(request, username):
     user = User.objects.get(username=request.user.username)
@@ -39,11 +40,12 @@ def requirementsP(request, username):
                 return redirect('requirementsR', request.user)
         else:
             form = UpdateRequirementsPForm(instance=requirements)
-        return render(request, 'status/requirementsP.html', {'form': form})
+        return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
 
 
 @login_required
 def requirementsR(request, username):
+    print(username)
     user = User.objects.get(username=request.user.username)
     try:
         requirements = RequirementsR.objects.get(user=user)
@@ -62,7 +64,7 @@ def requirementsR(request, username):
     else:
         form = UpdateRequirementsRForm(instance=requirements)
 
-    return render(request, 'status/requirementsR.html', {'form': form})
+    return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
 
 
 @login_required
@@ -83,10 +85,9 @@ def more(request):
     return more_items(request, list_items, template='more.html')
 
 
-
 @login_required
 def post_list(request):
-    #list_items = User.objects.all()
+    # list_items = User.objects.all()
     list_items = Scores.objects.all()
     username = request.user.username
     print("\n\nin post_list\n\n")
@@ -100,7 +101,7 @@ def post_list(request):
     paginated = get_pagination(request, list_items)
     data = {
         'more_posts_url': reverse('more'),
-        }
+    }
     data.update(paginated)
     print("\n\nout of post_list\n\n")
     return render(request, 'post_list.html', data)
@@ -122,17 +123,21 @@ def update_scores(request):
         for user in potential_profiles:
             score_enter = update_scores_enter(reqR, reqP, user)
             requirement = make_requirementsR(user.user)
-            score_insert = update_scores_insert(requirement, online_user.profile)
-            score = Scores(Username_enter=online_user, Username_insert=user.user, Enter_score=score_enter, Insert_score=score_insert)
+            score_insert = update_scores_insert(
+                requirement, online_user.profile)
+            score = Scores(Username_enter=online_user, Username_insert=user.user,
+                           Enter_score=score_enter, Insert_score=score_insert)
             print("\n\nscore updated\n\n")
             score.save()
     else:
         for user in potential_profiles:
             requirement = make_requirementsR(user.user)
             reqP = make_requirementsP(user.user)
-            score_enter = update_scores_enter(requirement, reqP, online_user.profile)
+            score_enter = update_scores_enter(
+                requirement, reqP, online_user.profile)
             score_insert = update_scores_insert(reqR, user)
-            score = Scores(Username_enter=user.user, Username_insert=online_user, Enter_score=score_enter, Insert_score=score_insert)
+            score = Scores(Username_enter=user.user, Username_insert=online_user,
+                           Enter_score=score_enter, Insert_score=score_insert)
             print("\n\nscore updated\n\n")
             score.save()
 
@@ -168,21 +173,33 @@ def update_scores_insert(requirementsR, user):
 def make_requirementsP(user):
     # try:
     reqP = []
-    print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
+    print("--------------------------------     ", user.username,
+          "     -----------------------------------------------------------")
     requirementP = RequirementsP.objects.get(user=user)
     print("-------------------------------------------------------------------------------------------")
-    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
-    reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
-    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
+    reqP.append(ListReq.ListReq(True, requirementP.Weight,
+                "Country", requirementP.Country))
+    reqP.append(ListReq.ListReq(
+        True, requirementP.Weight, "City", requirementP.City))
+    reqP.append(ListReq.ListReq(True, requirementP.Weight,
+                "Neighborhood", requirementP.Neighborhood))
     # rq =
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roommates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight,
+                "rent", requirementP.MinRent, requirementP.MaxRent))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight,
+                "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roommates_number",
+                requirementP.MinRoommates, requirementP.MaxRoommates))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight,
+                "toilets_number", requirementP.MinToilets, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight,
+                "showers_number", requirementP.MinShowers, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight,
+                "showers_number", requirementP.MinShowers, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight,
+                "showers_number", requirementP.MinShowers, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight,
+                "showers_number", requirementP.MinShowers, None))
     return reqP
     # except:
     #     return None
@@ -191,27 +208,41 @@ def make_requirementsP(user):
 def make_requirementsR(user):
     try:
         reqR = []
-        print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
+        print("--------------------------------     ", user.username,
+              "     -----------------------------------------------------------")
 
         requirementR = RequirementsR.objects.get(user=user.username)
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "diet", requirementR.Diet))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "status", requirementR.Status))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight,
+                    "gender", requirementR.Gender))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight,
+                    "occupation", requirementR.Occupation))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight,
+                    "smoker", requirementR.Smoker))
+        reqR.append(ListReq.ListReq(
+            False, requirementR.Weight, "diet", requirementR.Diet))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight,
+                    "status", requirementR.Status))
         # reqR.append(ListReq.ListReq(False, requirementR.Weight, "hospitality", requirementR.hospitality))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "kosher", requirementR.Kosher))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.expense_management))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "renovated", requirementR.expense_management))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shelter_inside", requirementR.expense_management))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shelter_nerbay", requirementR.expense_management))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "furnished", requirementR.expense_management))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "shared_livingroom", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight,
+                    "kosher", requirementR.Kosher))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight,
+                    "expense_management", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight,
+                    "renovated", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight,
+                    "shelter_inside", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight,
+                    "shelter_nerbay", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight,
+                    "furnished", requirementR.expense_management))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight,
+                    "shared_livingroom", requirementR.expense_management))
         # reqR.append(ListReq.ListReq(False, requirementR.Weight, "age", requirementR.age))
 
         return reqR
-    except :
+    except:
         return None
+
 
 def calculate_score(reqs, user):
     score = 0
@@ -230,11 +261,11 @@ def calculate_score(reqs, user):
             except AttributeError:
                 req_score = 0
 
-
         score += req_score
 
     # return weight, score, answers_info
     return score
+
 
 def search(request):
     return render(request, 'post_list.html')

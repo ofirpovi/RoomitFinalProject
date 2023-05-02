@@ -66,7 +66,7 @@ def profile(request, username):
         'read_only': read_only,
     }
     print(f'username:{user.username}\nemail: {user.email}')
-    return render(request, 'users/other_profile.html', context)
+    return render(request, 'users/profile.html', context)
 
 @login_required
 def info(request, username):
@@ -89,8 +89,8 @@ def info(request, username):
 
 
 @login_required
-def create_property_offer_view(request):
-    user = request.user
+def create_property_offer_view(request, username):
+    user = User.objects.get(username=username)
     if request.method == 'POST':
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
@@ -124,11 +124,12 @@ def create_property_offer_view(request):
             image_form = ImageForm()
 
         context = {
+            'user_profile': user,
             'pOffer_form': pOffer_form,
             'image_form': image_form,
         }
 
-    return render(request, 'users/let_in_form.html', context)
+    return render(request, 'users/property_offer.html', context)
 
 
 @login_required
@@ -137,6 +138,108 @@ def set_status(request):
     if request.method == 'GET':
         Profile.objects.filter(user = user).update(profile_status= request.GET['status'])
         if request.GET['status'] == 'insert in':
-            return redirect('property-offer-create')
+            return redirect('property-offer-create', user)
         else:
             return redirect('requirementsP', user)
+
+@login_required
+def display_property_offer(request, username):
+    user = User.objects.get(username=username)
+    if request.method == 'POST':
+        pOffer_form = OfferPropertyForm(request.POST)
+        if pOffer_form.is_valid():
+           # check if the property for the current user already exists
+            if PropertyForOffer.objects.filter(user_id=user.id).exists():
+                # update the existing property instance
+                property = PropertyForOffer.objects.get(user_id=user.id)
+                pOffer_form = OfferPropertyForm(request.POST, instance=property)
+            else:
+                # create a new property instance for the user
+                property = pOffer_form.save(commit=False)
+                property.user_id = user.id
+            pOffer_form.save()
+            # process images only if they were uploaded
+            if request.FILES:
+                images = request.FILES.getlist('image')
+                for image in images:
+                    Image.objects.create(property=property, image=image)
+            messages.success(request, "Your property info has been saved")
+            update_scores(request)
+            # Redirect to the property detail page
+            return redirect('property-offer-display', request.user)
+    else:
+        property = get_object_or_404(PropertyForOffer, user=user)
+        property = OfferPropertyForm(instance=property)
+        image_form = ImageForm()
+        context = {
+                'user_profile': user,
+                'property_form': property,
+                'image_form': image_form,
+            }
+        return render(request, 'users\property_offer_display.html', context)
+
+
+@login_required
+def display_property_reqs(request, username):
+    user = User.objects.get(username=username)
+    if request.method == 'POST':
+        form = UpdateRequirementsPForm(request.POST)
+        if form.is_valid():
+           # check if the RequirementsP for the current user already exists
+            if RequirementsP.objects.filter(user_id = user.id).exists():
+                # update the existing RequirementsP instance
+                propertyR = RequirementsP.objects.get(user_id=user.id)
+                form = UpdateRequirementsPForm(request.POST, instance=propertyR)
+            else:
+                # create a new RequirementsP instance for the user
+                propertyR = form.save(commit=False)
+                propertyR.user_id = user.id
+            form.save()
+            messages.success(request, "Your property's requirements has been saved")
+            update_scores(request)
+            # Redirect to the RequirementsP detail page
+            return redirect('property-reqs-display', request.user)
+    else:
+        propertyR = get_object_or_404(RequirementsP, user=user)
+        property_form = UpdateRequirementsPForm(instance=propertyR)
+        context = {
+            'user_profile': user,
+            'property_form': property_form,
+        }
+        return render(request, 'users/property_reqs_display.html', context)
+
+@login_required
+def display_roomi_reqs(request, username):
+    print('In display-roomi-reqs')
+    print(request.method)
+    user = User.objects.get(username=username)
+    if request.method == 'POST':
+        print('In display-roomi-reqs, POST')
+        form = UpdateRequirementsRForm(request.POST)
+        if form.is_valid():
+            print('In display-roomi-reqs, Form Is Valid')
+           # check if the RequirementsR for the current user already exists
+            if RequirementsR.objects.filter(user_id = user.id).exists():
+                print('In display-roomi-reqs, Form Is Exist')
+                # update the existing RequirementsR instance
+                roomiR = RequirementsR.objects.get(user_id = user.id)
+                form = UpdateRequirementsRForm(request.POST, instance=roomiR)
+            else:
+                print('In display-roomi-reqs, Form Is Not Exist')
+                # create a new RequirementsR instance for the user
+                roomiR = form.save(commit=False)
+                roomiR.user_id = user.id
+            form.save()
+            messages.success(request, "Your roomi's requirements has been updated")
+            update_scores(request)
+            # Redirect to the RequirementsRForm detail page
+            return redirect('roomi-reqs-display', request.user)
+    else:
+        print('In display-roomi-reqs, GET')
+        roomiR = get_object_or_404(RequirementsR, user=user)
+        roomi_form = UpdateRequirementsRForm(instance=roomiR)
+        context = {
+            'user_profile': user,
+            'form': roomi_form,
+        }
+        return render(request, 'users/roomi_reqs_display.html', context)

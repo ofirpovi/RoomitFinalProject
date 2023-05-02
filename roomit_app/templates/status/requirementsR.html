@@ -19,9 +19,11 @@
                         {{ form.Expense_Management|as_crispy_field }}
 
                     </fieldset>
-                    <div class="form-group">
-                        <button class="btn btn-outline-info" type="submit">Finish</button>
-                    </div>
+                    {%if user.username == user_profile%}
+                        <div class="form-group">
+                            <button class="btn btn-outline-info" type="submit">Save</button>
+                        </div>
+                    {%endif%}
                 </form>
             </div>
         </div>
