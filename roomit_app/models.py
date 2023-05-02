@@ -159,10 +159,10 @@ class RequirementsR(models.Model):
 
 
 class Likes(models.Model):
-    User_insert = models.OneToOneField(User, on_delete=models.CASCADE)
-    User_enter = models.OneToOneField(User, on_delete=models.CASCADE)
-    enter_likes_insert = models.BooleanField(blank= True, default=False)
-    insert_likes_enter = models.BooleanField(blank= True, default=False)
+    User_insert = models.ForeignKey(User, related_name='enter_likes_insert', on_delete=models.CASCADE)
+    User_enter = models.ForeignKey(User, related_name='insert_likes_enter', on_delete=models.CASCADE)
+    enter_likes_insert = models.BooleanField(blank= False, default=False)
+    insert_likes_enter = models.BooleanField(blank= False, default=False)
 
     def save(self, *args, **kwargs):
         super(Likes, self).save(*args, **kwargs)
