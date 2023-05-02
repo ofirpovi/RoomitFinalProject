@@ -12,7 +12,11 @@
                 <p style="text-align: center;">Score: {{ item.Insert_score }}</p>
               </div>
             </a>
-
+    <div style="display: flex; flex-direction: column; align-items: center;">
+                <a href="/like-picture">
+        <button class="like-button" data-user="{{ item.Username_enter }}">Like</button>
+                </a>
+    </div>
         {% else %}
             <a href="user/profile/{{item.Username_enter}}">
               <div style="display: flex; flex-direction: column; align-items: center;">
@@ -21,9 +25,26 @@
                 <p style="text-align: center;">Score: {{ item.Enter_score }}</p>
               </div>
             </a>
-
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <a href="/like-picture">
+        <button class="like-button" data-user="{{ item.Username_insert }}">Like</button>
+            </a>
+    </div>
         {% endif %}
     {% endfor %}
+    <script>
+        $(document).ready(function() {
+            $('.like-button').on('click', function() {
+                var user = $(this).data('user');
+                var csrftoken = Cookies.get('csrftoken');  // get CSRF token from cookie
+                $.post('/like-picture/', {user: user, csrfmiddlewaretoken: csrftoken}, function(data) {
+                    if (data.success) {
+                        alert('Picture liked!');
+                    }
+                });
+            });
+        });
+    </script>
 </div>
 <div class="item-box">
     {% infinite_scroll_box %}

@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -10,7 +11,7 @@ from rest_framework.views import APIView
 
 from users.models import Profile, PropertyForOffer
 from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
-from .models import RequirementsP, RequirementsR, Scores
+from .models import RequirementsP, RequirementsR, Scores, Likes
 from .requirements import ListReq, RangReq
 
 
@@ -169,16 +170,31 @@ def update_scores_insert(requirementsR, user):
         return personal_score
 
 
+@login_required
+def like_picture(request):
+    print("in like picture")
+    other_user = request.POST.get('user')
+    profile = Profile.objects.get(user=request.user)
+    online_status = profile.profile_status
+    if online_status == "StatusEnter":
+        like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)
+        like.enter_likes_insert = True
+        like.save()
+    else:
+        like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)
+        like.insert_likes_enter = True
+        like.save()
+    return JsonResponse({'success': True})
+
+
 def make_requirementsP(user):
-    # try:
     reqP = []
-    # print("--------------------------------     make_requirementsP  -->  ", user.username, "     -----------------------------------------------------------")
+    # print("---------------------------------     make_requirementsP  -->  ", user.username, "     -----------------------------------------------------------")
     requirementP = RequirementsP.objects.get(user=user)
     # print("-------------------------------------------------------------------------------------------")
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
-    # rq =
     reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
     reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
     reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roomates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
