@@ -28,11 +28,10 @@ body {
     font-weight: 500;
   }
   
-  .content-section {
+  .profile-menu-section {
     background: #ffffff;
     padding: 10px 20px;
-    border: 1px solid #dddddd;
-    border-radius: 3px;
+    border: 2px solid #dddddd;
     margin-bottom: 20px;
   }
   
@@ -100,4 +99,19 @@ body {
   .img-thumbnail {
     max-width: 100px;
     max-height: 100px;
+  }
+
+  .dropdown-toggle-sidebar {
+    background-color: #f8f9fa;
+    border-color: #f8f9fa;
+    color: #5f788a;
+    padding: 5px 0px;
+  }
+  
+  .content-section {
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 2px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
   }

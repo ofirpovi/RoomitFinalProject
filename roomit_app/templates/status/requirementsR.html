@@ -1,0 +1,31 @@
+{% extends "roomit_app/base.html"%}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-8" style="margin-right: 50%">
+               <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <fieldset class="form-group">
+                        <h1 class="display-10 fw-bold">My Dream Roommate</h1>
+                        <br>
+                        {{ form.Occupation|as_crispy_field }}
+                        {{ form.MinAge|as_crispy_field }}
+                        {{ form.MaxAge|as_crispy_field }}
+                        {{ form.Gender|as_crispy_field }}
+                        {{ form.Smoker|as_crispy_field }}
+                        {{ form.Diet|as_crispy_field }}
+                        {{ form.Kosher|as_crispy_field }}
+                        {{ form.Status|as_crispy_field }}
+                        {{ form.Expense_Management|as_crispy_field }}
+
+                    </fieldset>
+                    {%if user.username == user_profile%}
+                        <div class="form-group">
+                            <button class="btn btn-outline-info" type="submit">Save</button>
+                        </div>
+                    {%endif%}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

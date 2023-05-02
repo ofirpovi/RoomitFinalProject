@@ -39,11 +39,12 @@ def requirementsP(request, username):
                 return redirect('requirementsR', request.user)
         else:
             form = UpdateRequirementsPForm(instance=requirements)
-        return render(request, 'requirementsP.html', {'form': form})
+        return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
 
 
 @login_required
 def requirementsR(request, username):
+    print(username)
     user = User.objects.get(username=request.user.username)
     try:
         requirements = RequirementsR.objects.get(user=user)
@@ -56,13 +57,13 @@ def requirementsR(request, username):
         if form.is_valid():
             form.save()
             messages.success(request, f'Your Requirements have been updated!')
-            # print("\n\nrequirementR saved\n\n")
+            print("\n\nrequirementR saved\n\n")
             update_scores(request)
             return redirect('profile', request.user)
     else:
         form = UpdateRequirementsRForm(instance=requirements)
 
-    return render(request, 'requirementsR.html', {'form': form})
+    return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
 
 
 @login_required
@@ -70,7 +71,7 @@ def more(request):
     # This is the list that will be paginated.
     users = User.objects.all()
     list_items = Scores.objects.all()
-    # print("\n\nin more\n\n")
+    print("\n\nin more\n\n")
     profile = Profile.objects.get(user=request.user)
     # list_items = list_items.filter(Username_insert=request.user) | list_items.filter(Username_enter=request.user)
     # # list_items = list_items.order_by('-Insert_score')
@@ -83,10 +84,8 @@ def more(request):
     return more_items(request, list_items, template='more.html')
 
 
-
 @login_required
 def post_list(request):
-    list_items = User.objects.all()
     list_items = Scores.objects.all()
     username = request.user.username
     # print("\n\nin post_list\n\n")
@@ -100,7 +99,7 @@ def post_list(request):
     paginated = get_pagination(request, list_items)
     data = {
         'more_posts_url': reverse('more'),
-        }
+    }
     data.update(paginated)
     # print("\n\nout of post_list\n\n")
     return render(request, 'post_list.html', data)
@@ -138,8 +137,6 @@ def update_scores(request):
 
 
 def update_scores_enter(requirementsR, requirementsP, user):
-    # print("\n\nupdate_scores_enter  -  ", user.first_name)
-    # print("type  -  ", type(user), "")
     if requirementsR is None and requirementsP is None:
         # print("both none\n \n")
         return 100
@@ -159,8 +156,6 @@ def update_scores_enter(requirementsR, requirementsP, user):
 
 
 def update_scores_insert(requirementsR, user):
-    # print("\n\nupdate_scores_insert  -  ", user.first_name)
-    # print("type  -  ", type(user), "")
     if requirementsR is None:
         # print("status insert score - requirementsR none\n\n")
         return 100
@@ -215,6 +210,7 @@ def make_requirementsR(user):
         # print(reqR)
         return reqR
 
+
 def calculate_score(reqs, user):
     score = 0
     answers_info = {}
@@ -231,7 +227,6 @@ def calculate_score(reqs, user):
                 req_score = req.calculate_score(getattr(property, req_text))
             except AttributeError:
                 req_score = 0
-
 
         score += req_score
 

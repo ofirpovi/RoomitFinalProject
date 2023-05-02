@@ -1,11 +1,12 @@
 {% extends "roomit_app/base.html"%}
+{% block authenticate%}{%endblock%}
 {% block content %}
 <!DOCTYPE html>
 <html>
   <body>
     <h1>What you are looking for?</h1>
-    <a href="{% url 'set-status' %}?status=insert in">Looking for a roommate</a>
-    <a href="{% url 'set-status' %}?status=enter in">Looking for a property</a>
+    <a class="nav-item nav-link" href="{% url 'set-status' %}?status=insert in">Looking for a roommate</a>
+    <a class="nav-item nav-link" href="{% url 'set-status' %}?status=enter in">Looking for a property</a>
   </body>
 </html>
 {% endblock content %}
