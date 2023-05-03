@@ -56,6 +56,7 @@ class Profile(models.Model):
                                                                   ('N', 'No'),])
     expense_management = models.CharField(max_length=15, blank=True, choices=[('Y', 'Prefer'),
                                                                               ('N', 'Prefer not'),])
+    about_me = models.TextField(max_length=80, default='')
 
     def __str__(self):
         return "{} Profile".format(self.user.username)
@@ -68,13 +69,16 @@ class Profile(models.Model):
 
 class PropertyForOffer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    country = models.CharField(max_length=25, default='', blank=True)
+    city = models.CharField(max_length=25, default='', blank=True)
+    neighborhood = models.CharField(max_length=25, default='', blank=True)
     rent = MoneyField(max_digits=14, decimal_places=2,
                       default_currency='Israeli New Shekel')
     square_meters = models.FloatField(blank=True, null=True)
     description = models.TextField()
     renovated = models.BooleanField(blank=True, default=False)
     shelter_inside = models.BooleanField(blank=True, default=False)
-    shelter_nerbay = models.BooleanField(blank=True, default=False)
+    shelter_nearby = models.BooleanField(blank=True, default=False)
     furnished = models.BooleanField(blank=True, default=False)
     shared_livingroom = models.BooleanField(blank=True, default=False)
     rooms_number = models.FloatField(max_length=3, choices=[(1.0, '1'),

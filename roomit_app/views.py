@@ -1,6 +1,8 @@
+from typing import Any, Dict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models.query import QuerySet
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -13,7 +15,9 @@ from users.models import Profile, PropertyForOffer
 from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
 from .models import RequirementsP, RequirementsR, Scores, Likes
 from .requirements import ListReq, RangReq
-
+from django.views.generic.list import ListView
+from .filters import PropertyOfferFilter, RoommateFilter
+from.models import RequirementsR
 
 def home(request):
     return render(request, 'roomit_app/post_list.html')
@@ -252,3 +256,54 @@ def calculate_score(reqs, user):
 class UserHomepageView(APIView):
     def get(self, request):
         return render(request, 'post_list.html')
+
+
+def get_data_to_filter(request):
+    list_items = Scores.objects.all()
+    profile = Profile.objects.get(user=request.user)
+    if profile.profile_status == 'StatusInsert':
+        list_items = list_items.filter(Username_insert=request.user)
+        list_items = list_items.order_by('-Insert_score')
+    else:
+        list_items = list_items.filter(Username_enter=request.user)
+        list_items = list_items.order_by('-Enter_score')
+       
+    return list_items
+
+
+class PropertyFilterListView(ListView):
+    queryset = PropertyForOffer.objects.all()
+    template_name = 'filter_results.html'
+    context_object_name = 'data'
+
+    def get_queryset(self):
+        print('in get_quryset')
+        queryset = super().get_queryset()
+        self.filterset = PropertyOfferFilter(self.request.GET, queryset=queryset)
+        #data = map(lambda prop: Profile.objects.get(user = prop.user), self.filterset.qs)
+        # for item in data:
+        #     print(item)
+        # return list(data)
+        return self.filterset.qs
+    
+    def get_context_data(self, **kwargs):
+        print('in get_context_data')
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.filterset.form
+        return context
+
+
+class RoommateFilterListView(ListView):
+    queryset = Profile.objects.all()
+    template_name = 'filter_results.html'
+    context_object_name = 'data'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = RoommateFilter(self.request.GET, queryset=queryset)
+        return self.filterset.qs
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.filterset.form
+        return context
