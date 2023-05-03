@@ -9,7 +9,7 @@ from infscroll.utils import get_pagination
 from infscroll.views import more_items
 from rest_framework.views import APIView
 
-from users.models import Profile, PropertyForOffer
+from users.models import Profile, PropertyForOffer, Image
 from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
 from .models import RequirementsP, RequirementsR, Scores, Likes
 from .requirements import ListReq, RangReq
@@ -17,6 +17,7 @@ from .requirements import ListReq, RangReq
 
 def home(request):
     return render(request, 'roomit_app/post_list.html')
+
 
 @login_required
 def requirementsP(request, username):
@@ -67,6 +68,34 @@ def requirementsR(request, username):
     return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
 
 
+
+    # other_user = User.objects.get(username=username)
+    # print("other user   ---    ", other_user)
+    # profile = Profile.objects.get(user=request.user)
+    # online_status = profile.profile_status
+    #
+    # if online_status == "StatusEnter":
+    #     like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)[0]
+    #     like.enter_likes_insert = True
+    #     like.save()
+    # else:
+    #     like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)[0]
+    #     like.insert_likes_enter = True
+    #     like.save()
+    # return redirect('post_list_page')
+@login_required
+def likes_me(request):
+    list_items = Likes.objects.all()
+    profile = Profile.objects.get(user=request.user)
+    online_status = profile.profile_status
+    if online_status == "StatusEnter":
+        list_items = list_items.filter(User_enter=request.user)
+    else:
+        list_items = list_items.filter(User_insert=request.user)
+
+    return render(request, 'post_list.html', data)
+
+
 @login_required
 def more(request):
     # This is the list that will be paginated.
@@ -89,20 +118,25 @@ def more(request):
 def post_list(request):
     list_items = Scores.objects.all()
     username = request.user.username
-    # print("\n\nin post_list\n\n")
     profile = Profile.objects.get(user=request.user)
     if profile.profile_status == 'StatusInsert':
         list_items = list_items.filter(Username_insert=request.user)
         list_items = list_items.order_by('-Insert_score')
     else:
-        list_items = list_items.filter(Username_enter=request.user)
-        list_items = list_items.order_by('-Enter_score')
+        lst = list_items.filter(Username_enter=request.user)
+        lst = lst.order_by('-Enter_score')
+        list_items = []
+        for item in lst:
+            user_insert = item.Username_insert
+            prop = PropertyForOffer.objects.get(user=user_insert)
+            images = Image.objects.all()
+            images = images.filter(property=prop).first()
+            list_items.append(Posts(item, images))
     paginated = get_pagination(request, list_items)
     data = {
         'more_posts_url': reverse('more'),
     }
     data.update(paginated)
-    # print("\n\nout of post_list\n\n")
     return render(request, 'post_list.html', data)
 
 
@@ -158,7 +192,6 @@ def update_scores_enter(requirementsR, requirementsP, user):
 
 def update_scores_insert(requirementsR, user):
     if requirementsR is None:
-        # print("status insert score - requirementsR none\n\n")
         return 100
     else:
         personal_score = calculate_score(requirementsR, user)
@@ -166,20 +199,23 @@ def update_scores_insert(requirementsR, user):
 
 
 @login_required
-def like_picture(request):
+def like_picture(request, username):
     print("in like picture")
-    other_user = request.POST.get('user')
+    # other_user = request.POST.get('userw')
+    other_user = User.objects.get(username=username)
+    print("other user   ---    ", other_user)
     profile = Profile.objects.get(user=request.user)
     online_status = profile.profile_status
+
     if online_status == "StatusEnter":
-        like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)
+        like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)[0]
         like.enter_likes_insert = True
         like.save()
     else:
-        like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)
+        like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)[0]
         like.insert_likes_enter = True
         like.save()
-    return JsonResponse({'success': True})
+    return redirect('post_list_page')
 
 
 def make_requirementsP(user):
@@ -249,6 +285,13 @@ def calculate_score(reqs, user):
     # return weight, score, answers_info
     return score
 
+
 class UserHomepageView(APIView):
     def get(self, request):
         return render(request, 'post_list.html')
+
+
+class Posts:
+    def __init__(self, item, image):
+        self.image = image
+        self.item = item

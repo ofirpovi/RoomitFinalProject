@@ -82,7 +82,6 @@ class Scores(models.Model):
             models.UniqueConstraint(fields=['Username_enter', 'Username_insert'], name='unique_scores')
         ]
 
-
 class RequirementsP(models.Model):
     Requirement_ID = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)

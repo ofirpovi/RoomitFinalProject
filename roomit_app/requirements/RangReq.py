@@ -1,8 +1,5 @@
 import math
-
 from .Requirement import Requirement
-# from geopy.geocoders import Nominatim
-# from geopy.distance import geodesic
 
 
 class RangeReq(Requirement):
@@ -14,25 +11,15 @@ class RangeReq(Requirement):
         self._address = address
 
     def calculate_score(self, answer):
-        print("calc score")
-        if answer is None:
-            print("ans is None!!!!!!!!!!!!!")
         if self._max is None and self._min is None:
             return self._weight
-        # if self._distance:
-        #     answer = self.calculate_distance(answer, self._address)
         if self._max is None or answer is None:
             if answer is None or self._min > answer:
                 return 0
             else:
                 return self._weight
-        # if answer < 0:
-        #     raise ValueError("Answer could not be a negative value")
         if type(answer) is not int:
             raise TypeError("Answer should be a number")
-        # if self._max is None and self._min >= answer:
-        #     print("self._max is None and self._min >= answer  -- working")
-        #     return self._weight
 
         if answer in range(self._min, self._max):
             return self._weight
@@ -48,20 +35,4 @@ class RangeReq(Requirement):
                 return (1-0.05*ans_stde)*self._weight
 
     def convert_answer_to_str(self, answer):
-        # if self._distance:
-        #     answer = self.calculate_distance(answer, self._address)
         return answer
-
-    # def calculate_distance(self, address1, address2):
-    #     # create a geolocator object
-    #     geolocator = Nominatim(user_agent="geoapiExercises")
-    #
-    #     # convert the addresses to coordinates
-    #     location1 = geolocator.geocode(address1)
-    #     location2 = geolocator.geocode(address2)
-    #
-    #     # calculate the distance between the coordinates
-    #     distance = geodesic((location1.latitude, location1.longitude),
-    #                         (location2.latitude, location2.longitude)).kilometers
-    #
-    #     return int(distance)
