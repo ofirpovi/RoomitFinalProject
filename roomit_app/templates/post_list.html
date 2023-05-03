@@ -13,7 +13,7 @@
               </div>
             </a>
     <div style="display: flex; flex-direction: column; align-items: center;">
-                <a href="/like-picture/{{ item.Username_enter }}>/">
+                <a href="/like-picture/{{ item.Username_enter }}/">
         <button class="button" data-user="{{ item.Username_enter }}">Like</button>
                 </a>
     </div>
@@ -24,16 +24,16 @@
                     <div class="card_load">
                         <img src="{{ item.item.Username_insert.profile.image.url }}" alt="{{ item.item.Username_insert }}" style="max-width: 50%; height: auto; display: inline-block;">
                         <img src="{{ item.image.image.url }}" alt="{{ item.item.Username_insert }}" style="max-width: 50%; height: auto; display: inline-block;">
+
                     </div>
                     <div class="card_load_extreme_title">
                         <h2 style="text-align: center; margin-top: 20px;">{{ item.item.Username_insert.profile.first_name }} {{ item.item.Username_insert.profile.last_name }}</h2>
                         <p style="text-align: center;">Score: {{ item.item.Enter_score }}</p>
+                    </div>
+                    <div class="card_load_extreme_descripion">
                         <a href="/like-picture/{{ item.item.Username_insert }}/">
                             <button class="button" data-user="{{ item.item.Username_insert }}">Like</button>
                         </a>
-                    </div>
-                    <div class="card_load_extreme_descripion">
-
                     </div>
                 </div>
 

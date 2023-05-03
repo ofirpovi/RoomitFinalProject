@@ -68,21 +68,6 @@ def requirementsR(request, username):
     return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
 
 
-
-    # other_user = User.objects.get(username=username)
-    # print("other user   ---    ", other_user)
-    # profile = Profile.objects.get(user=request.user)
-    # online_status = profile.profile_status
-    #
-    # if online_status == "StatusEnter":
-    #     like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)[0]
-    #     like.enter_likes_insert = True
-    #     like.save()
-    # else:
-    #     like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)[0]
-    #     like.insert_likes_enter = True
-    #     like.save()
-    # return redirect('post_list_page')
 @login_required
 def likes_me(request):
     list_items = Likes.objects.all()
@@ -93,7 +78,7 @@ def likes_me(request):
     else:
         list_items = list_items.filter(User_insert=request.user)
 
-    return render(request, 'post_list.html', data)
+    return render(request, 'likes_me.html')
 
 
 @login_required

@@ -1,11 +1,12 @@
 {% extends "roomit_app/base.html"%}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="user-grid">
+<div>
       {% for user in user_list %}
-        <div class="user-card">
+        <div>
           <img src="{{ user.profile.image.url }}" alt="{{ user.username }}">
           <h2>{{ user.username }}</h2>
         </div>
       {% endfor %}
+            </div>
 {% endblock content %}
