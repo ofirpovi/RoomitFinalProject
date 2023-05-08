@@ -1,3 +1,4 @@
+from django.forms import inlineformset_factory
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -16,6 +17,7 @@ from django.views.generic import CreateView, UpdateView, TemplateView
 
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.files import File
 # Create your views here.
 
 
@@ -138,7 +140,7 @@ def set_status(request):
     user = request.user
     if request.method == 'GET':
         Profile.objects.filter(user = user).update(profile_status= request.GET['status'])
-        if request.GET['status'] == 'insert in':
+        if request.GET['status'] == 'StatusInsert':
             return redirect('property-offer-create', user)
         else:
             return redirect('requirementsP', user)
@@ -148,18 +150,20 @@ def change_status(request):
     user = request.user
     if request.method == 'GET':
         profile = Profile.objects.get(user = user)
-        if profile.profile_status == 'insert in':
-            Profile.objects.filter(user = user).update(profile_status= 'enter in')
+        if profile.profile_status == 'StatusInsert':
+            Profile.objects.filter(user = user).update(profile_status= 'StatusEnter')
             messages.success(request,"Your status have been change. Please fill your property's requirements")
             return redirect('property-reqs-display', user)
         else:
-            Profile.objects.filter(user = user).update(profile_status= 'insert in')
+            Profile.objects.filter(user = user).update(profile_status= 'StatusInsert')
             messages.success(request,"Your status have been change. Please fill your property's info")
             return redirect('property-offer-display', user)
+
 
 @login_required
 def display_property_offer(request, username):
     user = User.objects.get(username=username)
+    ImageFormSet = inlineformset_factory(PropertyForOffer, Image, fields=('image',))
     if request.method == 'POST':
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
@@ -171,30 +175,42 @@ def display_property_offer(request, username):
             else:
                 # create a new property instance for the user
                 property = pOffer_form.save(commit=False)
-                property.user_id = user.id
+                property.user_id = user.id    
             pOffer_form.save()
+            formset = ImageFormSet(request.POST, request.FILES, instance=property)
+            formset.save()
             # process images only if they were uploaded
             if request.FILES:
                 images = request.FILES.getlist('image')
                 for image in images:
                     Image.objects.create(property=property, image=image)
+            # else:
+            #     default_image_path = 'media/default_for_property.jpg'
+            #     with open(default_image_path, 'rb') as f:
+            #         default_image = Image(property=property, image=File(f))
+            #     default_image.save()
             messages.success(request, "Your property info has been saved")
             update_scores(request)
             # Redirect to the property detail page
             return redirect('property-offer-display', request.user)
     else:
         try:
+            
             property = get_object_or_404(PropertyForOffer, user=user)
-            property = OfferPropertyForm(instance=property)
-            image_form = ImageForm()
+            pOffer_form = OfferPropertyForm(instance=property)
+            formset = ImageFormSet(instance=property)
+            images = Image.objects.filter(property = property)
+            print(f'images: {images}')
         except:
-            property = OfferPropertyForm()
-            image_form = ImageForm()
+            pOffer_form = OfferPropertyForm()
+            formset = ImageFormSet()
         context = {
                 'user_profile': user,
-                'property_form': property,
-                'image_form': image_form,
+                'property_form':  pOffer_form,
+                'formset': formset,
+                'images': images,
             }
+        
         return render(request, 'users/for_display/property_offer_display.html', context)
 
 
@@ -267,3 +283,4 @@ def display_roomi_reqs(request, username):
         'form': roomi_form,
         }
         return render(request, 'users/for_display/roomi_reqs_display.html', context)
+

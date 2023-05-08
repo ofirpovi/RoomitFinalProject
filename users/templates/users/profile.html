@@ -9,7 +9,7 @@
                     <img class="rounded-circle account-img" src="{{ user_profile.profile.image.url }}">
                     <div>
                         <h2 class="account-heading" style="margin-top: 40px; margin-right: 50px;">{{ user_profile.username }}</h2>
-                        {%if user_profile.profile.profile_status == 'insert in'%}
+                        {%if user_profile.profile.profile_status == 'StatusInsert'%}
                             <h9 class="account-heading" style="margin-top: 40px; margin-right: 50px; font-size: 20px;">Looking for a Roommate</h9>
                             {%if user.username == user_profile.username%}      
                                 <a class="account-heading nav-link" style= "margin-right: 40px; font-size: 14px;" href="{% url 'change-status'%}">Looking for an Apartment?</a>

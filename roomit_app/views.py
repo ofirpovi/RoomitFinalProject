@@ -210,7 +210,7 @@ def like_picture(request, username):
 def make_requirementsP(user):
     reqP = []
     # print("---------------------------------     make_requirementsP  -->  ", user.username, "     -----------------------------------------------------------")
-    requirementP = RequirementsP.objects.get(user=user)
+    requirementP = RequirementsP.objects.get_or_create(user=user)[0]
     # print("-------------------------------------------------------------------------------------------")
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
@@ -235,7 +235,7 @@ def make_requirementsR(user):
         reqR = []
         # print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
 
-        requirementR = RequirementsR.objects.get(user=user)
+        requirementR = RequirementsR.objects.get_or_create(user=user)[0]
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))

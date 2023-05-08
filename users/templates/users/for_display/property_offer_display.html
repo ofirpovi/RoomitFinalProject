@@ -25,14 +25,16 @@
                 {% endfor %}
                 {{property_form|crispy}}
                 <h5> Property's Images</h5>
-                {% if images %}
-                    {% for image in images %}
-                        <img src="{{ image.image.url }}" alt="Property Image">
+                {% if formset %}
+                    {% for form in formset %}
+                        <img src="{{ form.instance.image.url }}" width="100" >             
                     {% endfor %}
                 {% else %}
-                    <img src="{% static 'default_for_property.jpg' %}" alt="Default Property Image">
+                        <p>No images for this property<p>
                 {% endif %}
                 <br><br>
+                <label for="id_image">Upload Images:</label>
+                <input type="file" name="image" id="id_image" multiple>
             </fieldset>    
             {% if user.username == user_profile.username %}
                 <div class="form-group">

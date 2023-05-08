@@ -120,10 +120,8 @@ def property_image_upload_path(instance, filename):
 
 
 class Image(models.Model):
-    property = models.ForeignKey(
-        PropertyForOffer, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(
-        default='default_for_property.jpg', upload_to=property_image_upload_path)
+    property = models.ForeignKey(PropertyForOffer, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(default='default_for_property.jpg', upload_to=property_image_upload_path)
 
     def save(self, *args, **kwargs):
         super(Image, self).save(*args, **kwargs)
