@@ -1,0 +1,12 @@
+{% extends "roomit_app/base.html"%}
+{% load crispy_forms_tags %}
+{% block content %}
+<div>
+      {% for user in user_list %}
+        <div>
+          <img src="{{ user.profile.image.url }}" alt="{{ user.username }}">
+          <h2>{{ user.username }}</h2>
+        </div>
+      {% endfor %}
+            </div>
+{% endblock content %}

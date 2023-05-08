@@ -113,3 +113,49 @@ body {
     border-radius: 3px;
     margin-bottom: 20px;
   }
+  button {
+  padding: 12.5px 30px;
+  border: 0;
+  border-radius: 100px;
+  background-color: #2ba8fb;
+  color: #ffffff;
+  font-weight: Bold;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+    }
+
+  button:hover {
+      background-color: #6fc5ff;
+      -webkit-box-shadow: 0 0 20px #6fc5ff50;
+              box-shadow: 0 0 20px #6fc5ff50;
+  }
+
+  button:active {
+      background-color: #3d94cf;
+      transition: all 0.25s;
+      -webkit-transition: all 0.25s;
+      -webkit-box-shadow: none;
+              box-shadow: none;
+  }
+
+
+  .user-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  /* Define the grid items */
+  .user-card {
+    text-align: center;
+    padding: 20px;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+  }
+
+  .user-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
