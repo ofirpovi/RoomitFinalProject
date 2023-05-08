@@ -29,25 +29,36 @@
           <div class="navbar-nav mr-auto">
             {% block authenticate %}
               <a class="nav-item nav-link" href="{% url 'post_list_page' %}">Home</a>
+              <script>
+                function updateFilterForm() {
+                  var category = document.getElementById("category").value;
+                  var form = document.getElementById("filter-form");
+                  if (category == "property") {
+                    form.action = "{% url 'filter-results-property' %}";
+                  } else if (category == "roommate") {
+                    form.action = "{% url 'filter-results-roommate' %}";
+                  }
+                }
+              </script>
               <div class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Search
+                  Filter
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                  <form class="px-4 py-3" action="{% url 'post_list_page' %}" method="get">
+                  <form class="px-4 py-3" action="{% url 'filter-results-property' %}" method="get" id="filter-form">
                     <div class="form-group">
                       <label for="category">Category</label>
                       <select class="form-control" id="category" name="category">
                           <option value="books">Books</option>
                           <option value="movies">Movies</option>
                           <option value="music">Music</option>
+                      <label for="category">Filter by</label>
+                      <select class="form-control" id="category" name="category" onchange="updateFilterForm()">
+                        <option value="property">Property</option>
+                        <option value="roommate">Roommate</option>
                       </select>
                     </div>
-                    <div class="form-group">
-                      <label for="query">Search</label>
-                      <input type="text" class="form-control" id="query" name="query" placeholder="Type your search...">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="submit" class="btn btn-primary">Filter</button>
                   </form>
                 </div>
               </div>

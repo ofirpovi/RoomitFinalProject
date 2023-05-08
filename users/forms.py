@@ -25,13 +25,15 @@ class UserUpdateForm(forms.ModelForm):
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['image', 'profile_status', 'first_name', 'last_name', 'birthdate', 'phone_number', 'gender',
+        fields = [ 'first_name', 'last_name', 'birthdate', 'phone_number', 'gender','about_me', 'image',
                   'occupation', 'smoker', 'diet', 'status', 'hospitality', 'kosher', 'expense_management']
         exclude = ['profile_status']
         widgets = {
             'birthdate': DateInput(attrs={'type': 'date'})
         }
 
+        about_me = forms.CharField()
+       
 
 class OfferPropertyForm(forms.ModelForm):
     class Meta:

@@ -146,6 +146,20 @@ def set_status(request):
             Likes.objects.filter(User_insert=request.user).delete()
             Scores.objects.filter(User_insert=request.user).delete()
             return redirect('requirementsP', user)
+        
+@login_required
+def change_status(request):
+    user = request.user
+    if request.method == 'GET':
+        profile = Profile.objects.get(user = user)
+        if profile.profile_status == 'insert in':
+            Profile.objects.filter(user = user).update(profile_status= 'enter in')
+            messages.success(request,"Your status have been change. Please fill your property's requirements")
+            return redirect('property-reqs-display', user)
+        else:
+            Profile.objects.filter(user = user).update(profile_status= 'insert in')
+            messages.success(request,"Your status have been change. Please fill your property's info")
+            return redirect('property-offer-display', user)
 
 @login_required
 def display_property_offer(request, username):
@@ -173,9 +187,13 @@ def display_property_offer(request, username):
             # Redirect to the property detail page
             return redirect('property-offer-display', request.user)
     else:
-        property = get_object_or_404(PropertyForOffer, user=user)
-        property = OfferPropertyForm(instance=property)
-        image_form = ImageForm()
+        try:
+            property = get_object_or_404(PropertyForOffer, user=user)
+            property = OfferPropertyForm(instance=property)
+            image_form = ImageForm()
+        except:
+            property = OfferPropertyForm()
+            image_form = ImageForm()
         context = {
                 'user_profile': user,
                 'property_form': property,
@@ -205,8 +223,11 @@ def display_property_reqs(request, username):
             # Redirect to the RequirementsP detail page
             return redirect('property-reqs-display', request.user)
     else:
-        propertyR = get_object_or_404(RequirementsP, user=user)
-        property_form = UpdateRequirementsPForm(instance=propertyR)
+        try:
+            propertyR = get_object_or_404(RequirementsP, user=user)
+            property_form = UpdateRequirementsPForm(instance=propertyR)
+        except:
+            property_form = UpdateRequirementsPForm()
         context = {
             'user_profile': user,
             'property_form': property_form,
@@ -240,11 +261,13 @@ def display_roomi_reqs(request, username):
             # Redirect to the RequirementsRForm detail page
             return redirect('roomi-reqs-display', request.user)
     else:
-        print('In display-roomi-reqs, GET')
-        roomiR = get_object_or_404(RequirementsR, user=user)
-        roomi_form = UpdateRequirementsRForm(instance=roomiR)
+        try:
+            roomiR = get_object_or_404(RequirementsR, user=user)
+            roomi_form = UpdateRequirementsRForm(instance=roomiR)
+        except:
+            oomi_form = UpdateRequirementsRForm()
         context = {
-            'user_profile': user,
-            'form': roomi_form,
+        'user_profile': user,
+        'form': roomi_form,
         }
         return render(request, 'users/for_display/roomi_reqs_display.html', context)
