@@ -133,21 +133,17 @@ def update_scores(request):
             score_enter = update_scores_enter(requirement, reqP, online_user.profile)
             score_insert = update_scores_insert(reqR, user)
             score = Scores(Username_enter=user.user, Username_insert=online_user, Enter_score=score_enter, Insert_score=score_insert)
-            # print("\n\nscore updated\n\n")
             score.save()
 
 
 def update_scores_enter(requirementsR, requirementsP, user):
     if requirementsR is None and requirementsP is None:
-        # print("both none\n \n")
         return 100
     elif requirementsR is None:
         personal_scoreP = calculate_score(requirementsP, user)
-        # print("requirementsR none\n\n")
         return (personal_scoreP + 100) / 2
     elif requirementsP is None:
         personal_score = calculate_score(requirementsR, user)
-        # print("requirementsP none\n\n")
         return (personal_score + 100) / 2
     else:
         personal_scoreR = calculate_score(requirementsR, user)
@@ -158,7 +154,6 @@ def update_scores_enter(requirementsR, requirementsP, user):
 
 def update_scores_insert(requirementsR, user):
     if requirementsR is None:
-        # print("status insert score - requirementsR none\n\n")
         return 100
     else:
         personal_score = calculate_score(requirementsR, user)
@@ -184,9 +179,7 @@ def like_picture(request):
 
 def make_requirementsP(user):
     reqP = []
-    # print("---------------------------------     make_requirementsP  -->  ", user.username, "     -----------------------------------------------------------")
-    requirementP = RequirementsP.objects.get(user=user)
-    # print("-------------------------------------------------------------------------------------------")
+    requirementP = RequirementsP.objects.get_or_create(user=user)
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
@@ -210,7 +203,7 @@ def make_requirementsR(user):
         reqR = []
         # print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
 
-        requirementR = RequirementsR.objects.get(user=user)
+        requirementR = RequirementsR.objects.get_or_create(user=user)
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))
@@ -223,13 +216,11 @@ def make_requirementsR(user):
         return reqR
     except Exception as e:
         print(e)
-        # print(reqR)
         return reqR
 
 
 def calculate_score(reqs, user):
     score = 0
-    answers_info = {}
     try:
         property = PropertyForOffer.objects.get(user=user)
     except:
@@ -245,8 +236,6 @@ def calculate_score(reqs, user):
                 req_score = 0
 
         score += req_score
-
-    # return weight, score, answers_info
     return score
 
 class UserHomepageView(APIView):
