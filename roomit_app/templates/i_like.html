@@ -1,0 +1,20 @@
+{% extends "roomit_app/base.html"%}
+{% load crispy_forms_tags %}
+{% block content %}
+<div>
+      {% for user in list_items %}
+      {% if request.user.profile.profile_status == "StatusEnter" %}
+        <div>
+          <img src="{{ user.User_insert.profile.image.url }}" alt="{{ user.User_insert.username }}">
+          <h2>{{ user.User_insert.username }}</h2>
+        </div>
+
+      {% else %}
+        <div>
+          <img src="{{ user.User_enter.profile.image.url }}" alt="{{ user.User_enter.username }}">
+          <h2>{{ user.User_enter.username }}</h2>
+        </div>
+      {% endif %}
+      {% endfor %}
+            </div>
+{% endblock content %}

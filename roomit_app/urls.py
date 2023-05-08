@@ -9,5 +9,6 @@ urlpatterns = [
     # path('search-results', app_views.search, name='search-results'),dd
     path('like-picture/<str:username>/', app_views.like_picture, name='like_picture'),
     path('likes-me/', app_views.likes_me, name='likes_me'),
+    path('i-like/', app_views.i_like, name='i_like'),
 ]
 

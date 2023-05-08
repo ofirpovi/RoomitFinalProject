@@ -8,12 +8,10 @@ from django.urls import reverse
 from infscroll.utils import get_pagination
 from infscroll.views import more_items
 from rest_framework.views import APIView
-
 from users.models import Profile, PropertyForOffer, Image
 from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
 from .models import RequirementsP, RequirementsR, Scores, Likes
 from .requirements import ListReq, RangReq
-
 
 def home(request):
     return render(request, 'roomit_app/post_list.html')
@@ -75,10 +73,25 @@ def likes_me(request):
     online_status = profile.profile_status
     if online_status == "StatusEnter":
         list_items = list_items.filter(User_enter=request.user)
+        list_items = list_items.filter(insert_likes_enter=True)
     else:
         list_items = list_items.filter(User_insert=request.user)
+        list_items = list_items.filter(enter_likes_insert=True)
+    return render(request, 'likes_me.html', {"list_items": list_items})
 
-    return render(request, 'likes_me.html')
+
+@login_required
+def i_like(request):
+    list_items = Likes.objects.all()
+    profile = Profile.objects.get(user=request.user)
+    online_status = profile.profile_status
+    if online_status == "StatusEnter":
+        list_items = list_items.filter(User_enter=request.user)
+        list_items = list_items.filter(enter_likes_insert=True)
+    else:
+        list_items = list_items.filter(User_insert=request.user)
+        list_items = list_items.filter(insert_likes_enter=True)
+    return render(request, 'i_like.html', {"list_items": list_items})
 
 
 @login_required
@@ -129,8 +142,6 @@ def update_scores(request):
     online_user = request.user
     Scores.objects.filter(Username_enter=online_user).delete()
     Scores.objects.filter(Username_insert=online_user).delete()
-    # Scores.objects.filter(Username_enter=username).delete()
-    # Scores.objects.filter(Username_insert=username).delete()
     profile = Profile.objects.get(user=online_user)
     online_status = profile.profile_status
     status_match = 'StatusEnter' if online_status == 'StatusInsert' else 'StatusInsert'
@@ -139,18 +150,17 @@ def update_scores(request):
     if online_status == 'StatusEnter':
         reqP = make_requirementsP(request.user)
         for user in potential_profiles:
-            score_enter = update_scores_enter(reqR, reqP, user)
+            score_enter = round(update_scores_enter(reqR, reqP, user))
             requirement = make_requirementsR(user.user)
-            score_insert = update_scores_insert(requirement, online_user.profile)
+            score_insert = round(update_scores_insert(requirement, online_user.profile))
             score = Scores(Username_enter=online_user, Username_insert=user.user, Enter_score=score_enter, Insert_score=score_insert)
-            # print("\n\nscore updated\n\n")
             score.save()
     else:
         for user in potential_profiles:
             requirement = make_requirementsR(user.user)
             reqP = make_requirementsP(user.user)
-            score_enter = update_scores_enter(requirement, reqP, online_user.profile)
-            score_insert = update_scores_insert(reqR, user)
+            score_enter = round(update_scores_enter(requirement, reqP, online_user.profile))
+            score_insert = round(update_scores_insert(reqR, user))
             score = Scores(Username_enter=user.user, Username_insert=online_user, Enter_score=score_enter, Insert_score=score_insert)
             score.save()
 
@@ -181,10 +191,10 @@ def update_scores_insert(requirementsR, user):
 
 @login_required
 def like_picture(request, username):
-    print("in like picture")
+    # print("in like picture")
     # other_user = request.POST.get('userw')
     other_user = User.objects.get(username=username)
-    print("other user   ---    ", other_user)
+    # print("other user   ---    ", other_user)
     profile = Profile.objects.get(user=request.user)
     online_status = profile.profile_status
 
@@ -201,7 +211,7 @@ def like_picture(request, username):
 
 def make_requirementsP(user):
     reqP = []
-    requirementP = RequirementsP.objects.get_or_create(user=user)
+    requirementP = RequirementsP.objects.get_or_create(user=user)[0]
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
     reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
@@ -225,7 +235,7 @@ def make_requirementsR(user):
         reqR = []
         # print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
 
-        requirementR = RequirementsR.objects.get_or_create(user=user)
+        requirementR = RequirementsR.objects.get_or_create(user=user)[0]
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))
@@ -270,3 +280,4 @@ class Posts:
     def __init__(self, item, image):
         self.image = image
         self.item = item
+

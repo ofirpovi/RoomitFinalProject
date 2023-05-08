@@ -10,7 +10,7 @@ from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ImageFor
 from .models import PropertyForOffer, Image, Profile
 
 from roomit_app.forms import UpdateRequirementsPForm, UpdateRequirementsRForm
-from roomit_app.models import RequirementsR, RequirementsP
+from roomit_app.models import RequirementsR, RequirementsP, Likes, Scores
 from django.views.generic.edit import FormView
 from django.views.generic import CreateView, UpdateView, TemplateView
 
@@ -139,8 +139,12 @@ def set_status(request):
     if request.method == 'GET':
         Profile.objects.filter(user = user).update(profile_status= request.GET['status'])
         if request.GET['status'] == 'insert in':
+            Likes.objects.filter(User_enter=request.user).delete()
+            Scores.objects.filter(User_enter=request.user).delete()
             return redirect('property-offer-create', user)
         else:
+            Likes.objects.filter(User_insert=request.user).delete()
+            Scores.objects.filter(User_insert=request.user).delete()
             return redirect('requirementsP', user)
 
 @login_required

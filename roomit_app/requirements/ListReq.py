@@ -13,5 +13,4 @@ class ListReq(Requirement):
             return 0
 
     def convert_answer_to_str(self, answer):
-
         return ', '.join(answer) if answer is not None else "-"
