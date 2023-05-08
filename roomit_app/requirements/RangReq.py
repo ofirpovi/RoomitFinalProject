@@ -1,5 +1,7 @@
 import math
 from .Requirement import Requirement
+# from geopy.geocoders import Nominatim
+# from geopy.distance import geodesic
 
 
 class RangeReq(Requirement):
