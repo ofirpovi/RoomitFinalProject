@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib import messages
 from django.urls import reverse_lazy
 
 from roomit_app.views import update_scores
@@ -40,7 +41,7 @@ def profile(request, username):
     user = User.objects.get(username=username)
     u_form = UserUpdateForm(instance=user)
     p_form = ProfileUpdateForm(instance=user.profile)
-    read_only = False  
+    read_only = False
 
     if request.user.username != username:
         read_only = True
@@ -176,7 +177,7 @@ def display_property_offer(request, username):
                 'property_form': property,
                 'image_form': image_form,
             }
-        return render(request, 'users\property_offer_display.html', context)
+        return render(request, 'users/for_display/property_offer_display.html', context)
 
 
 @login_required
@@ -206,7 +207,7 @@ def display_property_reqs(request, username):
             'user_profile': user,
             'property_form': property_form,
         }
-        return render(request, 'users/property_reqs_display.html', context)
+        return render(request, 'users/for_display/property_reqs_display.html', context)
 
 @login_required
 def display_roomi_reqs(request, username):
@@ -242,4 +243,4 @@ def display_roomi_reqs(request, username):
             'user_profile': user,
             'form': roomi_form,
         }
-        return render(request, 'users/roomi_reqs_display.html', context)
+        return render(request, 'users/for_display/roomi_reqs_display.html', context)
