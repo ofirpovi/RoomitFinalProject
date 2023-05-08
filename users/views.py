@@ -138,13 +138,15 @@ def set_status(request):
     user = request.user
     if request.method == 'GET':
         Profile.objects.filter(user = user).update(profile_status= request.GET['status'])
-        if request.GET['status'] == 'insert in':
-            Likes.objects.filter(User_enter=request.user).delete()
-            Scores.objects.filter(User_enter=request.user).delete()
+        if request.GET['status'] == 'StatusInsert':
+            # Likes.objects.filter(User_enter=request.user).delete()
+            # Scores.objects.filter(Username_enter=request.user).delete()
+            update_scores(request)
             return redirect('property-offer-create', user)
         else:
-            Likes.objects.filter(User_insert=request.user).delete()
-            Scores.objects.filter(User_insert=request.user).delete()
+            # Likes.objects.filter(User_insert=request.user).delete()
+            # Scores.objects.filter(Username_insert=request.user).delete()
+            update_scores(request)
             return redirect('requirementsP', user)
         
 @login_required
@@ -152,13 +154,17 @@ def change_status(request):
     user = request.user
     if request.method == 'GET':
         profile = Profile.objects.get(user = user)
-        if profile.profile_status == 'insert in':
-            Profile.objects.filter(user = user).update(profile_status= 'enter in')
+        if profile.profile_status == 'StatusInsert':
+            Profile.objects.filter(user = user).update(profile_status= 'StatusEnter')
             messages.success(request,"Your status have been change. Please fill your property's requirements")
+
+            update_scores(request)
             return redirect('property-reqs-display', user)
         else:
-            Profile.objects.filter(user = user).update(profile_status= 'insert in')
+            Profile.objects.filter(user = user).update(profile_status= 'StatusInsert')
+            RequirementsP.objects.filter(user=request.user).delete()
             messages.success(request,"Your status have been change. Please fill your property's info")
+            update_scores(request)
             return redirect('property-offer-display', user)
 
 @login_required

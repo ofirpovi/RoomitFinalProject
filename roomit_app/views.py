@@ -40,7 +40,6 @@ def requirementsP(request, username):
             form = UpdateRequirementsPForm(request.POST, instance=requirements)
             if form.is_valid():
                 form.save()
-                print("\n\nrequirementsP saved\n\n")
                 update_scores(request)
                 return redirect('requirementsR', request.user)
         else:
@@ -50,7 +49,6 @@ def requirementsP(request, username):
 
 @login_required
 def requirementsR(request, username):
-    print(username)
     user = User.objects.get(username=request.user.username)
     try:
         requirements = RequirementsR.objects.get(user=user)
@@ -63,7 +61,6 @@ def requirementsR(request, username):
         if form.is_valid():
             form.save()
             messages.success(request, f'Your Requirements have been updated!')
-            print("\n\nrequirementR saved\n\n")
             update_scores(request)
             return redirect('profile', request.user)
     else:
@@ -203,13 +200,12 @@ def like_picture(request, username):
     # print("other user   ---    ", other_user)
     profile = Profile.objects.get(user=request.user)
     online_status = profile.profile_status
-
     if online_status == "StatusEnter":
         like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)[0]
         like.enter_likes_insert = True
         like.save()
     else:
-        like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)[0]
+        like = Likes.objects.get_or_create(User_enter=other_user, User_insert=request.user)[0]
         like.insert_likes_enter = True
         like.save()
     return redirect('post_list_page')
