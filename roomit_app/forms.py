@@ -5,7 +5,7 @@ from .models import RequirementsP, RequirementsR
 class UpdateRequirementsRForm(forms.ModelForm):
     class Meta:
         model = RequirementsR
-        fields = ['Occupation', 'MinAge', 'MaxAge', 'Gender', 'Smoker', 'Diet', 'Kosher', 'Status', 'Expense_Management']
+        fields = ['Occupation', 'MinAge', 'MaxAge', 'Gender', 'Smoker', 'Diet', 'Kosher', 'Status', 'Expense_Management', 'Hospitality']
         exclude = ['Requirement_ID', 'Roommates_ID']
         labels = {
                      'Occupation': 'Occupation',
@@ -13,7 +13,8 @@ class UpdateRequirementsRForm(forms.ModelForm):
                      'MaxAge': 'Max Age',
                      'Gender': 'Gender',
                      'Status': 'Relationship Status',
-                     'Expense_Management': 'Shared Expenses'
+                     'Expense_Management': 'Shared Expenses',
+                     'Hospitality': 'Hospitality'
 
         }
 
@@ -23,7 +24,7 @@ class UpdateRequirementsPForm(forms.ModelForm):
         model = RequirementsP
         fields = ['Country', 'City', 'Neighborhood', 'MinRent', 'MaxRent', 'MinRooms', 'MaxRooms',
                   'MaxRoommates', 'MinRoommates', 'MinToilets', 'MinShowers', 'Renovated',
-                  'Shelter_Inside', 'Shelter_Nearby', 'Furnished', 'Shared_Living_Room']
+                  'ShelterInside', 'ShelterNearby', 'Furnished', 'SharedLivingRoom']
         exclude = ['Requirement_ID', 'Roommates_ID', 'Type']
         labels = {
             'Country': 'Country',
@@ -38,8 +39,8 @@ class UpdateRequirementsPForm(forms.ModelForm):
             'MinToilets': 'Min Toilets',
             'MinShowers': 'Min Showers',
             'Renovated': 'Renovated',
-            'Shelter_Inside': 'Shelter Inside',
-            'Shelter_Nearby': 'Shelter_Nearby',
+            'ShelterInside': 'Shelter Inside',
+            'ShelterNearby': 'Shelter Nearby',
             'Furnished': 'Furnished',
-            'Shared_Living_Room': 'Shared Living Room'
+            'SharedLivingRoom': 'Shared Living Room'
         }

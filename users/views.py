@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy
 
-from roomit_app.views import update_scores
+from roomit_app.views import update_scores, after_status_update
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ImageForm, OfferPropertyForm
 from .models import PropertyForOffer, Image, Profile
 
@@ -141,12 +141,14 @@ def set_status(request):
         if request.GET['status'] == 'StatusInsert':
             # Likes.objects.filter(User_enter=request.user).delete()
             # Scores.objects.filter(Username_enter=request.user).delete()
-            update_scores(request)
+            # update_scores(request)
+            after_status_update(request)
             return redirect('property-offer-create', user)
         else:
             # Likes.objects.filter(User_insert=request.user).delete()
             # Scores.objects.filter(Username_insert=request.user).delete()
-            update_scores(request)
+            # update_scores(request)
+            after_status_update(request)
             return redirect('requirementsP', user)
         
 @login_required
@@ -157,14 +159,12 @@ def change_status(request):
         if profile.profile_status == 'StatusInsert':
             Profile.objects.filter(user = user).update(profile_status= 'StatusEnter')
             messages.success(request,"Your status have been change. Please fill your property's requirements")
-
-            update_scores(request)
+            after_status_update(request)
             return redirect('property-reqs-display', user)
         else:
             Profile.objects.filter(user = user).update(profile_status= 'StatusInsert')
-            RequirementsP.objects.filter(user=request.user).delete()
             messages.success(request,"Your status have been change. Please fill your property's info")
-            update_scores(request)
+            after_status_update(request)
             return redirect('property-offer-display', user)
 
 @login_required

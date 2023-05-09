@@ -1,10 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db.models.query import QuerySet
-from django.http import JsonResponse
-from django.shortcuts import redirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from infscroll.utils import get_pagination
 from infscroll.views import more_items
@@ -13,11 +10,9 @@ from users.models import Profile, PropertyForOffer, Image
 from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
 from .models import RequirementsP, RequirementsR, Scores, Likes
 from .requirements import ListReq, RangReq
-
-
 from django.views.generic.list import ListView
 from .filters import PropertyOfferFilter, RoommateFilter
-from.models import RequirementsR
+
 
 def home(request):
     return render(request, 'roomit_app/post_list.html')
@@ -99,26 +94,7 @@ def i_like(request):
 
 @login_required
 def more(request):
-    # This is the list that will be paginated.
-    users = User.objects.all()
     list_items = Scores.objects.all()
-    print("\n\nin more\n\n")
-    profile = Profile.objects.get(user=request.user)
-    # list_items = list_items.filter(Username_insert=request.user) | list_items.filter(Username_enter=request.user)
-    # # list_items = list_items.order_by('-Insert_score')
-    if profile.profile_status == 'StatusInsert':
-        list_items = list_items.filter(Username_insert=request.user)
-        list_items = list_items.order_by('-Insert_score')
-    else:
-        list_items = list_items.filter(Username_enter=request.user)
-        list_items = list_items.order_by('-Enter_score')
-    return more_items(request, list_items, template='more.html')
-
-
-@login_required
-def post_list(request):
-    list_items = Scores.objects.all()
-    username = request.user.username
     profile = Profile.objects.get(user=request.user)
     if profile.profile_status == 'StatusInsert':
         list_items = list_items.filter(Username_insert=request.user)
@@ -133,6 +109,33 @@ def post_list(request):
             images = Image.objects.all()
             images = images.filter(property=prop).first()
             list_items.append(Posts(item, images))
+    return more_items(request, list_items, template='more.html')
+
+
+@login_required
+def post_list(request):
+    online_user = request.user
+    list_items = Scores.objects.all()
+    profile = Profile.objects.get(user=online_user)
+    if profile.profile_status == 'StatusInsert':
+        lst = list_items.filter(Username_insert=online_user)
+        lst = lst.order_by('-Insert_score')
+        list_items = []
+        for item in lst:
+            user_enter = item.Username_enter
+            like = Likes.objects.get_or_create(User_enter=user_enter, User_insert=online_user)[0]
+            list_items.append(Posts(item, None, like.insert_likes_enter))
+    else:
+        lst = list_items.filter(Username_enter=online_user)
+        lst = lst.order_by('-Enter_score')
+        list_items = []
+        for item in lst:
+            user_insert = item.Username_insert
+            prop = PropertyForOffer.objects.get(user=user_insert)
+            images = Image.objects.all()
+            images = images.filter(property=prop).first()
+            like = Likes.objects.get_or_create(User_enter=online_user, User_insert=user_insert)[0]
+            list_items.append(Posts(item, images, like.enter_likes_insert))
     paginated = get_pagination(request, list_items)
     data = {
         'more_posts_url': reverse('more'),
@@ -168,6 +171,23 @@ def update_scores(request):
             score.save()
 
 
+def after_status_update(request):
+    online_user = request.user
+    profile = Profile.objects.get(user=online_user)
+    online_status = profile.profile_status
+    if online_status == 'StatusEnter':
+        # Scores.objects.filter(Username_insert=online_user).delete()
+        PropertyForOffer.objects.filter(user=online_user).delete()
+        Likes.objects.filter(User_insert=online_user).delete()
+        PropertyForOffer.objects.filter(user=online_user).delete()
+        # todo: check if need to delete image or cascade?
+    else:
+        # Scores.objects.filter(Username_enter=online_user).delete()
+        RequirementsP.objects.filter(user=request.user).delete()
+        Likes.objects.filter(User_enter=online_user).delete()
+    update_scores(request)
+
+
 def update_scores_enter(requirementsR, requirementsP, user):
     if requirementsR is None and requirementsP is None:
         return 100
@@ -194,10 +214,7 @@ def update_scores_insert(requirementsR, user):
 
 @login_required
 def like_picture(request, username):
-    # print("in like picture")
-    # other_user = request.POST.get('userw')
     other_user = User.objects.get(username=username)
-    # print("other user   ---    ", other_user)
     profile = Profile.objects.get(user=request.user)
     online_status = profile.profile_status
     if online_status == "StatusEnter":
@@ -211,42 +228,61 @@ def like_picture(request, username):
     return redirect('post_list_page')
 
 
+@login_required
+def unlike_picture(request, username):
+    other_user = User.objects.get(username=username)
+    profile = Profile.objects.get(user=request.user)
+    online_status = profile.profile_status
+    if online_status == "StatusEnter":
+        like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)[0]
+        like.enter_likes_insert = False
+        like.save()
+    else:
+        like = Likes.objects.get_or_create(User_enter=other_user, User_insert=request.user)[0]
+        like.insert_likes_enter = False
+        like.save()
+    return redirect('post_list_page')
+
+
+# todo: add requirements for country, city, neighbourhood
+# todo: need to add somehow functionality for disqualifiers
 def make_requirementsP(user):
-    reqP = []
-    requirementP = RequirementsP.objects.get_or_create(user=user)[0]
-    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
-    reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
-    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roomates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_inside", requirementP.MinShowers, None))
-    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_nerbay", requirementP.MinShowers, None))
-    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "furnished", requirementP.MinShowers, None))
-    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "renovated", requirementP.MinShowers, None))
-    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shared_livingroom", requirementP.MinShowers, None))
-    return reqP
-    # except:
-    #     return None
+    try:
+        reqP = []
+        requirementP = RequirementsP.objects.get_or_create(user=user)[0]
+        reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
+        reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
+        reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
+        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
+        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
+        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roomates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
+        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
+        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_inside", requirementP.ShelterInside, None))
+        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_nerbay", requirementP.ShelterNearby, None))
+        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "furnished", requirementP.Furnished, None))
+        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "renovated", requirementP.Renovated, None))
+        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shared_livingroom", requirementP.SharedLivingRoom, None))
+        return reqP
+    except Exception as e:
+        print(e)
+        return reqP
 
 
+# todo: need to add somehow functionality for disqualifiers
 def make_requirementsR(user):
     try:
         reqR = []
-        # print("--------------------------------     ", user.username, "     -----------------------------------------------------------")
-
         requirementR = RequirementsR.objects.get_or_create(user=user)[0]
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "diet", requirementR.Diet))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "status", requirementR.Status))
-        # reqR.append(ListReq.ListReq(False, requirementR.Weight, "hospitality", requirementR.hospitality))
+        reqR.append(ListReq.ListReq(False, requirementR.Weight, "hospitality", requirementR.Hospitality))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "kosher", requirementR.Kosher))
         reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.Expense_Management))
-        # reqR.append(RangReq.RangeReq(False, requirementR.Weight, "age", requirementR.age))
+        reqR.append(RangReq.RangeReq(False, requirementR.Weight, "birthdate", requirementR.MinAge, requirementR.MaxAge))
         return reqR
     except Exception as e:
         print(e)
@@ -255,6 +291,7 @@ def make_requirementsR(user):
 
 def calculate_score(reqs, user):
     score = 0
+    req_counter = 0
     try:
         property = PropertyForOffer.objects.get(user=user)
     except:
@@ -265,17 +302,19 @@ def calculate_score(reqs, user):
             req_score = req.calculate_score(getattr(user, req_text))
         except AttributeError:
             try:
-                req_score = req.calculate_score(getattr(property, req_text))
+                req_score = req.calculate_score(getattr(user.profile, req_text))
             except AttributeError:
-                req_score = 0
-
-        score += req_score
-    return score
-
-
-class UserHomepageView(APIView):
-    def get(self, request):
-        return render(request, 'post_list.html')
+                try:
+                    req_score = req.calculate_score(getattr(property, req_text))
+                except AttributeError:
+                    req_score = 0
+        if req_score is not None:
+            score += req_score
+            req_counter += 1
+    if req_counter == 0:
+        return 0
+    else:
+        return score / req_counter
 
 
 def get_data_to_filter(request):
@@ -328,8 +367,14 @@ class RoommateFilterListView(ListView):
         context['form'] = self.filterset.form
         return context
 
+
 class Posts:
-    def __init__(self, item, image):
+    def __init__(self, item, image, like):
         self.image = image
         self.item = item
+        self.like = like
 
+
+class UserHomepageView(APIView):
+    def get(self, request):
+        return render(request, 'post_list.html')

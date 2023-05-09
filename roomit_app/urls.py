@@ -9,8 +9,8 @@ urlpatterns = [
     path('filter-results/property', app_views.PropertyFilterListView.as_view(), name='filter-results-property'),
     path('filter-results/roommate', app_views.RoommateFilterListView.as_view(), name='filter-results-roommate'),
     path('like-picture/', app_views.like_picture, name='like_picture'),
-    # path('search-results', app_views.search, name='search-results'),dd
     path('like-picture/<str:username>/', app_views.like_picture, name='like_picture'),
+    path('unlike-picture/<str:username>/', app_views.unlike_picture, name='unlike_picture'),
     path('likes-me/', app_views.likes_me, name='likes_me'),
     path('i-like/', app_views.i_like, name='i_like'),
 ]

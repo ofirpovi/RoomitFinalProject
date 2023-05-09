@@ -2,7 +2,7 @@ import math
 from .Requirement import Requirement
 # from geopy.geocoders import Nominatim
 # from geopy.distance import geodesic
-
+from datetime import date
 
 class RangeReq(Requirement):
     def __init__(self, disqualifies, weight, text, min, max, distance=False, address=None):
@@ -13,31 +13,50 @@ class RangeReq(Requirement):
         self._address = address
 
     def calculate_score(self, answer):
-        if type(answer) is not int:
-            raise TypeError("Answer should be a number")
-        if answer <= 0:
+        # if age requirement calculate age from birthdate
+        if self._text == "birthdate":
+            answer = self.calculate_age(answer)
+        # if there is a desired answer for the requirement but there is no answer
+        if answer is None:
+            return self._weight / 2
+        # check that answer is a number
+        elif type(answer) is not int and type(answer) is not float:
+            raise TypeError("Answer should be a number, got -- ", answer, " of type -- ", type(answer))
+        # check that answer is a non-negative number
+        elif answer <= 0:
             raise ValueError("Answer should be a non-negative number")
+        # if there is no desired answer
         if self._max is None and self._min is None:
-            return self._weight
-        if self._max is None or answer is None:
-            if answer is None or self._min > answer:
-                return 0
-            else:
+            return None
+        # if there is no desired max
+        elif self._max is None:
+            # if answer is equal to or greater than the desired min
+            if self._min <= answer:
                 return self._weight
-
-
-        if answer in range(self._min, self._max):
-            return self._weight
-        else:
-            mean = (self._max + self._min) / 2
-            stde = (self._max - self._min) / 2
-            deviation = abs(answer-mean)
-            ans_stde = math.floor(deviation/stde)
-
-            if ans_stde > 3:
-                return 0
+            # if answer is less than desired min
             else:
-                return (1-0.05*ans_stde)*self._weight
+                return 0
+        # if there is no desired min
+        elif self._min is None:
+            # if answer is equal to or less than desired max
+            if self._max >= answer:
+                return self._weight
+            # if answer is greater than desired max
+            else:
+                return 0
+        # if answer is in desired range
+        elif answer in range(self._min, self._max + 1):
+            return self._weight
+        # if there is a desired range but answer is not in range
+        else:
+            return 0
+
+    def calculate_age(self, dob):
+        today = date.today()
+        age = today.year - dob.year -((today.month, today.day) <
+             (dob.month, dob.day))
+        print("\n AGE --- ", age, " --- \n\n")
+        return age
 
     def convert_answer_to_str(self, answer):
         return answer
