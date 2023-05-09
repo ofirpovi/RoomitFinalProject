@@ -3,11 +3,17 @@ from django.contrib.auth.models import User
 from django.db import models
 from djmoney.models.fields import MoneyField
 from phonenumber_field.modelfields import PhoneNumberField
+from functools import partial
 
-
+def image_upload_path(instance, filename, flag):
+    if flag == 0:
+        return f"property_pics/{instance.property.user.username}/{filename}"
+    else:
+        return f"profile_pics/{instance.user.username}_profile_pic"
+    
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(help_text='Choose your profile-picture', default='default_for_profile.jpg', upload_to='profile_pics')
+    image = models.ImageField(help_text='Choose your profile-picture', default='default_for_profile.jpg', upload_to= partial(image_upload_path, flag=1))
     profile_status = models.CharField(max_length=15, default=' ', help_text='What you are looking for', choices=[('StatusInsert', 'insert in'),
                                                                                                                  ('StatusEnter', 'enter in'),])
     first_name = models.CharField(max_length=30, default='')
@@ -56,7 +62,7 @@ class Profile(models.Model):
                                                                   ('N', 'No'),])
     expense_management = models.CharField(max_length=15, blank=True, choices=[('Y', 'Prefer'),
                                                                               ('N', 'Prefer not'),])
-    about_me = models.TextField(max_length=80, default='')
+    about_me = models.TextField(max_length=80, default='', blank= True)
 
     def __str__(self):
         return "{} Profile".format(self.user.username)
@@ -75,7 +81,7 @@ class PropertyForOffer(models.Model):
     rent = MoneyField(max_digits=14, decimal_places=2,
                       default_currency='Israeli New Shekel')
     square_meters = models.FloatField(blank=True, null=True)
-    description = models.TextField()
+    description = models.TextField(blank=True, default='')
     renovated = models.BooleanField(blank=True, default=False)
     shelter_inside = models.BooleanField(blank=True, default=False)
     shelter_nearby = models.BooleanField(blank=True, default=False)
@@ -115,13 +121,9 @@ class PropertyForOffer(models.Model):
         super(PropertyForOffer, self).save(*args, **kwargs)
 
 
-def property_image_upload_path(instance, filename):
-    return f"property_pics/{instance.property.user.username}/{filename}"
-
-
 class Image(models.Model):
     property = models.ForeignKey(PropertyForOffer, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(default='default_for_property.jpg', upload_to=property_image_upload_path)
+    image = models.ImageField(default='default_for_property.jpg', upload_to= partial(image_upload_path, flag=0))
 
     def save(self, *args, **kwargs):
         super(Image, self).save(*args, **kwargs)

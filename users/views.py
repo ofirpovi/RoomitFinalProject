@@ -94,6 +94,7 @@ def info(request, username):
 @login_required
 def create_property_offer_view(request, username):
     user = User.objects.get(username=username)
+    ImageFormSet = inlineformset_factory(PropertyForOffer, Image, fields=('image',))
     if request.method == 'POST':
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
@@ -108,6 +109,8 @@ def create_property_offer_view(request, username):
                 property = pOffer_form.save(commit=False)
                 property.user_id = user.id
             pOffer_form.save()
+            formset = ImageFormSet(request.POST, request.FILES, instance=property)
+            formset.save()
             # process images only if they were uploaded
             if request.FILES:
                 images = request.FILES.getlist('image')
@@ -121,14 +124,16 @@ def create_property_offer_view(request, username):
         try:
             property = get_object_or_404(PropertyForOffer, user=user)
             pOffer_form = OfferPropertyForm(instance=property)
+            formset = ImageFormSet(instance=property)
             image_form = ImageForm()
         except:
             pOffer_form = OfferPropertyForm()
-            image_form = ImageForm()
+            formset = ImageFormSet()
 
         context = {
             'user_profile': user,
             'pOffer_form': pOffer_form,
+            'formset': formset,
             'image_form': image_form,
         }
 
@@ -200,7 +205,7 @@ def display_property_offer(request, username):
             pOffer_form = OfferPropertyForm(instance=property)
             formset = ImageFormSet(instance=property)
             images = Image.objects.filter(property = property)
-            print(f'images: {images}')
+ 
         except:
             pOffer_form = OfferPropertyForm()
             formset = ImageFormSet()
