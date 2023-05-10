@@ -84,6 +84,9 @@
                     <h3>See {{user_profile.username}} Info</h3>
                     <p class='text-muted'>
                         <ul class="list-group">
+                            <li class="list-group-item list-group-item-light">
+                                <a class="dropdown-item" href="{% url 'profile' username=user_profile.username %}">Profile</a>
+                            </li>
                             {% if user_profile.profile.profile_status == "StatusInsert" %}
                             <li class="list-group-item list-group-item-light">
                                 <a class="dropdown-item" href="{% url 'property-offer-display' username=user_profile.username %}">On Property</a>
