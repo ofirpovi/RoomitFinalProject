@@ -271,6 +271,26 @@ def make_requirementsP(user):
     except Exception as e:
         print(e)
         return reqP
+    reqP = []
+    # print("---------------------------------     make_requirementsP  -->  ", user.username, "     -----------------------------------------------------------")
+    requirementP = RequirementsP.objects.get_or_create(user=user)[0]
+    # print("-------------------------------------------------------------------------------------------")
+    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
+    reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
+    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roomates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
+    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_inside", requirementP.MinShowers, None))
+    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_nerbay", requirementP.MinShowers, None))
+    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "furnished", requirementP.MinShowers, None))
+    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "renovated", requirementP.MinShowers, None))
+    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shared_livingroom", requirementP.MinShowers, None))
+    return reqP
+    # except:
+    #     return None
 
 
 # todo: need to add somehow functionality for disqualifiers

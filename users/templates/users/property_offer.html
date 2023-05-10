@@ -10,10 +10,7 @@
             {% endfor %}
             <h1 class="display-10 fw-bold">Fill Your Property Info</h1>
             {{pOffer_form |crispy}}
-            {{ image_form.management_form }}
-            {% for image in image_form %}
-                {{ image }}
-            {% endfor %}
+            <input type="file" name="image" id="id_image" multiple>
             <br><br>
             <div class="form-group">
               <button class="btn btn-outline-info" type="submit">OK</button>
