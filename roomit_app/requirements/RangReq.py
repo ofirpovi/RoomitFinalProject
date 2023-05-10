@@ -23,7 +23,7 @@ class RangeReq(Requirement):
         elif type(answer) is not int and type(answer) is not float:
             raise TypeError("Answer should be a number, got -- ", answer, " of type -- ", type(answer))
         # check that answer is a non-negative number
-        elif answer <= 0:
+        elif answer < 0:
             raise ValueError("Answer should be a non-negative number")
         # if there is no desired answer
         if self._max is None and self._min is None:
@@ -53,9 +53,15 @@ class RangeReq(Requirement):
 
     def calculate_age(self, dob):
         today = date.today()
-        age = today.year - dob.year -((today.month, today.day) <
+        # check that birthday is of type date
+        if type(dob) is not date:
+            raise TypeError("Birthday must be a date")
+        # check that the birthdate has past
+        if dob > today:
+            raise ValueError("Birthday must be a date from the past")
+        # calculate age from given birthdate
+        age = today.year - dob.year - ((today.month, today.day) <
              (dob.month, dob.day))
-        print("\n AGE --- ", age, " --- \n\n")
         return age
 
     def convert_answer_to_str(self, answer):

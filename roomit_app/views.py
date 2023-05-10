@@ -131,9 +131,13 @@ def post_list(request):
         list_items = []
         for item in lst:
             user_insert = item.Username_insert
-            prop = PropertyForOffer.objects.get(user=user_insert)
-            images = Image.objects.all()
-            images = images.filter(property=prop).first()
+            try:
+                prop = PropertyForOffer.objects.get(user=user_insert)
+            except Exception as e:
+                images = None
+            else:
+                images = Image.objects.all()
+                images = images.filter(property=prop).first()
             like = Likes.objects.get_or_create(User_enter=online_user, User_insert=user_insert)[0]
             list_items.append(Posts(item, images, like.enter_likes_insert))
     paginated = get_pagination(request, list_items)

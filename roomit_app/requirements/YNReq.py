@@ -7,7 +7,7 @@ class YNReq(Requirement):
         self._desired_answer = desired_answer
 
     def calculate_score(self, answer):
-        if type(answer) is not bool:
+        if type(answer) is not bool and answer is not None:
             raise TypeError("Answer should be of type bool, but got - ", answer," of type - ", type(answer))
         elif self._desired_answer is None:
             return None

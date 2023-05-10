@@ -8,7 +8,7 @@ class ListReq(Requirement):
 
     def calculate_score(self, answer):
         # if there is no desired answer
-        if self._desired_answer is None:
+        if self._desired_answer is None or self._desired_answer == []:
             return None
         # if desired answer is don't care -> grade = weight
         # todo: check id D is don't care
