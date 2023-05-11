@@ -19,10 +19,14 @@
         {% if data%}
             {% for item in data %}
                 <div class="col-md-4 ">
-                <div>
-                    <img src="{{ item.user.profile.image.url }}" class="rounded-circle account-img" alt="{{ item.user }}" style="height: 100px; object-fit: cover;">
-                    <h5 class="card-title">{{ item.first_name }} {{ item.last_name }}</h5>
-                    <a href="{% url 'profile' item.user.username %}" >View Profile</a>
+                <div> 
+                    {% if image%}
+                      <img src="{{item.image.image.url}}" width="100">
+                    {%else%}
+                      <img src="{{ MEDIA_URL }}default_for_property.jpg" width="100">
+                    {%endif%}
+                    <p style="text-align: center;">Score: {{ item.score }}</p>
+                    <a href="{% url 'profile' item.username %}">View{{item.username}}'s profile</a>
                 </div>
                 </div>
             {% endfor %}
