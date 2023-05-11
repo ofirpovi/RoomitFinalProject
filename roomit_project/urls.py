@@ -24,7 +24,4 @@ urlpatterns = [
     path('verification/', include('verify_email.urls')),
     path('user/', include('users.urls')),
     path('', include('roomit_app.urls')),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

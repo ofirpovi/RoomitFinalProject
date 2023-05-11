@@ -20,4 +20,4 @@ urlpatterns = [
     path('property-offer-display/<str:username>/', users_views.display_property_offer, name='property-offer-display'),
     path('property-reqs-display/<str:username>/', users_views.display_property_reqs, name='property-reqs-display'),
     path('roomi-reqs-display/<str:username>/', users_views.display_roomi_reqs, name='roomi-reqs-display'),
-] + static(settings.MEDIA_URL, dcoumrnt_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -27,37 +27,43 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarToggle">
           <div class="navbar-nav mr-auto">
-            {% block authenticate %}
-              <a class="nav-item nav-link" href="{% url 'post_list_page' %}">Home</a>
-              <script>
-                function updateFilterForm() {
-                  var category = document.getElementById("category").value;
-                  var form = document.getElementById("filter-form");
-                  if (category == "property") {
-                    form.action = "{% url 'filter-results-property' %}";
-                  } else if (category == "roommate") {
-                    form.action = "{% url 'filter-results-roommate' %}";
-                  }
+          {% block authenticate %}
+            <a class="nav-item nav-link" href="{% url 'post_list_page' %}">Home</a>
+            <script>
+              var filterResultsPropertyUrl = "{% url 'filter-results-property' %}";
+              var filterResultsRoommateUrl = "{% url 'filter-results-roommate' %}";
+            
+              function updateFilterForm() {
+                var category = document.getElementById("category").value;
+                var form = document.getElementById("filter-form");
+                if (category.toLowerCase() === "property") {
+                  form.action = filterResultsPropertyUrl;
+                } else if (category.toLowerCase() === "roommate") {
+                  form.action = filterResultsRoommateUrl;
                 }
-              </script> 
-              <div class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Filter
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                  <form class="px-4 py-3" action="{% url 'filter-results-property' %}" method="get" id="filter-form">
-                    <div class="form-group">
-                      <label for="category">Filter by</label>
-                      <select class="form-control" id="category" name="category" onchange="updateFilterForm()">
+              }
+            </script> 
+            <div class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Filter
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <form class="px-4 py-3" action="#" method="get" id="filter-form">
+                  <div class="form-group">
+                    <label for="category">Filter by</label>
+                    <select class="form-control" id="category" name="category" onchange="updateFilterForm()">
+                      <option value="">Filter by</option>
+                      {%if user.profile.profile_status == 'StatusEnter'%}
                         <option value="property">Property</option>
-                        <option value="roommate">Roommate</option>
-                      </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                  </form>
-                </div>
+                      {%endif%}
+                      <option value="roommate">Roommate</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Filter</button>
+                </form>
               </div>
-            {% endblock %}
+            </div>
+          {% endblock %}
           </div>
           <!-- Navbar Right Side -->
           <div class="navbar-nav">
