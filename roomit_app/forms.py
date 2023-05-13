@@ -24,7 +24,7 @@ class UpdateRequirementsPForm(forms.ModelForm):
         model = RequirementsP
         fields = ['Country', 'City', 'Neighborhood', 'MinRent', 'MaxRent', 'MinRooms', 'MaxRooms',
                   'MaxRoommates', 'MinRoommates', 'MinToilets', 'MinShowers', 'Renovated',
-                  'ShelterInside', 'ShelterNearby', 'Furnished', 'SharedLivingRoom']
+                  'Shelter_Inside', 'Shelter_Nearby', 'Furnished', 'Shared_Living_Room']
         exclude = ['Requirement_ID', 'Roommates_ID', 'Type']
         labels = {
             'Country': 'Country',
@@ -39,8 +39,8 @@ class UpdateRequirementsPForm(forms.ModelForm):
             'MinToilets': 'Min Toilets',
             'MinShowers': 'Min Showers',
             'Renovated': 'Renovated',
-            'ShelterInside': 'Shelter Inside',
-            'ShelterNearby': 'Shelter Nearby',
+            'Shelter_Inside': 'Shelter Inside',
+            'Shelter_Nearby': 'Shelter Nearby',
             'Furnished': 'Furnished',
-            'SharedLivingRoom': 'Shared Living Room'
+            'Shared_Living_Room': 'Shared Living Room'
         }
