@@ -67,7 +67,6 @@ def profile(request, username):
         'p_form': p_form,
         'read_only': read_only,
     }
-    print(f'username:{user.username}\nemail: {user.email}')
     return render(request, 'users/profile.html', context)
 
 

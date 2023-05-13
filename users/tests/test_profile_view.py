@@ -1,15 +1,15 @@
-from django.test import TestCase, RequestFactory, Client
+import datetime
+from django.http import HttpRequest
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.shortcuts import reverse
-from users.models import Profile
 from users.forms import UserUpdateForm, ProfileUpdateForm
+from users.views import profile
+from django.contrib import messages
 
 
 class ProfileViewTest(TestCase):
     def setUp(self):
-        # self.factory = RequestFactory()
-        # self.username = 'testuser'
-        # self.password = 'testpassword'
         self.client = Client()
         self.user = User.objects.create_user('testusername', 'testemail@test.com', 'testpassword')
         self.other_user = User.objects.create_user('testotherusername', 'testotheremail@test.com', 'testotherpassword')
@@ -47,13 +47,43 @@ class ProfileViewTest(TestCase):
         self.assertTrue(response.context['read_only'])
         self.client.logout()
 
-    def test_profile_post(self):
+    def test_profile_post_valid_form(self):
         self.client.login(username='testusername', password='testpassword')
-        url = reverse('profile', args=['testusername'])
-        response = self.client.post(url, {'first_name': 'John', 'last_name': 'Doe'}, follow= True, content_type='application/x-www-form-urlencoded')
-        self.assertEqual(response.status_code, 200)  # Check the status code of the final response
-        updated_user_profile = Profile.objects.get(user=self.user)
-        self.assertEqual(updated_user_profile.first_name, 'John')
-        self.assertEqual(updated_user_profile.last_name, 'Doe')
+        request = HttpRequest()
+        request.user = self.user
+        request.method = 'POST'
+        request.POST = {
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'birthdate': '05/05/2022',
+            'phone_number': '+972526083915',
+            'gender': 'M',
+        }
+        request.META['HTTP_HOST'] = 'localhost'
+        response = profile(request, self.user.username)
+
+        self.assertEqual(response.status_code, 200)
+        # assertions to check if the form data was saved correctly
+        updated_user = self.user.profile
+        self.assertEqual(updated_user.first_name, 'John')
+        self.assertEqual(updated_user.last_name, 'Doe')
+        self.assertEqual(updated_user.birthdate, datetime.date(2022, 5, 5))
+        self.assertEqual(updated_user.phone_number, '+972526083915')
+        self.assertEqual(updated_user.gender, 'M')
         self.client.logout()
 
+
+    def test_info_post_invalid_form(self):
+            self.client.login(username='testusername', password='testpassword')
+            url = reverse('profile', args=['testusername'])
+            response = self.client.post(url, data={'first_name': 'Jon'}, content_type= "application/x-www-form-urlencoded")
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, 'users/profile.html')
+            self.assertIsInstance(response.context['p_form'], ProfileUpdateForm)
+            self.assertNotEqual(self.user.profile.first_name, 'Jon')
+            self.client.logout()
+
+
+
+
+        
