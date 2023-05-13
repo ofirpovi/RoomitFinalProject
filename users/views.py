@@ -49,7 +49,7 @@ def profile(request, username):
         read_only = True
 
     if request.method == 'POST' and request.user.username == username:
-        print ('in post')
+        print('in post')
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(request.POST,
                                    request.FILES,
@@ -149,7 +149,7 @@ def set_status(request):
             profile_status=request.GET['status'])
         if request.GET['status'] == 'StatusInsert':
             return redirect('property-offer-create', user)
-        else:
+        elif request.GET['status'] == 'StatusEnter':
             return redirect('requirementsP', user)
 
 
@@ -163,12 +163,14 @@ def change_status(request):
                 profile_status='StatusEnter')
             messages.success(
                 request, "Your status have been change. Please fill your property's requirements")
+            after_status_update(request)
             return redirect('property-reqs-display', user)
         else:
             Profile.objects.filter(user=user).update(
                 profile_status='StatusInsert')
             messages.success(
                 request, "Your status have been change. Please fill your property's info")
+            after_status_update(request)
             return redirect('property-offer-display', user)
 
 
