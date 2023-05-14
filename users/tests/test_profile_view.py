@@ -11,7 +11,7 @@ from django.contrib import messages
 class ProfileViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user('testusername', 'testemail@test.com', 'testpassword')
+        self.user = User.objects.create_user(username='testusername', email= 'testemail@test.com', password= 'testpassword')
         self.other_user = User.objects.create_user('testotherusername', 'testotheremail@test.com', 'testotherpassword')
 
     def tearDown(self):

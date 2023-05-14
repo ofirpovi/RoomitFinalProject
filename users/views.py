@@ -157,19 +157,16 @@ def set_status(request):
 def change_status(request):
     user = request.user
     if request.method == 'GET':
-        profile = Profile.objects.get(user=user)
-        if profile.profile_status == 'StatusInsert':
-            Profile.objects.filter(user=user).update(
-                profile_status='StatusEnter')
-            messages.success(
-                request, "Your status have been change. Please fill your property's requirements")
+        if request.user.profile.profile_status == 'StatusInsert':
+            print('in status insert')
+            Profile.objects.filter(user=user).update(profile_status='StatusEnter')
+            messages.success(request, "Your status have been change. Please fill your property's requirements")
             after_status_update(request)
             return redirect('property-reqs-display', user)
         else:
             Profile.objects.filter(user=user).update(
                 profile_status='StatusInsert')
-            messages.success(
-                request, "Your status have been change. Please fill your property's info")
+            messages.success(request, "Your status have been change. Please fill your property's info")
             after_status_update(request)
             return redirect('property-offer-display', user)
 
@@ -177,8 +174,7 @@ def change_status(request):
 @login_required
 def display_property_offer(request, username):
     user = User.objects.get(username=username)
-    ImageFormSet = inlineformset_factory(
-        PropertyForOffer, Image, fields=('image',))
+    ImageFormSet = inlineformset_factory(PropertyForOffer, Image, fields=('image',))
     if request.method == 'POST':
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
@@ -211,6 +207,7 @@ def display_property_offer(request, username):
             # Redirect to the property detail page
             return redirect('property-offer-display', request.user)
     else:
+        images=None
         try:
 
             property = get_object_or_404(PropertyForOffer, user=user)
