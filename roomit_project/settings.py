@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -48,6 +49,8 @@ INSTALLED_APPS = [
     'djmoney',
     'django.contrib.postgres',
     'django_filters',
+    'django.test',
+    'djongo',
 ]
 
 MIDDLEWARE = [
@@ -90,6 +93,31 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'Roomit',
+#         'USER': 'Roomit',
+#         'PASSWORD': 'dbms!234',
+#         'HOST': 'localhost',
+#         'PORT': 27017,
+#     }
+# }
+# DATABASES = {
+#         'default': {
+#             'ENGINE': 'djongo',
+#             'ENFORCE_SCHEMA': False,
+#             'CLIENT': {
+#                 'host': 'mongodb+srv://Roomit:dbms!234@roomit.2rnqv5z.mongodb.net/?retryWrites=true&w=majority',
+#                 'name': 'Roomit',
+#                 'username': 'Roomit',
+#                 'password': 'dbms!234',
+#                 'authMechanism': "SCRAM-SHA-1",
+#             }
+#
+#         }
+# }
 
 
 # Password validation
@@ -148,3 +176,6 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+# if 'test' in sys.argv:
+#     DATABASES['default'] = DATABASES['test']

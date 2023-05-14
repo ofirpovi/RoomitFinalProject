@@ -1,5 +1,5 @@
 import unittest
-from ..requirements.RangReq import RangeReq
+from roomit_app.requirements.RangReq import RangeReq
 from datetime import date, timedelta
 
 

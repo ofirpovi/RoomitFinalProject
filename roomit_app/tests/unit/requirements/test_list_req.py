@@ -1,5 +1,5 @@
 import unittest
-from ..requirements.ListReq import ListReq
+from roomit_app.requirements.ListReq import ListReq
 
 
 class ListReqTest(unittest.TestCase):
