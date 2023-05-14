@@ -206,26 +206,26 @@ def display_property_offer(request, username):
             update_scores(request)
             # Redirect to the property detail page
             return redirect('property-offer-display', request.user)
-    else:
-        images=None
-        try:
 
-            property = get_object_or_404(PropertyForOffer, user=user)
-            pOffer_form = OfferPropertyForm(instance=property)
-            formset = ImageFormSet(instance=property)
-            images = Image.objects.filter(property=property)
+    images=None
+    try:
 
-        except:
-            pOffer_form = OfferPropertyForm()
-            formset = ImageFormSet()
-        context = {
-            'user_profile': user,
-            'property_form':  pOffer_form,
-            'formset': formset,
-            'images': images,
-        }
+        property = get_object_or_404(PropertyForOffer, user=user)
+        pOffer_form = OfferPropertyForm(instance=property)
+        formset = ImageFormSet(instance=property)
+        images = Image.objects.filter(property=property)
 
-        return render(request, 'users/for_display/property_offer_display.html', context)
+    except:
+        pOffer_form = OfferPropertyForm()
+        formset = ImageFormSet()
+    context = {
+        'user_profile': user,
+        'property_form':  pOffer_form,
+        'formset': formset,
+        'images': images,
+    }
+
+    return render(request, 'users/for_display/property_offer_display.html', context)
 
 
 @login_required
@@ -285,8 +285,7 @@ def display_roomi_reqs(request, username):
                 roomiR = form.save(commit=False)
                 roomiR.user_id = user.id
             form.save()
-            messages.success(
-                request, "Your roomi's requirements has been updated")
+            messages.success(request, "Your roomi's requirements has been updated")
             update_scores(request)
             # Redirect to the RequirementsRForm detail page
             return redirect('roomi-reqs-display', request.user)

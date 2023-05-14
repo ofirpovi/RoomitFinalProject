@@ -74,12 +74,12 @@ class Profile(models.Model):
 
 
 class PropertyForOffer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    country = models.CharField(max_length=25, default='', blank=True)
-    city = models.CharField(max_length=25, default='', blank=True)
-    neighborhood = models.CharField(max_length=25, default='', blank=True)
-    rent = MoneyField(max_digits=14, decimal_places=2,
-                      default_currency='Israeli New Shekel')
+    user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='property')
+    country = models.CharField(max_length=25, default='')
+    city = models.CharField(max_length=25, default='')
+    neighborhood = models.CharField(max_length=25, default='')
+    rent = MoneyField(max_digits=14, decimal_places=2, default_currency='ILS')
+
     square_meters = models.FloatField(blank=True, null=True)
     description = models.TextField(blank=True, default='')
     renovated = models.BooleanField(blank=True, default=False)
