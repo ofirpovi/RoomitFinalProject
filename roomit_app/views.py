@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from infscroll.utils import get_pagination
 from infscroll.views import more_items
@@ -12,6 +12,8 @@ from .models import RequirementsP, RequirementsR, Scores, Likes
 from .requirements import ListReq, RangReq
 from django.views.generic.list import ListView
 from .filters import PropertyOfferFilter, RoommateFilter
+import django
+
 
 
 def home(request):
@@ -20,96 +22,114 @@ def home(request):
 
 @login_required
 def requirementsP(request, username):
-    user = User.objects.get(username=request.user.username)
-    profile = Profile.objects.get(user=user)
-    if profile.profile_status == 'StatusInsert':
-        return redirect(requirementsR, request.user)
-    else:
-        try:
-            requirements = RequirementsP.objects.get(user=user)
-        except RequirementsP.DoesNotExist:
-            requirements = RequirementsP(user=request.user)
-            requirements.save()
-
-        if request.method == 'POST':
-            form = UpdateRequirementsPForm(request.POST, instance=requirements)
-            if form.is_valid():
-                form.save()
-                update_scores(request)
-                return redirect('requirementsR', request.user)
+    try:
+        user = get_object_or_404(User, username=request.user.username)
+        profile = Profile.objects.get(user=user)
+        if profile.profile_status == 'StatusInsert':
+            return redirect(requirementsR, request.user)
         else:
-            form = UpdateRequirementsPForm(instance=requirements)
-        return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
+            try:
+                requirements = RequirementsP.objects.get(user=user)
+            except RequirementsP.DoesNotExist:
+                requirements = RequirementsP(user=request.user)
+                requirements.save()
+
+            if request.method == 'POST':
+                form = UpdateRequirementsPForm(request.POST, instance=requirements)
+                if form.is_valid():
+                    form.save()
+                    update_scores(request)
+                    return redirect('requirementsR', request.user)
+            else:
+                form = UpdateRequirementsPForm(instance=requirements)
+            return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
+    except Exception as e:
+        return e
 
 
 @login_required
 def requirementsR(request, username):
-    user = User.objects.get(username=request.user.username)
     try:
-        requirements = RequirementsR.objects.get(user=user)
-    except RequirementsR.DoesNotExist:
-        requirements = RequirementsR(user=request.user)
-        requirements.save()
+        user = get_object_or_404(User,username=request.user.username)
+        try:
+            requirements = RequirementsR.objects.get(user=user)
+        except RequirementsR.DoesNotExist:
+            requirements = RequirementsR(user=request.user)
+            requirements.save()
 
-    if request.method == 'POST':
-        form = UpdateRequirementsRForm(request.POST, instance=requirements)
-        if form.is_valid():
-            form.save()
-            messages.success(request, f'Your Requirements have been updated!')
-            update_scores(request)
-            return redirect('profile', request.user)
-    else:
-        form = UpdateRequirementsRForm(instance=requirements)
+        if request.method == 'POST':
+            form = UpdateRequirementsRForm(request.POST, instance=requirements)
+            if form.is_valid():
+                form.save()
+                messages.success(request, f'Your Requirements have been updated!')
+                update_scores(request)
+                return redirect('profile', request.user)
+        else:
+            form = UpdateRequirementsRForm(instance=requirements)
 
-    return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
+        return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
+    except Exception as e:
+        return e
 
 
 @login_required
 def likes_me(request):
-    list_items = Likes.objects.all()
-    profile = Profile.objects.get(user=request.user)
-    online_status = profile.profile_status
-    if online_status == "StatusEnter":
-        list_items = list_items.filter(User_enter=request.user)
-        list_items = list_items.filter(insert_likes_enter=True)
-    else:
-        list_items = list_items.filter(User_insert=request.user)
-        list_items = list_items.filter(enter_likes_insert=True)
-    return render(request, 'likes_me.html', {"list_items": list_items})
+    try:
+        user = get_object_or_404(User, username=request.user.username)
+        list_items = Likes.objects.all()
+        profile = Profile.objects.get(user=user)
+        online_status = profile.profile_status
+        if online_status == "StatusEnter":
+            list_items = list_items.filter(User_enter=user)
+            list_items = list_items.filter(insert_likes_enter=True)
+        else:
+            list_items = list_items.filter(User_insert=user)
+            list_items = list_items.filter(enter_likes_insert=True)
+        return render(request, 'likes_me.html', {"list_items": list_items})
+    except Exception as e:
+        return e
 
 
 @login_required
 def i_like(request):
-    list_items = Likes.objects.all()
-    profile = Profile.objects.get(user=request.user)
-    online_status = profile.profile_status
-    if online_status == "StatusEnter":
-        list_items = list_items.filter(User_enter=request.user)
-        list_items = list_items.filter(enter_likes_insert=True)
-    else:
-        list_items = list_items.filter(User_insert=request.user)
-        list_items = list_items.filter(insert_likes_enter=True)
-    return render(request, 'i_like.html', {"list_items": list_items})
+    try:
+        user = get_object_or_404(User, username=request.user.username)
+        list_items = Likes.objects.all()
+        profile = Profile.objects.get(user=user)
+        online_status = profile.profile_status
+        if online_status == "StatusEnter":
+            list_items = list_items.filter(User_enter=user)
+            list_items = list_items.filter(enter_likes_insert=True)
+        else:
+            list_items = list_items.filter(User_insert=user)
+            list_items = list_items.filter(insert_likes_enter=True)
+        return render(request, 'i_like.html', {"list_items": list_items})
+    except Exception as e:
+        return e
 
 
 @login_required
 def more(request):
-    list_items = Scores.objects.all()
-    profile = Profile.objects.get(user=request.user)
-    if profile.profile_status == 'StatusInsert':
-        list_items = list_items.filter(Username_insert=request.user)
-        list_items = list_items.order_by('-Insert_score')
-    else:
-        lst = list_items.filter(Username_enter=request.user)
-        lst = lst.order_by('-Enter_score')
-        list_items = []
-        for item in lst:
-            user_insert = item.Username_insert
-            prop = PropertyForOffer.objects.get(user=user_insert)
-            images = Image.objects.all()
-            images = images.filter(property=prop).first()
-            list_items.append(Posts(item, images))
-    return more_items(request, list_items, template='more.html')
+    try:
+        user = get_object_or_404(User, username=request.user.username)
+        list_items = Scores.objects.all()
+        profile = Profile.objects.get(user=user)
+        if profile.profile_status == 'StatusInsert':
+            list_items = list_items.filter(Username_insert=user)
+            list_items = list_items.order_by('-Insert_score')
+        else:
+            lst = list_items.filter(Username_enter=user)
+            lst = lst.order_by('-Enter_score')
+            list_items = []
+            for item in lst:
+                user_insert = item.Username_insert
+                prop = PropertyForOffer.objects.get(user=user_insert)
+                images = Image.objects.all()
+                images = images.filter(property=prop).first()
+                list_items.append(Posts(item, images))
+        return more_items(request, list_items, template='more.html')
+    except Exception as e:
+        return e
 
 
 @login_required
@@ -271,26 +291,7 @@ def make_requirementsP(user):
     except Exception as e:
         print(e)
         return reqP
-    reqP = []
-    # print("---------------------------------     make_requirementsP  -->  ", user.username, "     -----------------------------------------------------------")
-    requirementP = RequirementsP.objects.get_or_create(user=user)[0]
-    # print("-------------------------------------------------------------------------------------------")
-    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
-    reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
-    reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roomates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
-    reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_inside", requirementP.MinShowers, None))
-    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_nerbay", requirementP.MinShowers, None))
-    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "furnished", requirementP.MinShowers, None))
-    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "renovated", requirementP.MinShowers, None))
-    # reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shared_livingroom", requirementP.MinShowers, None))
-    return reqP
-    # except:
-    #     return None
+
 
 
 # todo: need to add somehow functionality for disqualifiers
@@ -324,7 +325,7 @@ def calculate_score(reqs, user):
         req_text = req._text
         try:
             req_score = req.calculate_score(getattr(user, req_text))
-        except AttributeError:
+        except Exception:
             try:
                 req_score = req.calculate_score(getattr(user.profile, req_text))
             except AttributeError:
