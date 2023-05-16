@@ -1,4 +1,7 @@
 import math
+
+from djmoney.templatetags import djmoney
+
 from .Requirement import Requirement
 # from geopy.geocoders import Nominatim
 # from geopy.distance import geodesic
@@ -16,6 +19,8 @@ class RangeReq(Requirement):
         # if age requirement calculate age from birthdate
         if self._text == "birthdate":
             answer = self.calculate_age(answer)
+        if self._text == "rent" and type(answer) is djmoney.money.Money:
+            answer = answer[0]
         # if there is a desired answer for the requirement but there is no answer
         if answer is None:
             return self._weight / 2

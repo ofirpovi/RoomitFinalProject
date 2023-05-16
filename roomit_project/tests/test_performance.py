@@ -2,7 +2,6 @@ import random
 
 from locust import HttpUser, between, task
 from datetime import date
-# Your personal details have been saved and your profile has been created. You can see your profile and edit it at any time by clicking on the 'profile' tab on the top right of the screen.
 
 
 class test_performance(HttpUser):

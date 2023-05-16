@@ -1,3 +1,10 @@
+import os
+import django
+
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'roomit_project.settings'
+django.setup()
+
 import unittest
 from roomit_app.requirements.RangReq import RangeReq
 from datetime import date, timedelta

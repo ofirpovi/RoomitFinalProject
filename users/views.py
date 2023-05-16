@@ -49,8 +49,6 @@ def profile(request, username):
         read_only = True
 
     if request.method == 'POST' and request.user.username == username:
-        # if request.user == user:
-        print('in if')
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(request.POST,
                                    request.FILES,
@@ -70,6 +68,7 @@ def profile(request, username):
     }
     print(f'username:{user.username}\nemail: {user.email}')
     return render(request, 'users/profile.html', context)
+
 
 @login_required
 def info(request, username):
@@ -149,7 +148,8 @@ def set_status(request):
             return redirect('property-offer-create', user)
         else:
             return redirect('requirementsP', user)
-        
+
+
 @login_required
 def change_status(request):
     user = request.user
@@ -250,6 +250,7 @@ def display_property_reqs(request, username):
             'property_form': property_form,
         }
         return render(request, 'users/for_display/property_reqs_display.html', context)
+
 
 @login_required
 def display_roomi_reqs(request, username):

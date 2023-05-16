@@ -1,4 +1,3 @@
-from PIL import Image as pilImage
 from django.contrib.auth.models import User
 from django.db import models
 from djmoney.models.fields import MoneyField
@@ -69,8 +68,6 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs):
         super(Profile, self).save(*args, **kwargs)
-
-        img = pilImage.open(self.image.path)
 
 
 class PropertyForOffer(models.Model):

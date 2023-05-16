@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from users.models import Profile, PropertyForOffer, Image
 from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
 from .models import RequirementsP, RequirementsR, Scores, Likes
-from .requirements import ListReq, RangReq
+from .requirements import ListReq, RangReq, YNReq
 from django.views.generic.list import ListView
 from .filters import PropertyOfferFilter, RoommateFilter
 import django
@@ -282,11 +282,11 @@ def make_requirementsP(user):
         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roomates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_inside", requirementP.ShelterInside, None))
-        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shelter_nerbay", requirementP.ShelterNearby, None))
-        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "furnished", requirementP.Furnished, None))
-        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "renovated", requirementP.Renovated, None))
-        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "shared_livingroom", requirementP.SharedLivingRoom, None))
+        reqP.append(YNReq.YNReq(False, requirementP.Weight, "shelter_inside", requirementP.ShelterInside))
+        reqP.append(YNReq.YNReq(False, requirementP.Weight, "shelter_nerbay", requirementP.ShelterNearby))
+        reqP.append(YNReq.YNReq(False, requirementP.Weight, "furnished", requirementP.Furnished))
+        reqP.append(YNReq.YNReq(False, requirementP.Weight, "renovated", requirementP.Renovated))
+        reqP.append(YNReq.YNReq(False, requirementP.Weight, "shared_livingroom", requirementP.SharedLivingRoom))
         return reqP
     except Exception as e:
         print(e)
@@ -332,7 +332,7 @@ def calculate_score(reqs, user):
                 try:
                     req_score = req.calculate_score(getattr(property, req_text))
                 except AttributeError:
-                    req_score = 0
+                    req_score = None
         if req_score is not None:
             score += req_score
             req_counter += 1

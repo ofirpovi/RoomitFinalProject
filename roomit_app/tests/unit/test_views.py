@@ -13,25 +13,29 @@ from roomit_app.views import requirementsP, requirementsR, likes_me, i_like, mor
     update_scores_insert, make_requirementsP, update_scores, update_scores_enter
 from django.shortcuts import reverse
 from django.contrib.auth.models import User
-from users.models import Profile
+from users.models import Profile, PropertyForOffer
 from roomit_app.models import RequirementsP, RequirementsR, Scores
 
 class TestViews(TestCase):
 
     def setUp(self):
-        self.user = User.objects.get(username='testuser')
+        self.user = User.objects.create_user(username='testuser')
+        self.user.save()
         self.user_profile = Profile.objects.get_or_create(user=self.user)[0]
         self.factory = MagicMock()
-        self.user1 = User.objects.get(username='user1')
-        self.user2 = User.objects.get(username='user2')
-        self.profile1 = Profile.objects.get_or_create(user=self.user1, profile_status='StatusEnter')[0]
-        self.profile2 = Profile.objects.get_or_create(user=self.user2, profile_status='StatusInsert')[0]
+        self.user1 = User.objects.create_user(username='user1')
+        self.user1.save()
+        self.user2 = User.objects.create_user(username='user2')
+        self.user2.save()
+        self.profile1 = Profile.objects.get(user=self.user1)
+        self.profile1.profile_status='StatusEnter'
+        self.profile2 = Profile.objects.get(user=self.user2)
+        self.profile2.profile_status='StatusInsert'
         self.user3 = User.objects.create_user(username='testuser3', password='testpass123')
         self.requirementsR3 = RequirementsR.objects.create(user=self.user3, Weight=1, Gender='Male')
         self.requirementsP3 = RequirementsP.objects.create(user=self.user3, Weight=1, Country='US', City='New York', MinRent=500, MaxRent=1000)
         self.requirementP1 = RequirementsP.objects.get_or_create(
             user=self.user1,
-            Weight=1,
             Country='US',
             City='San Francisco',
             Neighborhood='SOMA',
@@ -51,18 +55,48 @@ class TestViews(TestCase):
         )[0]
         self.requirementR1 = RequirementsR.objects.get_or_create(
             user=self.user1,
-            Weight=1,
             Gender='Female',
-            Occupation='Engineer',
+            Occupation='Student',
             Smoker='No',
             Diet='Vegan',
             Status='Single',
             Hospitality='No',
             Kosher='No',
-            Expense_Management='I am frugal',
+            Expense_Management='No',
             MinAge=20,
             MaxAge=30,
         )[0]
+
+    def test_calculate_score(self):
+        property_offered = PropertyForOffer.objects.get_or_create(
+            user=self.user2,
+            country='US',
+            city='San Francisco',
+            neighborhood='SOMA',
+            rent_currency='ILS',
+            rent=1000,
+            rooms_number=1,
+            roomates_number=0,
+            toilets_number=1,
+            showers_number=1,
+            shelter_inside=1,
+            shelter_nearby=1,
+            furnished=1,
+            renovated=0,
+            shared_livingroom=1)[0]
+        property_offered.save()
+        self.user2.profile.gender = 'Female'
+        self.user2.profile.occupation = 'Student'
+        self.user2.profile.smoker = 'No'
+        self.user2.profile.diet = 'Vegan'
+        self.user2.profile.status = 'Single'
+        self.user2.profile.hospitality = 'No'
+        self.user2.profile.kosher = 'No'
+        self.user2.profile.expense_management = 'No'
+        self.user2.profile.birthdate = date(1999,7,12)
+        self.user2.profile.save()
+        score = update_scores_enter(make_requirementsR(self.user1), make_requirementsP(self.user1), self.user2)
+        self.assertEqual(score, 100, ("score should have been 100, but got ", score, "instead.."))
 
     def test_update_scores_only_creates_new_scores(self):
         initial_scores_count = Scores.objects.count()
@@ -74,7 +108,7 @@ class TestViews(TestCase):
 
         final_scores_count = Scores.objects.count()
 
-        self.assertEqual(final_scores_count, initial_scores_count + 5)
+        self.assertEqual(final_scores_count, initial_scores_count + 4)
 
     def test_update_scores_correctly_calculates_enter_scores(self):
         request1 = self.client.get('/dummyurl', {'user': self.user1.id})
@@ -106,7 +140,7 @@ class TestViews(TestCase):
         except roomit_app.models.Scores.DoesNotExist:
             score2 = Scores(Username_enter=self.user1, Username_insert=self.user3,Enter_score=0, Insert_score=0)
 
-        self.assertEqual(score1.Insert_score, 50)
+        self.assertEqual(score1.Insert_score, 0)
         self.assertEqual(score2.Insert_score, 0)
 
     def test_update_scores_enter(self):
