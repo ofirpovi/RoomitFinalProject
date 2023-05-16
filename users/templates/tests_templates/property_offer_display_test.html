@@ -1,0 +1,99 @@
+{% extends "tests_templates/base_test.html"%} 
+{% load crispy_forms_tags %}
+{%block PageContent%}
+<!-- Page Container -->
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+    <!-- The Grid -->
+    <div class="w2-row">
+      <!-- Left Column -->
+      <div class=" w3-col m3">
+         <!-- Profile -->
+        <div class="w3-card w3-round w3-white  w3-margin">
+          <div class="w3-container"><br>
+            <p class="w3-center"><img src="{{ user_profile.profile.image.url }}" class="w3-circle" style="height:106px;width:106px"></p>
+            {%if user_profile.profile.profile_status == 'StatusInsert'%}
+                <h5 class="w3-center" style="">Looking for a Roommate</h5>
+                {%if user.username == user_profile.username%}      
+                    <a class="account-heading nav-link w3-center" style= " font-size: 14px;" href="{% url 'change-status'%}">Looking for an Apartment?</a>
+                {%endif%}
+            {%else%}
+            <h5 class="w3-center" style="">Looking for an Apartment</h5>
+                {%if user.username == user_profile.username%}      
+                    <a class="account-heading nav-link w3-center" style= " font-size: 14px;" href="{% url 'change-status'%}">Looking for a Roommate?</a>
+                {%endif%}
+            {%endif%}     
+            <hr>
+  
+            {% if not read_only %}
+            <!--Active User Sidebar-->
+              <ul class="w3-ul">
+                <li><i class=" fa fa-thumbs-o-up fa-fw w3-margin-right w3-text-theme"></i> Who I Liked</li>
+                <li><i class=" fa fa-thumbs-up fa-fw w3-margin-right w3-text-theme"></i> Who Liked Me</li>
+            {%else%}
+            <!--Other User Sidebar-->
+             <ul class="w3-ul">
+               <li> <i class="fa fa-thumbs-o-up fa-fw w3-margin-right w3-text-theme"></i><a style="color: black" href="{% url 'profile' username=user_profile.username %}"> Profile</a></li>
+            {%endif%}
+               <li><i class=" fa fa-info-circle fa-fw  w3-text-theme" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+                  <div class="w3-dropdown-hover w3-margin-right">
+                    <button class="w3-button w3-hover-none" style=" font-weight: normal"> Matching Info</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-border">
+                      {% if user_profile.profile.profile_status == "StatusInsert" %}
+                        <a href="{% url 'property-offer-display' user_profile.username%}" class="fa fa-key fa-fw w3-bar-item w3-button"> On Property</a>
+                      {%elif user_profile.profile.profile_status == "StatusEnter"%}
+                        <a href="{% url 'property-reqs-display' user_profile.username %}" class="	fa fa-user fa-fw w3-bar-item w3-button"> On Property</a>
+                      {%endif%}
+                        <a href="{% url 'roomi-reqs-display' user_profile.username %}" class="	fa fa-user fa-fw w3-bar-item w3-button"> On Roommate</a>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+          
+          </div>
+        </div>
+      <!-- End Left Column -->
+      </div>
+
+      <!-- Middle Column -->
+      <div class="w3-col m7">
+       <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+        <h3 class="border-bottom mb-4"> Property Info </h3>
+        <div class="content-section"> 
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    {% for hidden in property_form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    {{property_form|crispy}}
+                    <h5> Property's Images</h5>
+                    {% if formset %}
+                        {% for form in formset %}
+                            <img src="{{ form.instance.image.url }}" width="100" >             
+                        {% endfor %}
+                    {% else %}
+                            <p>No images for this property<p>
+                    {% endif %}
+                    <br><br>
+                    {% if user.username == user_profile.username%}
+                        <label for="id_image">Upload Images:</label>
+                        <input type="file" name="image" id="id_image" multiple>
+                    {%endif%}
+                </fieldset>    
+                {% if user.username == user_profile.username %}
+                    <div class="form-group">
+                        <button class="btn btn-outline-info" type="submit">Update</button>
+                    </div>
+                {% endif %}
+            </form>
+      <!-- End Middle Column --> 
+      </div>
+    <!-- End Grid -->  
+    </div>
+    <br>
+  
+
+    <!-- End Page Container -->
+</div>
+<br>
+{%endblock%}

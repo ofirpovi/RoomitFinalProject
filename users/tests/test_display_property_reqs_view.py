@@ -15,8 +15,8 @@ class DisplayPropertyReqsViewTestCase(TestCase):
     def tearDown(self):
             self.user.delete()
 
-    def test_display_property_offer_get(self):
-        url = reverse('property-offer-display', args=[self.user.username])
+    def test_display_property_reqs_get(self):
+        url = reverse('property-reqs-display', args=[self.user.username])
         request = self.client.get(url)
         request.user = self.user
 

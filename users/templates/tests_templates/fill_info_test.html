@@ -1,0 +1,30 @@
+{% extends "tests_templates/base_test.html" %}
+{% load crispy_forms_tags %}
+
+{% block PageContent %}
+<!-- Page Container -->
+<div class=" w3-content w3-content" style="max-width: 950px; margin-top: 80px; ">
+  <!-- The Grid -->
+  <div class="w2-row">
+    <!-- Middle Column -->
+    <div class="w3-col m7">
+      <div class="w3-container w3-card w3-white w3-round w3-margin content-section d-flex flex-column align-items-center justify-content-center">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Fill Your Info Here</legend>
+            {{ p_form|crispy }}
+          </fieldset>
+          <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Next</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- End Middle Column -->
+  </div>
+  <!-- End Grid -->
+</div>
+<br>
+<!-- End Page Container -->
+{% endblock %}

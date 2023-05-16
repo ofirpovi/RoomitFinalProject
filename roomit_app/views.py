@@ -39,29 +39,37 @@ def requirementsP(request, username):
                 return redirect('requirementsR', request.user)
         else:
             form = UpdateRequirementsPForm(instance=requirements)
-        return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
+        return render(request, 'templates_status/requirementsP_test.html', {'form': form, 'user_profile': username})
+        # return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
 
 
 @login_required
 def requirementsR(request, username):
+    print('h1')
     user = User.objects.get(username=request.user.username)
     try:
+        print('h2')
         requirements = RequirementsR.objects.get(user=user)
     except RequirementsR.DoesNotExist:
+        print('h3')
         requirements = RequirementsR(user=request.user)
         requirements.save()
 
     if request.method == 'POST':
+        print('h4')
         form = UpdateRequirementsRForm(request.POST, instance=requirements)
         if form.is_valid():
+            print('h5')
             form.save()
             messages.success(request, f'Your Requirements have been updated!')
             update_scores(request)
-            return redirect('profile', request.user)
+        return redirect('profile', request.user)
     else:
+        print('h6')
         form = UpdateRequirementsRForm(instance=requirements)
-
-    return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
+    print('h7')
+    return render(request, 'tests_templates/requirementsR_test.html', {'form': form, 'user_profile': username})
+    # return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
 
 
 @login_required
@@ -145,7 +153,8 @@ def post_list(request):
         'more_posts_url': reverse('more'),
     }
     data.update(paginated)
-    return render(request, 'post_list.html', data)
+    return render(request, 'tests_templates/post_list_test.html', data)
+    # return render(request, 'post_list.html', data)
 
 
 def update_scores(request):
@@ -425,4 +434,4 @@ class Posts:
 
 class UserHomepageView(APIView):
     def get(self, request):
-        return render(request, 'post_list.html')
+        return render(request, 'post_list_test.html')
