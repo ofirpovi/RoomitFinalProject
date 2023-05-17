@@ -2,15 +2,9 @@
 {% load crispy_forms_tags %}
 {%block PageContent%}
 <!-- Page Container -->
-<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+<div class=" w3-content w3-content" style="max-width: 1100px; margin-top: 80px; margin-right:-8%;">
     <!-- The Grid -->
     <div class="w2-row">
-      <!-- Left Column -->
-      <div class=" w3-col m3">
-        </div>
-      <!-- End Left Column -->
-      </div>
-
       <!-- Middle Column -->
       <div class="w3-col m7">
        <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
@@ -18,7 +12,7 @@
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <fieldset class="form-group">
-                    <h1 class="display-10 fw-bold">My Dream Apartment</h1>
+                    <h2 class="display-10 fw-bold border-bottom mb-4">My Dream Apartment</h2>
                     {{ form.Country|as_crispy_field }}
                     {{ form.City|as_crispy_field }}
                     {{ form.Neighborhood|as_crispy_field }}

@@ -3,7 +3,6 @@ from django.db import models
 # from django.contrib.postgres.fields import ArrayField
 
 
-
 class Scores(models.Model):
     Username_enter = models.ForeignKey(
         User, related_name='scores_entered', on_delete=models.CASCADE)
@@ -25,8 +24,6 @@ class Scores(models.Model):
 class RequirementsP(models.Model):
     Requirement_ID = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    Type = models.CharField(max_length=1, choices=[
-                            ('P', 'Property'), ('R', 'Roommate')])
     Country = models.CharField(max_length=25, default='', blank=True)
     City = models.CharField(max_length=25, default='', blank=True)
     Neighborhood = models.CharField(max_length=25, default='', blank=True)
@@ -38,12 +35,12 @@ class RequirementsP(models.Model):
     MinRoommates = models.IntegerField(null=True, default=None, blank=True)
     MinToilets = models.IntegerField(null=True, default=None, blank=True)
     MinShowers = models.IntegerField(null=True, default=None, blank=True)
-    Weight = models.FloatField(null=True, default=100/5, blank=True)
-    Renovated = models.BooleanField(blank=True, default=False)
-    Shelter_Inside = models.BooleanField(blank=True, default=False)
-    Shelter_Nearby = models.BooleanField(blank=True, default=False)
-    Furnished = models.BooleanField(blank=True, default=False)
-    Shared_Living_Room = models.BooleanField(blank=True, default=False)
+    Weight = models.FloatField(null=True, default=100, blank=True)
+    Renovated = models.BooleanField(blank=False, default=False)
+    ShelterInside = models.BooleanField(blank=False, default=False)
+    ShelterNearby = models.BooleanField(blank=False, default=False)
+    Furnished = models.BooleanField(blank=False, default=False)
+    SharedLivingRoom = models.BooleanField(blank=False, default=False)
 
     def save(self, *args, **kwargs):
         super(RequirementsP, self).save(*args, **kwargs)
@@ -86,14 +83,14 @@ class RequirementsR(models.Model):
     Kosher = models.CharField(max_length=15, null=True, default=None, blank=True, choices=[('Y', 'Yes'),
                                                                                            ('N', 'No'),])
     Status = models.CharField(max_length=20, null=True, default=None, blank=True, choices=[('Single', 'Single'),
-                                                                  ('Married',
-                                                                   'Married'),
-                                                                  ('In a relationship',
-                                                                   'In a relationship'),
-                                                                  ('D', "Doesn't matter"),])
+                                                                                           ('Married',
+                                                                                            'Married'),
+                                                                                           ('In a relationship',
+                                                                                            'In a relationship'),
+                                                                                           ('D', "Doesn't matter"),])
     Weight = Weight = models.FloatField(null=True, default=100, blank=True)
     Expense_Management = models.CharField(max_length=15, default='P', choices=[('L', 'Love'),
-                                                                           ('P', 'Prefer not')])
+                                                                               ('P', 'Prefer not')])
     Hospitality = models.CharField(max_length=15, blank=True, default='empty', choices=[('L', 'Love'),
                                                                                         ('N', 'Prefer not'),])
 
