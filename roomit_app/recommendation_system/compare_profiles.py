@@ -23,7 +23,7 @@ def compare_profiles(profile1: Profile, profile2: Profile):
             counter += 1
         if profile1.expense_management == profile2.expense_management:
             counter += 1
-    return counter / total_fields
+    return counter / total_fields, total_fields
 
 
 def calculate_age(dob):
