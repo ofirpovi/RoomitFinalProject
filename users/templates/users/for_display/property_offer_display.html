@@ -33,8 +33,10 @@
                         <p>No images for this property<p>
                 {% endif %}
                 <br><br>
-                <label for="id_image">Upload Images:</label>
-                <input type="file" name="image" id="id_image" multiple>
+                {% if user.username == user_profile.username%}
+                    <label for="id_image">Upload Images:</label>
+                    <input type="file" name="image" id="id_image" multiple>
+                {%endif%}
             </fieldset>    
             {% if user.username == user_profile.username %}
                 <div class="form-group">

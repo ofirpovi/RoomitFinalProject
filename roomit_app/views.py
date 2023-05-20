@@ -165,7 +165,8 @@ def post_list(request):
         'more_posts_url': reverse('more'),
     }
     data.update(paginated)
-    return render(request, 'post_list.html', data)
+    return render(request, 'tests_templates/post_list_test.html', data)
+    # return render(request, 'post_list.html', data)
 
 
 def update_scores(request):
@@ -341,34 +342,36 @@ def calculate_score(reqs, user):
     else:
         return score / req_counter
 
-
-def get_data_to_filter(request):
-    list_items = Scores.objects.all()
-    profile = Profile.objects.get(user=request.user)
-    if profile.profile_status == 'StatusInsert':
-        list_items = list_items.filter(Username_insert=request.user)
-        list_items = list_items.order_by('-Insert_score')
-    else:
-        list_items = list_items.filter(Username_enter=request.user)
-        list_items = list_items.order_by('-Enter_score')
-
-    return list_items
-
-
 class PropertyFilterListView(ListView):
     queryset = PropertyForOffer.objects.all()
     template_name = 'filter_results.html'
     context_object_name = 'data'
 
+    def dispatch(self, request, *args, **kwargs):
+        self.user = request.user  # set the user attribute
+        return super().dispatch(request, *args, **kwargs)
+
+
     def get_queryset(self):
-        print('in get_quryset')
         queryset = super().get_queryset()
         self.filterset = PropertyOfferFilter(self.request.GET, queryset=queryset)
-        #data = map(lambda prop: Profile.objects.get(user = prop.user), self.filterset.qs)
-        # for item in data:
-        #     print(item)
-        # return list(data)
-        return self.filterset.qs
+        data_to_return =[]
+        for prop in self.filterset.qs:
+            scores = Scores.objects.filter(Username_insert=prop.user, Username_enter=self.request.user)
+            if scores:
+                score = scores[0]
+                image = Image.objects.filter(property=prop).first()
+                if image:
+                    print(f'prop_image: {image.image}, {image}')
+                else:
+                    print('no image')
+                context = {
+                    'score': score.Enter_score,
+                    'username': score.Username_insert,
+                    'image': image}
+                data_to_return.append(context)
+
+        return data_to_return
 
     def get_context_data(self, **kwargs):
         print('in get_context_data')
@@ -385,7 +388,29 @@ class RoommateFilterListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         self.filterset = RoommateFilter(self.request.GET, queryset=queryset)
-        return self.filterset.qs
+        data_to_return =[]
+        for profile in self.filterset.qs:
+            image = profile.image
+            context = {}
+            if(self.request.user.profile.profile_status == 'StatusEnter'):
+                score = Scores.objects.filter(Username_insert=profile.user, Username_enter=self.request.user)
+                if score:
+                    score = score[0]
+                    context = {
+                            'score': score.Enter_score,
+                            'username': score.Username_insert.username,
+                            'image': image}
+                    data_to_return.append(context)
+            else:
+                score = Scores.objects.filter(Username_enter=profile.user, Username_insert=self.request.user)
+                if score:
+                    score = score[0]
+                    context = {
+                            'score': score.Insert_score,
+                            'username': score.Username_enter.username,
+                            'image': image}
+                    data_to_return.append(context)
+        return data_to_return
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -402,4 +427,4 @@ class Posts:
 
 class UserHomepageView(APIView):
     def get(self, request):
-        return render(request, 'post_list.html')
+        return render(request, 'post_list_test.html')
