@@ -1,91 +1,26 @@
-{% extends "users/display_matching_info_base.html" %}
+{% extends "users/for_display/display_base.html"%} 
 {% load crispy_forms_tags %}
-{% load static %}
-{% block content %}
-  <div class="row">
-    <div class="col-md-8" style="margin-right: 50%">
-        <div class="content-section">
-          {%block media %}
-            <img class="rounded-circle account-img" src="{{ user_profile.profile.image.url }}">
-            <div class="media-body">
-              {% if user.username != user_profile.username %}
-                <h2 class="account-heading">{{user_profile}}'s Property Requirements</h2>
-              {%else%}
-                <h2 class="account-heading">My Property Requirements</h2>
-              {%endif%}
-              <legend class="border-bottom mb-4"></legend>
-            </div>
-          {%endblock media%}
-          {%block form%}     
+    {%block MiddleColoumContent%}
+        <h3 class="border-bottom mb-4"> Property Requirements </h3>
+        <div class="content-section"> 
             <form method="POST" enctype="multipart/form-data">
-              {% csrf_token %}
-              <fieldset class="form-group">
-                {% for hidden in property_form.hidden_fields %}
-                    {{ hidden }}
-                {% endfor %}       
-                {{property_form|crispy}}
-                <br><br>
-              </fieldset>
-              {% if user.username == user_profile.username %}
-                <div class="form-group">
-                    <button class="btn btn-outline-info" type="submit">Update</button>
-                </div>
-              {% endif %}
-            </form>
-            {%endblock form%}   
-          </div>  
-        </div>
-        {%block sidebar%}
-                {% if user.username == user_profile.username%}
-                    <div class="col-md-3.5" style="margin-right: -50%">
-                        <div class="profile-menu-section">
-                            <h3>Menu</h3>
-                            <p class='text-muted'>
-                                <ul class="list-group">
-                                    <li class="list-group-item list-group-item-light">My Matches</li>
-                                    <li class="list-group-item list-group-item-light">My Likes</li>
-                                    <li class="list-group-item list-group-item-light">Who Likes Me</li>
-                                    <li class="list-group-item list-group-item-light">
-                                        <button class="btn dropdown-toggle dropdown-toggle-sidebar" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Matching Info</button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            {% if user_profile.profile.profile_status == "StatusInsert" %}
-                                                <a class="dropdown-item" href="{% url 'property-offer-display' user_profile.username%}">Property Info</a>
-                                            {%else%}    
-                                                <a class="dropdown-item" href="{% url 'property-reqs-display' user_profile.username %}">Property Requirements</a>
-                                            {%endif%} 
-                                            <a class="dropdown-item" href="{% url 'roomi-reqs-display' user_profile.username %}">Roommate Requirements</a>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </p>
-                        </div>
-                    </div>
-                {%else%}
-                    <div class="col-md-4" style="margin-right: -50%">
-                        <div class="profile-menu-section">
-                            <h3 class="account-heading">{{user_profile.username}}'s Info</h3>
-                            <p class='text-muted'>
-                                <ul class="list-group">
-                                    <li class="list-group-item list-group-item-light">
-                                      <a class="dropdown-item" href="{% url 'profile' username=user_profile.username %}">Profile</a>
-                                    </li>
-                                    {% if user_profile.profile.profile_status == "StatusInsert" %}
-                                    <li class="list-group-item list-group-item-light">
-                                        <a class="dropdown-item" href="{% url 'property-offer-display' username=user_profile.username %}">On Property</a>
-                                    </li>
-                                    {%else%}
-                                    <li class="list-group-item list-group-item-light">    
-                                        <a class="dropdown-item" href="{% url 'property-reqs-display' username=user_profile.username %}">On Property</a>
-                                    </li>
-                                    {%endif%}
-                                    <li class="list-group-item list-group-item-light">
-                                        <a class="dropdown-item" href="{% url 'roomi-reqs-display' username=user_profile.username %}" >On Roommate</a>
-                                    </li>
-                                </ul>
-                            </p>
-                        </div>
-                    </div>
-                {%endif%}
-            {%endblock sidebar%}
+                {% csrf_token %}
+                <fieldset class="form-group">
+                  {% for hidden in property_form.hidden_fields %}
+                      {{ hidden }}
+                  {% endfor %}       
+                  {{property_form|crispy}}
+                  <br><br>
+                </fieldset>
+                {% if user.username == user_profile.username %}
+                  <div class="form-group">
+                      <button class="btn btn-outline-info" type="submit">Update</button>
+                  </div>
+                {% endif %}
+              </form>
+             
+            </div>  
+          </div>
+      <!-- End Middle Column --> 
       </div>
-{% endblock content%}
+{%endblock%}

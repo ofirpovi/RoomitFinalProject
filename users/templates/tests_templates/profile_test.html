@@ -23,18 +23,17 @@
                 {%endif%}
             {%endif%}     
             <hr>
-  
+
+            <ul class="w3-ul">
             {% if not read_only %}
             <!--Active User Sidebar-->
-              <ul class="w3-ul">
-                <li><i class=" fa fa-thumbs-o-up fa-fw w3-margin-right w3-text-theme"></i> Who I Liked</li>
-                <li><i class=" fa fa-thumbs-up fa-fw w3-margin-right w3-text-theme"></i> Who Liked Me</li>
-            {%else%}
+              <li><i class=" fa fa-thumbs-o-up fa-fw w3-margin-right w3-text-theme"></i> Who I Liked</li>
+              <li><i class=" fa fa-thumbs-up fa-fw w3-margin-right w3-text-theme"></i> Who Liked Me</li>
+            {% else %}
             <!--Other User Sidebar-->
-             <ul class="w3-ul">
-               <li> <i class="fa fa-thumbs-o-up fa-fw w3-margin-right w3-text-theme"></i><a style="color: black" href="{% url 'profile' username=user_profile.username %}"> Profile</a></li>
+              <li> <i class="fa fa-thumbs-o-up fa-fw w3-margin-right w3-text-theme"></i><a style="color: black" href="{% url 'profile' username=user_profile.username %}"> Profile</a></li>
             {%endif%}
-               <li><i class=" fa fa-info-circle fa-fw  w3-text-theme" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+              <li><i class=" fa fa-info-circle fa-fw  w3-text-theme" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
                   <div class="w3-dropdown-hover w3-margin-right">
                     <button class="w3-button w3-hover-none" style=" font-weight: normal"> Matching Info</button>
                     <div class="w3-dropdown-content w3-bar-block w3-border">

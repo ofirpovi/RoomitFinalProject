@@ -24,25 +24,23 @@ def home(request):
 def requirementsP(request, username):
     try:
         user = get_object_or_404(User, username=request.user.username)
-        profile = Profile.objects.get(user=user)
-        if profile.profile_status == 'StatusInsert':
-            return redirect(requirementsR, request.user)
-        else:
-            try:
-                requirements = RequirementsP.objects.get(user=user)
-            except RequirementsP.DoesNotExist:
-                requirements = RequirementsP(user=request.user)
-                requirements.save()
+        try:
+            requirements = RequirementsP.objects.get(user=user)
+        except RequirementsP.DoesNotExist:
+            requirements = RequirementsP(user=user)
+            requirements.save()
 
-            if request.method == 'POST':
-                form = UpdateRequirementsPForm(request.POST, instance=requirements)
-                if form.is_valid():
-                    form.save()
-                    update_scores(request)
-                    return redirect('requirementsR', request.user)
-            else:
-                form = UpdateRequirementsPForm(instance=requirements)
-            return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
+        if request.method == 'POST':
+            form = UpdateRequirementsPForm(request.POST, instance=requirements)
+            if form.is_valid():
+                form.save()
+                messages.success(request, f'Your Requirements have been saved!')
+                update_scores(request)
+                return redirect('requirementsR', user)
+        else:
+            form = UpdateRequirementsPForm(instance=requirements)
+        #return render(request, 'tests_templates/requirementsP_test.html', {'form': form, 'user_profile': username})
+        return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
     except Exception as e:
         return e
 
@@ -54,38 +52,46 @@ def requirementsR(request, username):
         try:
             requirements = RequirementsR.objects.get(user=user)
         except RequirementsR.DoesNotExist:
-            requirements = RequirementsR(user=request.user)
+            requirements = RequirementsR(user=user)
             requirements.save()
 
         if request.method == 'POST':
             form = UpdateRequirementsRForm(request.POST, instance=requirements)
             if form.is_valid():
                 form.save()
-                messages.success(request, f'Your Requirements have been updated!')
+                messages.success(request, f'Your Requirements have been saved!')
                 update_scores(request)
-                return redirect('profile', request.user)
+            return redirect('profile', user)
         else:
             form = UpdateRequirementsRForm(instance=requirements)
-
+        #return render(request, 'tests_templates/requirementsR_test.html', {'form': form, 'user_profile': username})
         return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
     except Exception as e:
         return e
-
 
 @login_required
 def likes_me(request):
     try:
         user = get_object_or_404(User, username=request.user.username)
         list_items = Likes.objects.all()
-        profile = Profile.objects.get(user=user)
+        profile = Profile.objects.get(user=request.user)
         online_status = profile.profile_status
+        items_to_return =[]
         if online_status == "StatusEnter":
-            list_items = list_items.filter(User_enter=user)
+            list_items = list_items.filter(User_enter=request.user)
             list_items = list_items.filter(insert_likes_enter=True)
+            for item in list_items:
+                score = Scores.objects.get(Username_enter = request.user, Username_insert = item.User_insert)
+                prop = PropertyForOffer.objects.get(user = item.User_insert)
+                image = Image.objects.filter(property = prop).first()
+                items_to_return.append(Posts(score, image, True))
         else:
-            list_items = list_items.filter(User_insert=user)
+            list_items = list_items.filter(User_insert=request.user)
             list_items = list_items.filter(enter_likes_insert=True)
-        return render(request, 'likes_me.html', {"list_items": list_items})
+            for item in list_items:
+                score = Scores.objects.get(Username_insert = request.user, Username_enter = item.User_enter)
+                items_to_return.append(Posts(score, None, True))
+        return render(request, 'likes_me.html', {"list_items": items_to_return})
     except Exception as e:
         return e
 
@@ -97,16 +103,24 @@ def i_like(request):
         list_items = Likes.objects.all()
         profile = Profile.objects.get(user=user)
         online_status = profile.profile_status
+        items_to_return =[]
         if online_status == "StatusEnter":
             list_items = list_items.filter(User_enter=user)
             list_items = list_items.filter(enter_likes_insert=True)
+            for item in list_items:
+                score = Scores.objects.get(Username_enter = user, Username_insert = item.User_insert)
+                prop = PropertyForOffer.objects.get(user = item.User_insert)
+                image = Image.objects.filter(property = prop).first()
+                items_to_return.append(Posts(score, image, True))
         else:
-            list_items = list_items.filter(User_insert=user)
+            list_items = list_items.filter(User_insert=request.user)
             list_items = list_items.filter(insert_likes_enter=True)
-        return render(request, 'i_like.html', {"list_items": list_items})
+            for item in list_items:
+                score = Scores.objects.get(Username_insert = user, Username_enter = item.User_enter)
+                items_to_return.append(Posts(score, None, True))
+        return render(request, 'i_like.html', {"list_items": items_to_return})
     except Exception as e:
         return e
-
 
 @login_required
 def more(request):
@@ -165,8 +179,8 @@ def post_list(request):
         'more_posts_url': reverse('more'),
     }
     data.update(paginated)
-    return render(request, 'tests_templates/post_list_test.html', data)
-    # return render(request, 'post_list.html', data)
+    #return render(request, 'tests_templates/post_list_test.html', data)
+    return render(request, 'post_list.html', data)
 
 
 def update_scores(request):
