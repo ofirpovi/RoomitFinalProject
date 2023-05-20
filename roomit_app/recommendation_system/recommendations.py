@@ -33,11 +33,16 @@ def recommend_roommates(user):
 
 
 def compare_users(user1, user2):
+    # get profile, roommate requirements, and property requiremenets similarity score
     profile_score, fields_in_profile = compare_profiles(user1, user2)
     reqP_score, fields_in_reqP = compare_reqP(user1, user2)
     reqR_score, fields_in_reqR = compare_reqR(user1, user2)
+
+    # calc numerator & denominator
     numerator = profile_score + reqP_score + reqR_score
     denominator = fields_in_profile + fields_in_reqP + fields_in_reqR
+
+    # return the similarity score avg
     return numerator / denominator
 
 

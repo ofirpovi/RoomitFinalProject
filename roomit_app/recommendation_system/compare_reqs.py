@@ -4,6 +4,7 @@ from roomit_app.models import RequirementsP, RequirementsR
 # check if reqP1 fields are within the bounds or equal to reqP2
 # todo: add calculations like in range req
 # todo: add consideration for idk answers and no answer
+# returns number of similar fields and the number of fields compared
 def compare_reqP(reqP1: RequirementsP, reqP2: RequirementsP):
     counter, total_fields = 0, 11
     if reqP1.Country == reqP2.Country \
@@ -35,11 +36,12 @@ def compare_reqP(reqP1: RequirementsP, reqP2: RequirementsP):
             counter += 1
         if reqP1.SharedLivingRoom == reqP2.SharedLivingRoom:
             counter += 1
-    return counter / total_fields, total_fields
+    return counter, total_fields
 
 
 # todo: add calculations like in range req
 # todo: add consideration for idk answers and no answer
+# returns number of similar fields and the number of fields compared
 def compare_reqR(reqR1: RequirementsR, reqR2: RequirementsR):
     counter, total_fields = 0, 9
     if reqR1.Occupation == reqR2.Occupation:
@@ -61,4 +63,4 @@ def compare_reqR(reqR1: RequirementsR, reqR2: RequirementsR):
         counter += 1
     if reqR1.Hospitality == reqR2.Hospitality:
         counter += 1
-    return counter / total_fields, total_fields
+    return counter, total_fields
