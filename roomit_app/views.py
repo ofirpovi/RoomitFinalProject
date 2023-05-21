@@ -12,8 +12,6 @@ from .models import RequirementsP, RequirementsR, Scores, Likes
 from .requirements import ListReq, RangReq, YNReq
 from django.views.generic.list import ListView
 from .filters import PropertyOfferFilter, RoommateFilter
-from roomit_app.recommendation_system.recommendations import get_another_user
-import django
 
 
 
