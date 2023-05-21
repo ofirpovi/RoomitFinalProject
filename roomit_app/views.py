@@ -212,18 +212,19 @@ def get_queryset(request, users):
                         data_to_return.append(context)
     else:
         profiles_filterset = RoommateFilter(request.GET, Profile.objects.filter(user__in = users)) 
-        for profile in profiles_filterset.qs:
-            score = Scores.objects.filter(Username_enter=profile.user, Username_insert=request.user)
-            if score:
-                score = score[0]
-                like = Likes.objects.get_or_create(User_enter=profile.user, User_insert=request.user)[0]
-                context = {
-                    'score': score.Insert_score,
-                    'user': score.Username_enter,
-                    'image': None,
-                    'like': like.insert_likes_enter}
-                data_to_return.append(context)
-    print(f'data_to_return: {data_to_return}\n')
+        if profiles_filterset.is_valid():
+            for profile in profiles_filterset.qs:
+                score = Scores.objects.filter(Username_enter=profile.user, Username_insert=request.user)
+                if score:
+                    score = score[0]
+                    like = Likes.objects.get_or_create(User_enter=profile.user, User_insert=request.user)[0]
+                    context = {
+                        'score': score.Insert_score,
+                        'user': score.Username_enter,
+                        'image': None,
+                        'like': like.insert_likes_enter}
+                    data_to_return.append(context)
+        print(f'data_to_return: {data_to_return}\n')
     return data_to_return
    
 
