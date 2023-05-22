@@ -7,3 +7,4 @@ math
 django-infinite-scroll
 selenium
 djongo
+pytest

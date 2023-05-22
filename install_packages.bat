@@ -28,4 +28,7 @@ pip install selenium
 REM Install djongo
 pip install djongo
 
+REM Install pytest
+pip install pytest
+
 echo Installation complete.

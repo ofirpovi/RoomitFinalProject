@@ -104,4 +104,5 @@ class TestSignupKfirLevi():
     dropdown.find_element(By.XPATH, "//option[. = 'Love']").click()
     self.driver.find_element(By.CSS_SELECTOR, ".btn-outline-info").click()
     self.driver.find_element(By.CSS_SELECTOR, ".btn-outline-info").click()
+    self.driver.close()
 
