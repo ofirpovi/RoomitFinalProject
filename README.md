@@ -2,9 +2,9 @@
 
 ## Description
 
-ROOMIT is the final project for our software engineering degree at BGU. The aim of ROOMIT is to create a matching platform for finding roommates. The system facilitates the process of finding compatible roommates by considering personal information, housing preferences, and roommate requirements. 
+ROOMIT is the final project of our software engineering degree at Ben Gurion University. The goal of ROOMIT is to create a roommate matching platform that simplifies the process of finding compatible roommates. The platform caters to two types of users: roommates who already have a living arrangement and roommates who are looking for both a roommate and a place to live.
 
-The project caters to two types of users: roommates who already have a living arrangement (apartment, house, etc.) and roommates who are looking for a roommate and a place to live. Each user provides their personal information and specific criteria for a potential roommate or property. The system then calculates a matching score for each roommate, displaying the most relevant users with their matching score in descending order. For roommates without a property, only roommates with available properties are displayed, and vice versa.
+For roommates with an existing living arrangement, they provide their personal information, housing details, and roommate preferences. On the other hand, roommates who are searching for a roommate and a place to live fill in their personal information, roommate requirements, and property preferences. The system then calculates a matching score between the different roommates, displaying the most relevant roommate candidates for each user. The matches are sorted in descending order of the matching score, ensuring higher compatibility.
 
 ## Features
 
@@ -56,9 +56,13 @@ source env/bin/activate
 5. Install the required Python packages using pip.
 
 ```bash
-pip install os sys django django_filters rest_framework datetime abc math unittest infscroll
+pip install -r requirements.txt
 ```
+OR
 
+Alternatively, you can use the provided install_packages.bat file to automatically install the required packages.
+
+- Double-click the install_packages.bat file and it will download and install all the necessary packages for the ROOMIT project.
 
 ## Usage
 

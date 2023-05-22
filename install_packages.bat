@@ -11,7 +11,7 @@ REM Install django
 pip install django
 
 REM Install django_filters
-pip install django_filters
+pip install filters-django
 
 REM Install rest_framework
 pip install djangorestframework
@@ -25,10 +25,13 @@ pip install abc
 REM Install math
 pip install math
 
-REM Install unittest
-pip install unittest
+REM Install django-infinite-scroll
+pip install django-infinite-scroll
 
-REM Install infscroll
-pip install infscroll
+REM Install selenium
+pip install selenium
+
+REM Install djongo
+pip install djongo
 
 echo Installation complete.
