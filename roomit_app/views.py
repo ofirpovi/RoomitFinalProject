@@ -122,26 +122,16 @@ def i_like(request):
 
 @login_required
 def more(request):
-    try:
-        user = get_object_or_404(User, username=request.user.username)
-        list_items = Scores.objects.all()
-        profile = Profile.objects.get(user=user)
-        if profile.profile_status == 'StatusInsert':
-            list_items = list_items.filter(Username_insert=user)
-            list_items = list_items.order_by('-Insert_score')
-        else:
-            lst = list_items.filter(Username_enter=user)
-            lst = lst.order_by('-Enter_score')
-            list_items = []
-            for item in lst:
-                user_insert = item.Username_insert
-                prop = PropertyForOffer.objects.get(user=user_insert)
-                images = Image.objects.all()
-                images = images.filter(property=prop).first()
-                list_items.append(Posts(item, images))
-        return more_items(request, list_items, template='more.html')
-    except Exception as e:
-        return e
+    if request.method == 'GET':
+            context ={}
+            items = get_queryset(request, User.objects.all())
+            if request.user.profile.profile_status == 'StatusEnter':
+                context['offerP_form'] = PropertyOfferFilter(request.GET, PropertyForOffer.objects.all())
+                context['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
+            else:
+                context['offerP_form'] = None
+                context['reqsR_form'] =RoommateFilter(request.GET, Profile.objects.all())
+    return more_items(request, items, template='more.html')
 
 
 @login_required
@@ -152,7 +142,7 @@ def post_list(request):
         if request.user.profile.profile_status == 'StatusEnter':
             context['offerP_form'] = PropertyOfferFilter(request.GET, PropertyForOffer.objects.all())
             context['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
-        else:
+        else: 
             context['offerP_form'] = None
             context['reqsR_form'] =RoommateFilter(request.GET, Profile.objects.all())
         paginated = get_pagination(request, items)
@@ -164,7 +154,7 @@ def post_list(request):
         return render(request, 'post_list.html', context)
         # return render(request, 'tests_templates/post_list_test.html', data)
 
-
+ 
 def get_queryset(request, users):
     data_to_return = []
     print(f'\nrequest_data: {request.GET}\n')
@@ -191,7 +181,7 @@ def get_queryset(request, users):
                             'like': like.enter_likes_insert}
                         data_to_return.append(context)
     else:
-        profiles_filterset = RoommateFilter(request.GET, Profile.objects.filter(user__in = users))
+        profiles_filterset = RoommateFilter(request.GET, Profile.objects.filter(user__in = users)) 
         if profiles_filterset.is_valid():
             for profile in profiles_filterset.qs:
                 score = Scores.objects.filter(Username_enter=profile.user, Username_insert=request.user)
@@ -205,8 +195,10 @@ def get_queryset(request, users):
                         'like': like.insert_likes_enter}
                     data_to_return.append(context)
         print(f'data_to_return: {data_to_return}\n')
-    return data_to_return
 
+    data_to_return = sorted(data_to_return, key=lambda x: x['score'], reverse=True)
+    return data_to_return
+   
 
 def update_scores(request):
     online_user = request.user

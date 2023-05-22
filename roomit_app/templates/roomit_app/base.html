@@ -30,8 +30,8 @@
       <div class="w3-top w3-bar w3-theme-d2 w3-large">
         <div class="w3-left-align">
         <!--Authenticate Navbar Left Side-->
-          <a class="w3-bar-item w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i> ROOMIT - Hello {{ user }}</a>
-          <a class="w3-bar-item w3-button w3-padding-large" href="{% url 'post_list_page' %}">Home</a>
+          <a class="w3-bar-item w3-padding-large w3-theme-d4">ROOMIT - Hello {{ user }}</a>
+          <a class="w3-bar-item w3-button w3-padding-large" href="{% url 'post_list_page' %}"><i class="fa fa-home w3-margin-right"></i>Home</a>
           <a class="w3-bar-item w3-button w3-padding-large" href="{% url 'profile' user.username %}">Profile</a>
           <!--Authenticate Navbar Right Side-->
           <div class=" w3-right-align">
