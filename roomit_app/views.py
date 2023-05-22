@@ -114,54 +114,16 @@ def i_like(request):
 
 @login_required
 def more(request):
-    list_items = Scores.objects.all()
-    profile = Profile.objects.get(user=request.user)
-    if profile.profile_status == 'StatusInsert':
-        list_items = list_items.filter(Username_insert=request.user)
-        list_items = list_items.order_by('-Insert_score')
-    else:
-        lst = list_items.filter(Username_enter=request.user)
-        lst = lst.order_by('-Enter_score')
-        list_items = []
-        for item in lst:
-            user_insert = item.Username_insert
-            prop = PropertyForOffer.objects.get(user=user_insert)
-            images = Image.objects.all()
-            images = images.filter(property=prop).first()
-            list_items.append(Posts(item, images))
-    return more_items(request, list_items, template='more.html')
-
-
-# def get_post_list(request):
-#     online_user = request.user
-#     list_items = Scores.objects.all()
-#     profile = Profile.objects.get(user=online_user)
-#     if profile.profile_status == 'StatusInsert':
-#         lst = list_items.filter(Username_insert=online_user)
-#         lst = lst.order_by('-Insert_score')
-#         list_items = []
-#         for item in lst:
-#             user_enter = item.Username_enter
-#             like = Likes.objects.get_or_create(
-#                 User_enter=user_enter, User_insert=online_user)[0]
-#             list_items.append(Posts(item, None, None, like.insert_likes_enter))
-#     else:
-#         lst = list_items.filter(Username_enter=online_user)
-#         lst = lst.order_by('-Enter_score')
-#         list_items = []
-#         for item in lst:
-#             user_insert = item.Username_insert
-#             try:
-#                 prop = PropertyForOffer.objects.get(user=user_insert)
-#             except Exception as e:
-#                 images = None
-#             else:
-#                 images = Image.objects.all()
-#                 image = images.filter(property=prop).first()
-#             like = Likes.objects.get_or_create(
-#                 User_enter=online_user, User_insert=user_insert)[0]
-#             list_items.append(Posts(item, prop, image, like.enter_likes_insert))
-#     return list_items
+    if request.method == 'GET':
+            context ={}
+            items = get_queryset(request, User.objects.all())
+            if request.user.profile.profile_status == 'StatusEnter':
+                context['offerP_form'] = PropertyOfferFilter(request.GET, PropertyForOffer.objects.all())
+                context['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
+            else: 
+                context['offerP_form'] = None
+                context['reqsR_form'] =RoommateFilter(request.GET, Profile.objects.all())
+    return more_items(request, items, template='more.html')
 
 
 @login_required
@@ -225,6 +187,8 @@ def get_queryset(request, users):
                         'like': like.insert_likes_enter}
                     data_to_return.append(context)
         print(f'data_to_return: {data_to_return}\n')
+    
+    data_to_return = sorted(data_to_return, key=lambda x: x['score'], reverse=True)
     return data_to_return
    
 
@@ -478,27 +442,4 @@ class UserHomepageView(APIView):
 
 
 
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     self.filterset = PropertyOfferFilter(
-    #         self.request.GET, queryset=queryset)
-    #     data_to_return = []
-    #     for prop in self.filterset.qs:
-    #         scores = Scores.objects.filter(Username_insert=prop.user, Username_enter=self.request.user)
-    #         if scores:
-    #             score = scores[0]
-    #             image = Image.objects.filter(property=prop).first()
-    #             context = {
-    #                 'score': score.Enter_score,
-    #                 'username': score.Username_insert,
-    #                 'image': image}
-    #             data_to_return.append(context)
-
-    #     return data_to_return
-
-    # def get_context_data(self, **kwargs):
-    #     print('in get_context_data')
-    #     context = super().get_context_data(**kwargs)
-    #     context['offerP_form'] = self.filterset.form
-    #     return context
 
