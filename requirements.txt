@@ -1,5 +1,3 @@
-os
-sys
 django
 filters-django
 djangorestframework

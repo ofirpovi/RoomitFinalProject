@@ -1,12 +1,6 @@
 @echo off
 echo Installing required Python packages for ROOMIT project...
 
-REM Install os
-pip install os
-
-REM Install sys
-pip install sys
-
 REM Install django
 pip install django
 
