@@ -1,5 +1,5 @@
 {% load infinite_scroll %}
- {% for item in feed %}
+ {% for item in data.feed%}
          <br>
         {% if request.user == item.item.Username_insert %}
             <a href="user/profile/{{item.item.Username_enter}}">
