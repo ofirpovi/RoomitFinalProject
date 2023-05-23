@@ -1,7 +1,17 @@
 {% load static %}
-<!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
+  </style>
+</head>
+<body class="w3-theme-l5">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
@@ -13,74 +23,43 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <link rel="stylesheet" type="text/css" href="{% static 'roomit_app/main.css' %}">
-  </head>
-  <header class="site-header">
-    <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
-      <div class="container">
-        {% if user.is_authenticated %}
-          <a class="site-header navbar-nav nav-link"> ROOMIT - Hello {{ user }}</a>
-        {% else %}
-        <a class="site-header navbar-nav nav-link">ROOMIT</a>
-        {% endif %}
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarToggle">
-          <div class="navbar-nav mr-auto">
-            {% block authenticate %}
-              <a class="nav-item nav-link" href="{% url 'post_list_page' %}">Home</a>
-              <script>
-                function updateFilterForm() {
-                  var category = document.getElementById("category").value;
-                  var form = document.getElementById("filter-form");
-                  if (category == "property") {
-                    form.action = "{% url 'filter-results-property' %}";
-                  } else if (category == "roommate") {
-                    form.action = "{% url 'filter-results-roommate' %}";
-                  }
-                }
-              </script>
-              <div class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Filter
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                  <form class="px-4 py-3" action="{% url 'filter-results-property' %}" method="get" id="filter-form">
-                    <div class="form-group">
-                      <label for="category">Category</label>
-                      <select class="form-control" id="category" name="category">
-                          <option value="books">Books</option>
-                          <option value="movies">Movies</option>
-                          <option value="music">Music</option>
-                      <label for="category">Filter by</label>
-                      <select class="form-control" id="category" name="category" onchange="updateFilterForm()">
-                        <option value="property">Property</option>
-                        <option value="roommate">Roommate</option>
-                      </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                  </form>
-                </div>
-              </div>
-            {% endblock %}
-          </div>
-          <!-- Navbar Right Side -->
-          <div class="navbar-nav">
-            {% if user.is_authenticated %}
-            <a class="nav-item nav-link" href="{% url 'profile' user.username %}">Profile</a>
-            <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
-            {% else %}
-            <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-            <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
-            {% endif %}
+ 
+
+    <!-- Navbar -->
+    {% if user.is_authenticated %}
+      <div class="w3-top w3-bar w3-theme-d2 w3-large">
+        <div class="w3-left-align">
+        <!--Authenticate Navbar Left Side-->
+          <a class="w3-bar-item w3-padding-large w3-theme-d4">ROOMIT - Hello {{ user }}</a>
+          <a class="w3-bar-item w3-button w3-padding-large" href="{% url 'post_list_page' %}"><i class="fa fa-home w3-margin-right"></i>Home</a>
+          <a class="w3-bar-item w3-button w3-padding-large" href="{% url 'profile' user.username %}">Profile</a>
+          <!--Authenticate Navbar Right Side-->
+          <div class=" w3-right-align">
+            <a class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" href="{% url 'logout' %}">Logout</a>
           </div>
         </div>
       </div>
-    </nav>
-  </header>
+    {% else %}
+      <div class="w3-top w3-bar w3-theme-d2 w3-large">
+        <div class="w3-left-align">
+        <!--Unauthenticate Navbar Left Side-->
+          <a class="w3-bar-item w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>ROOMIT</a>
+        </div>
+        <!--Unauthenticate Navbar Right Side -->
+        <div class=" w3-right-align">
+          <a class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" href="{% url 'login' %}">Login</a>
+          <a class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" href="{% url 'register' %}">Register</a>
+        </div>
+      </div>
+    {% endif %}
+    <!-- End Navbar -->  
+
+    {%block PageContent%}
+    {%endblock PageContent%}
+
     <main role="main" class="container">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-2" style="max-width: 1000px;">
           {% if messages %}
             {% for message in messages %}
               <div class="alert alert-{{ message.tags }}">

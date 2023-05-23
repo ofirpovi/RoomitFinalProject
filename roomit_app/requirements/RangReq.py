@@ -15,6 +15,7 @@ class RangeReq(Requirement):
         self._distance = distance
         self._address = address
 
+# todo : add distribution calc
     def calculate_score(self, answer):
         # if age requirement calculate age from birthdate
         if self._text == "birthdate":

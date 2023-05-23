@@ -1,0 +1,106 @@
+{% load static %}
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
+  </style>
+</head>
+<body class="w3-theme-l5">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'roomit_app/main.css' %}">
+ 
+
+    <!-- Navbar -->
+    {% if user.is_authenticated %}
+      <div class="w3-top w3-bar w3-theme-d2 w3-large">
+        <div class="w3-left-align">
+        <!--Authenticate Navbar Left Side-->
+          <a class="w3-bar-item w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i> ROOMIT - Hello {{ user }}</a>
+          <a class="w3-bar-item w3-button w3-padding-large" href="{% url 'post_list_page' %}">Home</a>
+          <!-- Filter Dropdown button -->
+          <div class="w3-dropdown-hover" id="dropdownMenuButton">
+            <button class="w3-bar-item w3-button w3-padding-large dropdown-toggle" style="font-weight: normal">Filter</button>
+            <div class="w3-dropdown-menu w3-bar-block" style="display: none;">
+              {%if user.profile.profile_status == 'StatusEnter'%}
+                <a href="'filter-results-property'" class="w3-bar-item w3-button">Property</a>
+                {%endif%}
+              <a href="filter-results-roommate" class="w3-bar-item w3-button">Roommate</a>
+            </div>
+          </div>
+          <!-- End Filter Dropdown button -->
+          <script>
+            document.getElementById("dropdownMenuButton").addEventListener("click", function() {
+              var dropdownMenu = this.querySelector(".w3-dropdown-menu");
+              if (dropdownMenu.style.display === "none") {
+                dropdownMenu.style.display = "block";
+              } else {
+                dropdownMenu.style.display = "none";
+              }
+            });
+          </script>
+          <!--Authenticate Navbar Right Side-->
+          <div class=" w3-right-align">
+            <a class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" href="{% url 'logout' %}">Logout</a>
+            <a class=" w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" href="{% url 'profile' user.username %}">Profile</a>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="w3-top w3-bar w3-theme-d2 w3-large">
+        <div class="w3-left-align">
+        <!--Unauthenticate Navbar Left Side-->
+          <a class="w3-bar-item w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>ROOMIT</a>
+        </div>
+        <!--Unauthenticate Navbar Right Side -->
+        <div class=" w3-right-align">
+          <a class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" href="{% url 'login' %}">Login</a>
+          <a class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" href="{% url 'register' %}">Register</a>
+        </div>
+      </div>
+    {% endif %}
+    <!-- End Navbar -->  
+
+    {%block PageContent%}
+    {%endblock PageContent%}
+
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-2" style="max-width: 1000px;">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+          {% block content %}{% endblock %}
+        </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+</body>
+</html>

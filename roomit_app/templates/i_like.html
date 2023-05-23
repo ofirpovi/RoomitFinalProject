@@ -1,20 +1,74 @@
 {% extends "roomit_app/base.html"%}
+{%load static%}
 {% load crispy_forms_tags %}
-{% block content %}
-<div>
-      {% for user in list_items %}
-      {% if request.user.profile.profile_status == "StatusEnter" %}
-        <div>
-          <img src="{{ user.User_insert.profile.image.url }}" alt="{{ user.User_insert.username }}">
-          <h2>{{ user.User_insert.username }}</h2>
-        </div>
+{% load infinite_scroll %}
+{%block PageContent%}
+<!-- Page Container -->
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+  <!-- The Grid -->
+  <div class="w2-row">
 
-      {% else %}
-        <div>
-          <img src="{{ user.User_enter.profile.image.url }}" alt="{{ user.User_enter.username }}">
-          <h2>{{ user.User_enter.username }}</h2>
-        </div>
-      {% endif %}
-      {% endfor %}
+    <!-- Middle Column -->
+    <div class="w3-col" style="display: flex; justify-content: center;">
+      <div class="item-box">
+        {% for item in list_items %}
+          <br>
+          {% if request.user == item.item.Username_insert %}
+            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
+                <img  src="{{ item.item.Username_enter.profile.image.url }}" alt={{item.item.Username_enter}} style="width:100%">
+                <h5 class="w3-left "><a  style="color:black" href="/user/profile/{{item.item.Username_enter}}" ><br><i class="fa fa-hand-o-right"></i> {{item.item.Username_enter}} </a></h5>
+                <h5>score: {{ item.item.Insert_score }} </h5>
+                <a href="/unlike-picture/{{ item.item.Username_enter }}/">
+                    <button onclick="removeItem()" class="button"  style="background-color: #50766650" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.item.Username_enter }}"><i class="fa fa-thumbs-down "></i> Unlike</button>
+                </a>
+                <br>
             </div>
-{% endblock content %}
+          {%else%}
+            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
+              {% if item.image != None %}
+                  <img src="{{ item.image.image.url }}" alt={{item.item.Username_insert}} style="width:100%;">
+              {%else%}
+                  <br><h7> <i class="fa fa-close"></i> No images for this property</h7>
+              {% endif %}<br>
+              <i class="border-bottom"></i>
+              <h5 class="w3-left "><br><a style="color:black" href="/user/profile/{{item.item.Username_insert}}" ><img src="{{ item.item.Username_insert.profile.image.url }}" class ="w3-circle" style="width:25%;" /><br><i class="fa fa-hand-o-right"></i> {{item.item.Username_insert}} </a></h5>
+              <h5>score: {{ item.item.Enter_score }} </h5>
+              <a href="/unlike-picture/{{ item.item.Username_insert }}/">
+                  <button class="button"  style="background-color: #50766650" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.item.Username_insert }}"><i class="fa fa-thumbs-down "></i> Unlike</button>
+              </a>
+              <br>
+            </div>
+          {%endif%}<br>
+        {%endfor%}
+
+
+          {% comment %} {% if request.user.profile.profile_status == "StatusEnter" %}
+            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
+              <img src="{{ user.User_insert.profile.image.url }}" alt="{{ user.User_insert.username }}" style="width:100%">
+              <h5>{{ user.User_insert.username }}</h5>
+            </div>
+
+          {% else %}
+            <div>
+              <img src="{{ user.User_enter.profile.image.url }}" alt="{{ user.User_enter.username }}">
+              <h2>{{ user.User_enter.username }}</h2>
+            </div>
+          {% endif %}
+          <br>
+      {% endfor %} {% endcomment %}
+      </div>
+    {% set_infinite_scroll %}
+    <!-- End Middle Column --> 
+    </div>
+    <!-- End Grid -->  
+    </div>
+    <br>
+  
+
+    <!-- End Page Container -->
+</div>
+<br>
+{%endblock%}
+
+
+

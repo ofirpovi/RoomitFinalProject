@@ -35,6 +35,7 @@ def register(request):
             return redirect('fill_info', new_user)
     else:
         form = UserRegisterForm()
+        #return render(request, 'tests_templates/register_test.html', {'form': form})
     return render(request, 'users/register.html', {'form': form})
 
 
@@ -66,8 +67,9 @@ def profile(request, username):
         'p_form': p_form,
         'read_only': read_only,
     }
-    print(f'username:{user.username}\nemail: {user.email}')
+    #return render(request, 'tests_templates/profile_test.html', context)
     return render(request, 'users/profile.html', context)
+    
 
 
 @login_required
@@ -79,7 +81,8 @@ def info(request, username):
         if p_form.is_valid():
             p_form.save()
             messages.success(request, "Your personal details have been saved and your profile has been created. You can see your profile and edit it at any time by clicking on the 'profile' tab on the top right of the screen.")
-            return render(request, 'users/choose_status.html')
+            return render(request, 'tests_templates/choose_status_test.html')
+            #return render(request, 'users/choose_status.html')
 
     else:
         p_form = ProfileUpdateForm(instance=request.user.profile)
@@ -87,13 +90,15 @@ def info(request, username):
     context = {
         'p_form': p_form
     }
+    return render(request, 'tests_templates/fill_info_test.html', context)
     return render(request, 'users/fill_info.html', context)
 
 
 @login_required
 def create_property_offer_view(request, username):
     user = User.objects.get(username=username)
-    ImageFormSet = inlineformset_factory(PropertyForOffer, Image, fields=('image',))
+    ImageFormSet = inlineformset_factory(
+        PropertyForOffer, Image, fields=('image',))
     if request.method == 'POST':
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
@@ -108,7 +113,8 @@ def create_property_offer_view(request, username):
                 property = pOffer_form.save(commit=False)
                 property.user_id = user.id
             pOffer_form.save()
-            formset = ImageFormSet(request.POST, request.FILES, instance=property)
+            formset = ImageFormSet(
+                request.POST, request.FILES, instance=property)
             formset.save()
             # process images only if they were uploaded
             if request.FILES:
@@ -120,6 +126,7 @@ def create_property_offer_view(request, username):
             # Redirect to the property detail page
             return redirect('requirementsR', request.user)
     else:
+        image_form = None
         try:
             property = get_object_or_404(PropertyForOffer, user=user)
             pOffer_form = OfferPropertyForm(instance=property)
@@ -135,7 +142,7 @@ def create_property_offer_view(request, username):
             'formset': formset,
             'image_form': image_form,
         }
-
+    #return render(request, 'tests_templates/property_offer_test.html', context)
     return render(request, 'users/property_offer.html', context)
 
 
@@ -143,10 +150,11 @@ def create_property_offer_view(request, username):
 def set_status(request):
     user = request.user
     if request.method == 'GET':
-        Profile.objects.filter(user = user).update(profile_status= request.GET['status'])
+        Profile.objects.filter(user=user).update(
+            profile_status=request.GET['status'])
         if request.GET['status'] == 'StatusInsert':
             return redirect('property-offer-create', user)
-        else:
+        elif request.GET['status'] == 'StatusEnter':
             return redirect('requirementsP', user)
 
 
@@ -154,21 +162,25 @@ def set_status(request):
 def change_status(request):
     user = request.user
     if request.method == 'GET':
-        profile = Profile.objects.get(user = user)
-        if profile.profile_status == 'StatusInsert':
-            Profile.objects.filter(user = user).update(profile_status= 'StatusEnter')
-            messages.success(request,"Your status have been change. Please fill your property's requirements")
+        if request.user.profile.profile_status == 'StatusInsert':
+            Profile.objects.filter(user=user).update(profile_status='StatusEnter')
+            messages.success(request, "Your status have been change. Please fill your property's requirements")
+            after_status_update(request)
             return redirect('property-reqs-display', user)
         else:
-            Profile.objects.filter(user = user).update(profile_status= 'StatusInsert')
-            messages.success(request,"Your status have been change. Please fill your property's info")
+            Profile.objects.filter(user=user).update(
+                profile_status='StatusInsert')
+            messages.success(
+                request, "Your status have been change. Please fill your property's info")
+            after_status_update(request)
             return redirect('property-offer-display', user)
 
 
 @login_required
 def display_property_offer(request, username):
     user = User.objects.get(username=username)
-    ImageFormSet = inlineformset_factory(PropertyForOffer, Image, fields=('image',))
+    ImageFormSet = inlineformset_factory(
+        PropertyForOffer, Image, fields=('image',))
     if request.method == 'POST':
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
@@ -176,13 +188,15 @@ def display_property_offer(request, username):
             if PropertyForOffer.objects.filter(user_id=user.id).exists():
                 # update the existing property instance
                 property = PropertyForOffer.objects.get(user_id=user.id)
-                pOffer_form = OfferPropertyForm(request.POST, instance=property)
+                pOffer_form = OfferPropertyForm(
+                    request.POST, instance=property)
             else:
                 # create a new property instance for the user
                 property = pOffer_form.save(commit=False)
                 property.user_id = user.id
             pOffer_form.save()
-            formset = ImageFormSet(request.POST, request.FILES, instance=property)
+            formset = ImageFormSet(
+                request.POST, request.FILES, instance=property)
             formset.save()
             # process images only if they were uploaded
             if request.FILES:
@@ -198,25 +212,26 @@ def display_property_offer(request, username):
             update_scores(request)
             # Redirect to the property detail page
             return redirect('property-offer-display', request.user)
-    else:
-        try:
 
-            property = get_object_or_404(PropertyForOffer, user=user)
-            pOffer_form = OfferPropertyForm(instance=property)
-            formset = ImageFormSet(instance=property)
-            images = Image.objects.filter(property = property)
+    images = None
+    try:
 
-        except:
-            pOffer_form = OfferPropertyForm()
-            formset = ImageFormSet()
-        context = {
-                'user_profile': user,
-                'property_form':  pOffer_form,
-                'formset': formset,
-                'images': images,
-            }
+        property = get_object_or_404(PropertyForOffer, user=user)
+        pOffer_form = OfferPropertyForm(instance=property)
+        formset = ImageFormSet(instance=property)
+        images = Image.objects.filter(property=property)
 
-        return render(request, 'users/for_display/property_offer_display.html', context)
+    except:
+        pOffer_form = OfferPropertyForm()
+        formset = ImageFormSet()
+    context = {
+        'user_profile': user,
+        'property_form':  pOffer_form,
+        'formset': formset,
+        'images': images,
+    }
+    #return render(request, 'tests_templates/property_offer_display_test.html', context)
+    return render(request, 'users/for_display/property_offer_display.html', context)
 
 
 @login_required
@@ -226,16 +241,18 @@ def display_property_reqs(request, username):
         form = UpdateRequirementsPForm(request.POST)
         if form.is_valid():
            # check if the RequirementsP for the current user already exists
-            if RequirementsP.objects.filter(user_id = user.id).exists():
+            if RequirementsP.objects.filter(user_id=user.id).exists():
                 # update the existing RequirementsP instance
                 propertyR = RequirementsP.objects.get(user_id=user.id)
-                form = UpdateRequirementsPForm(request.POST, instance=propertyR)
+                form = UpdateRequirementsPForm(
+                    request.POST, instance=propertyR)
             else:
                 # create a new RequirementsP instance for the user
                 propertyR = form.save(commit=False)
                 propertyR.user_id = user.id
             form.save()
-            messages.success(request, "Your property's requirements has been saved")
+            messages.success(
+                request, "Your property's requirements has been saved")
             update_scores(request)
             # Redirect to the RequirementsP detail page
             return redirect('property-reqs-display', request.user)
@@ -249,6 +266,7 @@ def display_property_reqs(request, username):
             'user_profile': user,
             'property_form': property_form,
         }
+        #return render(request, 'tests_templates/property_reqs_display_test.html', context)
         return render(request, 'users/for_display/property_reqs_display.html', context)
 
 
@@ -263,10 +281,10 @@ def display_roomi_reqs(request, username):
         if form.is_valid():
             print('In display-roomi-reqs, Form Is Valid')
            # check if the RequirementsR for the current user already exists
-            if RequirementsR.objects.filter(user_id = user.id).exists():
+            if RequirementsR.objects.filter(user_id=user.id).exists():
                 print('In display-roomi-reqs, Form Is Exist')
                 # update the existing RequirementsR instance
-                roomiR = RequirementsR.objects.get(user_id = user.id)
+                roomiR = RequirementsR.objects.get(user_id=user.id)
                 form = UpdateRequirementsRForm(request.POST, instance=roomiR)
             else:
                 print('In display-roomi-reqs, Form Is Not Exist')
@@ -274,7 +292,8 @@ def display_roomi_reqs(request, username):
                 roomiR = form.save(commit=False)
                 roomiR.user_id = user.id
             form.save()
-            messages.success(request, "Your roomi's requirements has been updated")
+            messages.success(
+                request, "Your roomi's requirements has been updated")
             update_scores(request)
             # Redirect to the RequirementsRForm detail page
             return redirect('roomi-reqs-display', request.user)
@@ -283,10 +302,14 @@ def display_roomi_reqs(request, username):
             roomiR = get_object_or_404(RequirementsR, user=user)
             roomi_form = UpdateRequirementsRForm(instance=roomiR)
         except:
-            oomi_form = UpdateRequirementsRForm()
+            roomi_form = UpdateRequirementsRForm()
         context = {
-        'user_profile': user,
-        'form': roomi_form,
+            'user_profile': user,
+            'form': roomi_form,
         }
+        #return render(request, 'tests_templates/roomi_reqs_display_test.html', context)
         return render(request, 'users/for_display/roomi_reqs_display.html', context)
 
+
+def test_templates(request):
+    return render(request, 'tests_templates/post_list_test.html')

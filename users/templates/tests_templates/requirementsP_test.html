@@ -1,0 +1,49 @@
+{% extends "tests_templates/base_test.html"%} 
+{% load crispy_forms_tags %}
+{%block PageContent%}
+<!-- Page Container -->
+<div class=" w3-content w3-content" style="max-width: 1100px; margin-top: 80px; margin-right:-8%;">
+    <!-- The Grid -->
+    <div class="w2-row">
+      <!-- Middle Column -->
+      <div class="w3-col m7">
+       <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+        <div class="content-section"> 
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    <h2 class="display-10 fw-bold border-bottom mb-4">My Dream Apartment</h2>
+                    {{ form.Country|as_crispy_field }}
+                    {{ form.City|as_crispy_field }}
+                    {{ form.Neighborhood|as_crispy_field }}
+                    {{ form.MinRent|as_crispy_field }}
+                    {{ form.MaxRent|as_crispy_field }}
+                    {{ form.MinRooms|as_crispy_field }}
+                    {{ form.MaxRooms|as_crispy_field }}
+                    {{ form.MaxRoommates|as_crispy_field }}
+                    {{ form.MinRoommates|as_crispy_field }}
+                    {{ form.MinToilets|as_crispy_field }}
+                    {{ form.MinShowers|as_crispy_field }}
+                    {{ form.ShelterInside|as_crispy_field }}
+                    {{ form.ShelterNearby|as_crispy_field }}
+                    {{ form.Furnished|as_crispy_field }}
+                    {{ form.SharedLivingRoom|as_crispy_field }}
+                    {{ form.Renovated|as_crispy_field }}
+                </fieldset>
+                {%if user.username == user_profile%}
+                    <div class="form-group">
+                        <button class="btn btn-outline-info" type="submit">OK</button>
+                    </div>
+                {%endif%}
+            </form>
+      <!-- End Middle Column --> 
+      </div>
+    <!-- End Grid -->  
+    </div>
+    <br>
+  
+
+    <!-- End Page Container -->
+</div>
+<br>
+{%endblock%}

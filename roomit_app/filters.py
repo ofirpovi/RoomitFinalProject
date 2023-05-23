@@ -26,7 +26,6 @@ class PropertyOfferFilter(django_filters.FilterSet):
 
 
 class RoommateFilter(django_filters.FilterSet):
-        #rooms_number = django_filters.RangeFilter()
         smoker = django_filters.BooleanFilter()
         kosher = django_filters.BooleanFilter()
     
@@ -38,7 +37,8 @@ class RoommateFilter(django_filters.FilterSet):
                 'diet' : ['exact'],
                 'status': ['exact'],
                 'hospitality': ['exact'],
-                #'rooms_number': ['exact'],
                 'smoker' : ['exact'],
                 'kosher' : ['exact'],
             }
+
+    

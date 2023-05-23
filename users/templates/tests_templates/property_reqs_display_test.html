@@ -1,0 +1,26 @@
+{% extends "tests_templates/display_test.html"%} 
+{% load crispy_forms_tags %}
+    {%block MiddleColoumContent%}
+        <h3 class="border-bottom mb-4"> Property Requirements </h3>
+        <div class="content-section"> 
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                  {% for hidden in property_form.hidden_fields %}
+                      {{ hidden }}
+                  {% endfor %}       
+                  {{property_form|crispy}}
+                  <br><br>
+                </fieldset>
+                {% if user.username == user_profile.username %}
+                  <div class="form-group">
+                      <button class="btn btn-outline-info" type="submit">Update</button>
+                  </div>
+                {% endif %}
+              </form>
+             
+            </div>  
+          </div>
+      <!-- End Middle Column --> 
+      </div>
+{%endblock%}

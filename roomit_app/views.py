@@ -12,7 +12,6 @@ from .models import RequirementsP, RequirementsR, Scores, Likes
 from .requirements import ListReq, RangReq, YNReq
 from django.views.generic.list import ListView
 from .filters import PropertyOfferFilter, RoommateFilter
-import django
 
 
 
@@ -22,27 +21,25 @@ def home(request):
 
 @login_required
 def requirementsP(request, username):
+    user = User.objects.get(username=request.user.username)
     try:
         user = get_object_or_404(User, username=request.user.username)
-        profile = Profile.objects.get(user=user)
-        if profile.profile_status == 'StatusInsert':
-            return redirect(requirementsR, request.user)
-        else:
-            try:
-                requirements = RequirementsP.objects.get(user=user)
-            except RequirementsP.DoesNotExist:
-                requirements = RequirementsP(user=request.user)
-                requirements.save()
+        try:
+            requirements = RequirementsP.objects.get(user=user)
+        except RequirementsP.DoesNotExist:
+            requirements = RequirementsP(user=user)
+            requirements.save()
 
-            if request.method == 'POST':
-                form = UpdateRequirementsPForm(request.POST, instance=requirements)
-                if form.is_valid():
-                    form.save()
-                    update_scores(request)
-                    return redirect('requirementsR', request.user)
-            else:
-                form = UpdateRequirementsPForm(instance=requirements)
-            return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
+        if request.method == 'POST':
+            form = UpdateRequirementsPForm(request.POST, instance=requirements)
+            if form.is_valid():
+                form.save()
+                messages.success(request, f'Your Requirements have been saved!')
+                update_scores(request)
+                return redirect('requirementsR', user)
+        else:
+            form = UpdateRequirementsPForm(instance=requirements)
+        return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
     except Exception as e:
         return e
 
@@ -54,23 +51,21 @@ def requirementsR(request, username):
         try:
             requirements = RequirementsR.objects.get(user=user)
         except RequirementsR.DoesNotExist:
-            requirements = RequirementsR(user=request.user)
+            requirements = RequirementsR(user=user)
             requirements.save()
 
         if request.method == 'POST':
             form = UpdateRequirementsRForm(request.POST, instance=requirements)
             if form.is_valid():
                 form.save()
-                messages.success(request, f'Your Requirements have been updated!')
+                messages.success(request, f'Your Requirements have been saved!')
                 update_scores(request)
-                return redirect('profile', request.user)
+            return redirect('profile', user)
         else:
             form = UpdateRequirementsRForm(instance=requirements)
-
         return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
     except Exception as e:
         return e
-
 
 @login_required
 def likes_me(request):
@@ -79,13 +74,22 @@ def likes_me(request):
         list_items = Likes.objects.all()
         profile = Profile.objects.get(user=user)
         online_status = profile.profile_status
+        items_to_return =[]
         if online_status == "StatusEnter":
             list_items = list_items.filter(User_enter=user)
             list_items = list_items.filter(insert_likes_enter=True)
+            for item in list_items:
+                score = Scores.objects.get(Username_enter = user, Username_insert = item.User_insert)
+                prop = PropertyForOffer.objects.get(user = item.User_insert)
+                image = Image.objects.filter(property = prop).first()
+                items_to_return.append(Posts(score, image, True))
         else:
             list_items = list_items.filter(User_insert=user)
             list_items = list_items.filter(enter_likes_insert=True)
-        return render(request, 'likes_me.html', {"list_items": list_items})
+            for item in list_items:
+                score = Scores.objects.get(Username_insert = user, Username_enter = item.User_enter)
+                items_to_return.append(Posts(score, None, True))
+        return render(request, 'likes_me.html', {"list_items": items_to_return})
     except Exception as e:
         return e
 
@@ -97,76 +101,104 @@ def i_like(request):
         list_items = Likes.objects.all()
         profile = Profile.objects.get(user=user)
         online_status = profile.profile_status
+        items_to_return =[]
         if online_status == "StatusEnter":
             list_items = list_items.filter(User_enter=user)
             list_items = list_items.filter(enter_likes_insert=True)
+            for item in list_items:
+                score = Scores.objects.get(Username_enter = user, Username_insert = item.User_insert)
+                prop = PropertyForOffer.objects.get(user = item.User_insert)
+                image = Image.objects.filter(property = prop).first()
+                items_to_return.append(Posts(score, image, True))
         else:
-            list_items = list_items.filter(User_insert=user)
+            list_items = list_items.filter(User_insert=request.user)
             list_items = list_items.filter(insert_likes_enter=True)
-        return render(request, 'i_like.html', {"list_items": list_items})
+            for item in list_items:
+                score = Scores.objects.get(Username_insert = user, Username_enter = item.User_enter)
+                items_to_return.append(Posts(score, None, True))
+        return render(request, 'i_like.html', {"list_items": items_to_return})
     except Exception as e:
         return e
-
 
 @login_required
 def more(request):
-    try:
-        user = get_object_or_404(User, username=request.user.username)
-        list_items = Scores.objects.all()
-        profile = Profile.objects.get(user=user)
-        if profile.profile_status == 'StatusInsert':
-            list_items = list_items.filter(Username_insert=user)
-            list_items = list_items.order_by('-Insert_score')
-        else:
-            lst = list_items.filter(Username_enter=user)
-            lst = lst.order_by('-Enter_score')
-            list_items = []
-            for item in lst:
-                user_insert = item.Username_insert
-                prop = PropertyForOffer.objects.get(user=user_insert)
-                images = Image.objects.all()
-                images = images.filter(property=prop).first()
-                list_items.append(Posts(item, images))
-        return more_items(request, list_items, template='more.html')
-    except Exception as e:
-        return e
+    if request.method == 'GET':
+            context ={}
+            items = get_queryset(request, User.objects.all())
+            if request.user.profile.profile_status == 'StatusEnter':
+                context['offerP_form'] = PropertyOfferFilter(request.GET, PropertyForOffer.objects.all())
+                context['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
+            else:
+                context['offerP_form'] = None
+                context['reqsR_form'] =RoommateFilter(request.GET, Profile.objects.all())
+    return more_items(request, items, template='more.html')
 
 
 @login_required
 def post_list(request):
-    online_user = request.user
-    list_items = Scores.objects.all()
-    profile = Profile.objects.get(user=online_user)
-    if profile.profile_status == 'StatusInsert':
-        lst = list_items.filter(Username_insert=online_user)
-        lst = lst.order_by('-Insert_score')
-        list_items = []
-        for item in lst:
-            user_enter = item.Username_enter
-            like = Likes.objects.get_or_create(User_enter=user_enter, User_insert=online_user)[0]
-            list_items.append(Posts(item, None, like.insert_likes_enter))
-    else:
-        lst = list_items.filter(Username_enter=online_user)
-        lst = lst.order_by('-Enter_score')
-        list_items = []
-        for item in lst:
-            user_insert = item.Username_insert
-            try:
-                prop = PropertyForOffer.objects.get(user=user_insert)
-            except Exception as e:
-                images = None
-            else:
-                images = Image.objects.all()
-                images = images.filter(property=prop).first()
-            like = Likes.objects.get_or_create(User_enter=online_user, User_insert=user_insert)[0]
-            list_items.append(Posts(item, images, like.enter_likes_insert))
-    paginated = get_pagination(request, list_items)
-    data = {
-        'more_posts_url': reverse('more'),
-    }
-    data.update(paginated)
-    return render(request, 'post_list.html', data)
+    if request.method == 'GET':
+        context ={}
+        items = get_queryset(request, User.objects.all())
+        if request.user.profile.profile_status == 'StatusEnter':
+            context['offerP_form'] = PropertyOfferFilter(request.GET, PropertyForOffer.objects.all())
+            context['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
+        else: 
+            context['offerP_form'] = None
+            context['reqsR_form'] =RoommateFilter(request.GET, Profile.objects.all())
+        paginated = get_pagination(request, items)
+        data = {
+            'more_posts_url': reverse('more'),
+        }
+        data.update(paginated)
+        context['data']= data
+        return render(request, 'post_list.html', context)
+        # return render(request, 'tests_templates/post_list_test.html', data)
 
+ 
+def get_queryset(request, users):
+    data_to_return = []
+    print(f'\nrequest_data: {request.GET}\n')
+    print(f'users: {users}\n')
+    if request.user.profile.profile_status == 'StatusEnter':
+        profiles_filterset = RoommateFilter(request.GET, Profile.objects.filter(user__in = users))
+        if profiles_filterset.is_valid():
+            print(f'profiles_filterset: {profiles_filterset.qs}\n' )
+            filter_users= [profile.user for profile in profiles_filterset.qs]
+            print(f'filter_users: {filter_users}\n')
+            prop_filterset = PropertyOfferFilter(request.GET, queryset=PropertyForOffer.objects.filter(user__in = filter_users))
+            if prop_filterset.is_valid():
+                print(f'prop_filterset: {prop_filterset.qs}\n')
+                for prop in prop_filterset.qs:
+                    scores = Scores.objects.filter(Username_insert=prop.user, Username_enter=request.user)
+                    if scores:
+                        score = scores[0]
+                        image = Image.objects.filter(property=prop).first()
+                        like = Likes.objects.get_or_create(User_enter=request.user, User_insert=score.Username_insert)[0]
+                        context = {
+                            'score': score.Enter_score,
+                            'user': score.Username_insert,
+                            'image': image,
+                            'like': like.enter_likes_insert}
+                        data_to_return.append(context)
+    else:
+        profiles_filterset = RoommateFilter(request.GET, Profile.objects.filter(user__in = users)) 
+        if profiles_filterset.is_valid():
+            for profile in profiles_filterset.qs:
+                score = Scores.objects.filter(Username_enter=profile.user, Username_insert=request.user)
+                if score:
+                    score = score[0]
+                    like = Likes.objects.get_or_create(User_enter=profile.user, User_insert=request.user)[0]
+                    context = {
+                        'score': score.Insert_score,
+                        'user': score.Username_enter,
+                        'image': None,
+                        'like': like.insert_likes_enter}
+                    data_to_return.append(context)
+        print(f'data_to_return: {data_to_return}\n')
+
+    data_to_return = sorted(data_to_return, key=lambda x: x['score'], reverse=True)
+    return data_to_return
+   
 
 def update_scores(request):
     online_user = request.user
@@ -182,16 +214,20 @@ def update_scores(request):
         for user in potential_profiles:
             score_enter = round(update_scores_enter(reqR, reqP, user))
             requirement = make_requirementsR(user.user)
-            score_insert = round(update_scores_insert(requirement, online_user.profile))
-            score = Scores(Username_enter=online_user, Username_insert=user.user, Enter_score=score_enter, Insert_score=score_insert)
+            score_insert = round(update_scores_insert(
+                requirement, online_user.profile))
+            score = Scores(Username_enter=online_user, Username_insert=user.user,
+                           Enter_score=score_enter, Insert_score=score_insert)
             score.save()
     else:
         for user in potential_profiles:
             requirement = make_requirementsR(user.user)
             reqP = make_requirementsP(user.user)
-            score_enter = round(update_scores_enter(requirement, reqP, online_user.profile))
+            score_enter = round(update_scores_enter(
+                requirement, reqP, online_user.profile))
             score_insert = round(update_scores_insert(reqR, user))
-            score = Scores(Username_enter=user.user, Username_insert=online_user, Enter_score=score_enter, Insert_score=score_insert)
+            score = Scores(Username_enter=user.user, Username_insert=online_user,
+                           Enter_score=score_enter, Insert_score=score_insert)
             score.save()
 
 
@@ -242,11 +278,13 @@ def like_picture(request, username):
     profile = Profile.objects.get(user=request.user)
     online_status = profile.profile_status
     if online_status == "StatusEnter":
-        like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)[0]
+        like = Likes.objects.get_or_create(
+            User_enter=request.user, User_insert=other_user)[0]
         like.enter_likes_insert = True
         like.save()
     else:
-        like = Likes.objects.get_or_create(User_enter=other_user, User_insert=request.user)[0]
+        like = Likes.objects.get_or_create(
+            User_enter=other_user, User_insert=request.user)[0]
         like.insert_likes_enter = True
         like.save()
     return redirect('post_list_page')
@@ -258,11 +296,13 @@ def unlike_picture(request, username):
     profile = Profile.objects.get(user=request.user)
     online_status = profile.profile_status
     if online_status == "StatusEnter":
-        like = Likes.objects.get_or_create(User_enter=request.user, User_insert=other_user)[0]
+        like = Likes.objects.get_or_create(
+            User_enter=request.user, User_insert=other_user)[0]
         like.enter_likes_insert = False
         like.save()
     else:
-        like = Likes.objects.get_or_create(User_enter=other_user, User_insert=request.user)[0]
+        like = Likes.objects.get_or_create(
+            User_enter=other_user, User_insert=request.user)[0]
         like.insert_likes_enter = False
         like.save()
     return redirect('post_list_page')
@@ -384,12 +424,14 @@ def calculate_score(reqs, user):
         req_text = req._text
         try:
             req_score = req.calculate_score(getattr(user, req_text))
-        except Exception:
+        except AttributeError:
             try:
-                req_score = req.calculate_score(getattr(user.profile, req_text))
+                req_score = req.calculate_score(
+                    getattr(user.profile, req_text))
             except AttributeError:
                 try:
-                    req_score = req.calculate_score(getattr(property, req_text))
+                    req_score = req.calculate_score(
+                        getattr(property, req_text))
                 except AttributeError:
                     req_score = None
         if req_score is not None:
@@ -401,59 +443,11 @@ def calculate_score(reqs, user):
         return score / req_counter
 
 
-def get_data_to_filter(request):
-    list_items = Scores.objects.all()
-    profile = Profile.objects.get(user=request.user)
-    if profile.profile_status == 'StatusInsert':
-        list_items = list_items.filter(Username_insert=request.user)
-        list_items = list_items.order_by('-Insert_score')
-    else:
-        list_items = list_items.filter(Username_enter=request.user)
-        list_items = list_items.order_by('-Enter_score')
-
-    return list_items
-
-
-class PropertyFilterListView(ListView):
-    queryset = PropertyForOffer.objects.all()
-    template_name = 'filter_results.html'
-    context_object_name = 'data'
-
-    def get_queryset(self):
-        print('in get_quryset')
-        queryset = super().get_queryset()
-        self.filterset = PropertyOfferFilter(self.request.GET, queryset=queryset)
-        #data = map(lambda prop: Profile.objects.get(user = prop.user), self.filterset.qs)
-        # for item in data:
-        #     print(item)
-        # return list(data)
-        return self.filterset.qs
-
-    def get_context_data(self, **kwargs):
-        print('in get_context_data')
-        context = super().get_context_data(**kwargs)
-        context['form'] = self.filterset.form
-        return context
-
-
-class RoommateFilterListView(ListView):
-    queryset = Profile.objects.all()
-    template_name = 'filter_results.html'
-    context_object_name = 'data'
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        self.filterset = RoommateFilter(self.request.GET, queryset=queryset)
-        return self.filterset.qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = self.filterset.form
-        return context
 
 
 class Posts:
-    def __init__(self, item, image, like):
+    def __init__(self, item, prop,image, like):
+        self.prop = prop
         self.image = image
         self.item = item
         self.like = like
@@ -461,4 +455,4 @@ class Posts:
 
 class UserHomepageView(APIView):
     def get(self, request):
-        return render(request, 'post_list.html')
+        return render(request, 'post_list_test.html')

@@ -1,72 +1,166 @@
-{% extends "roomit_app/base.html" %}
+{% extends "roomit_app/base.html"%} 
+{%load static%}
+{% load crispy_forms_tags %}
 {% load infinite_scroll %}
-{% block content %}
+{%block PageContent%}
+    <!-- Page Container -->
+    <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+        <!-- The Grid -->
+        <div class="w2-row">
 
-<div class="item-box">
-    {% for item in feed %}
-    <br>
-        {% if request.user == item.item.Username_insert %}
-            <a href="user/profile/{{item.item.Username_enter}}">
-              <div style="display: flex; flex-direction: column; align-items: center;">
-                <div class="card">
-                    <div class="card_load">
-                        <img src="{{ item.item.Username_enter.profile.image.url }}" alt="{{ item.item.Username_enter }}" style="max-width: 50%; height: auto; display: inline-block;">
-                    </div>
-                    <div class="card_load_extreme_title">
-                        <h2 style="text-align: center; margin-top: 20px;">{{ item.item.Username_enter.profile.first_name }} {{ item.item.Username_enter.profile.last_name }}</h2>
-                        <p style="text-align: center;">Score: {{ item.item.Insert_score }}</p>
-                    </div>
-                    <div class="card_load_extreme_descripion">
-                        {% if item.like %}
-                        <a href="/unlike-picture/{{ item.item.Username_enter }}/">
-                            <button class="button"  data-user="{{ item.item.Username_enter }}">👎Unlike</button>
-                        </a>
-                        {% else %}
-                        <a href="/like-picture/{{ item.item.Username_enter }}/">
-                            <button class="button"  data-user="{{ item.item.Username_enter }}">👍Like</button>
-                        </a>
-                        {% endif %}
+            <!-- Left Column -->
+            <div class=" w3-col m3">
+                <!-- Filterbar -->
+                <div class="w3-card w3-round w3-white w3-margin">
+                    <div class="w3-container"><br>
+                        <form method="GET" action="{% url 'post_list_page' %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <fieldset class="form-group">
+                                <h3 class="border-bottom mb-4">Filter your matches</h3>
+                                    
+                                    <h5> About Roomate: </h5>
+                                    <br>
+                                    {{reqsR_form.form|crispy}}
+                                    {% if request.user.profile.profile_status == 'StatusEnter' %}
+                                    <div class="border-bottom mb-4"> </div>
+                                    <h5> About Property: </h5>
+                                    <br>
+                                    {{offerP_form.form|crispy}}
+                                    
+                                    {%endif%}
+                                    <button type="submit" class="btn btn-primary mt-3">Filter</button>
+                                </fieldset>
+                        </form>
                     </div>
                 </div>
+            <!-- End Left Column -->
+            </div>
+                
+            <!-- Middle Column -->
+            <div class="w3-col m7" style="display: flex; justify-content: center;">
+                <div class="item-box">
+                {%if data.feed%}
+                    {% for item in data.feed %}
+                    <br>
+                        {% if request.user.profile.profile_status == "StatusInsert" %}
+                            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 200px; margin: auto; text-align: center;">
+                                <img  src="{{ item.user.profile.image.url }}" alt={{item.user.username}} style="width:100%">
+                                <h6 class="w3-left "><a href="user/profile/{{item.user.username}}" style="color:black"><br><i class="fa fa-hand-o-right"></i> More about {{item.user.username}} </a></h6>
+                                <h5>score: {{ item.score }} </h5>
+                                {% if item.like %}
+                                    <a href="/unlike-picture/{{ item.user.username }}/">
+                                        <button class="button"  style="background-color: #50766650" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user }}"><i class="fa fa-thumbs-down "></i> Unlike</button>
+                                    </a>
+                                {% else %}
+                                    <a href="/like-picture/{{ item.user.username }}/">
+                                        <button class="button" style="background-color: #50766650 " class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user.username }}"><i class="fa fa-thumbs-up"></i> Like</button>
+                                    </a>
+                                {% endif %}
+                                <br>
+                            </div>
 
-              </div>
-            </a>
-        {% else %}
-            <a href="user/profile/{{item.item.Username_insert}}">
-              <div style="display: flex; flex-direction: column; align-items: center;">
-                <div class="card">
-                    <div class="card_load">
-                        <img src="{{ item.item.Username_insert.profile.image.url }}" alt="{{ item.item.Username_insert }}" style="max-width: 50%; height: auto; display: inline-block;">
-                        {% if item.image != None %}
-                            <img src="{{ item.image.image.url }}" alt="{{ item.item.Username_insert }}" style="max-width: 50%; height: auto; display: inline-block;">
-                        {% endif %}
-                    </div>
-                    <div class="card_load_extreme_title">
-                        <h2 style="text-align: center; margin-top: 20px;">{{ item.item.Username_insert.profile.first_name }} {{ item.item.Username_insert.profile.last_name }}</h2>
-                        <p style="text-align: center;">Score: {{ item.item.Enter_score }}</p>
-                    </div>
-                    <div class="card_load_extreme_descripion">
-                        {% if item.like %}
-                        <a href="/unlike-picture/{{ item.item.Username_insert }}/">
-                            <button class="button"  data-user="{{ item.item.Username_insert }}">👎Unlike</button>
-                        </a>
-                        {% else %}
-                        <a href="/like-picture/{{ item.item.Username_insert }}/">
-                            <button class="button"  data-user="{{ item.item.Username_insert }}">👍Like</button>
-                        </a>
-                        {% endif %}
+                        {%else%}
+                            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
+                                {% if item.image != None %}
+                                    <img src="{{ item.image.image.url }}" alt={{item.user.username}} style="width:100%; height: 170px">
+                                {%else%}
+                                    <br><h5> <i class="fa fa-close"></i> No images for this property</h5>
+                                {% endif %}
+                                <h6 class="w3-left "><br><a href="user/profile/{{item.user.username}}" style="color:black"><img src="{{ item.user.profile.image.url }}" class ="w3-circle" style="width:25%;" /><br><i class="fa fa-hand-o-right"></i> More about {{item.user.username}} </a></h6>
+                                <h5>score: {{ item.score }}</h5>
+                                {% if item.like %}
+                                    <a href="/unlike-picture/{{ item.user.username }}/">
+                                        <button class="button"  style="background-color: #50766650" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user }}"><i class="fa fa-thumbs-down "></i> Unlike</button>
+                                    </a>
+                                {% else %}
+                                    <a href="/like-picture/{{ item.user.username }}/">
+                                        <button class="button" style="background-color: #50766650 " class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user.username}}"><i class="fa fa-thumbs-up"></i> Like</button>
+                                    </a>
+                                {% endif %}
+                                <br>
+                            </div>
+                        {%endif%}
+                        <br>
+                        {%endfor%}
+                
+                {%else%}
+                <br><br>
+                    <h4 class>No matching results were found</h4> 
+                {%endif%}
+                </div>
+                
+
+            {% set_infinite_scroll %}
+            <!-- End Middle Column --> 
+            </div>
+
+            <!-- Right Column -->
+            <div class="w3-col m2">
+                <br>
+                <div class="w3-card w3-round w3-white w3-center">
+                    <div class="w3-container">
+                        <h6>You may also like</h6>
+                        <div style="display: flex">
+                            <h8 class="w3-left" style="margin-right: 10px">
+                                <a href="user/profile/{{user.username}}">
+                                    <img src="{{ user.profile.image.url }}" class ="w3-circle" style="width:80%;"/><br>
+                                    <a href="/like-picture/{{ item.user.username }}/"><i class="fa fa-thumbs-up" style="color: #50766650"></a></i>
+                                    <a href="user/profile/{{user.username}}" style="color:black ">{{user.username}}</a>
+                                </a>
+                            </h8>
+                            <h8 class="w3-left" style="margin-right: 10px">
+                                <a href="user/profile/{{user.username}}">
+                                    <img src="{{ user.profile.image.url }}" class ="w3-circle" style="width:80%;"/><br>
+                                    <a href="/like-picture/{{ item.user.username }}/"><i class="fa fa-thumbs-up" style="color: #50766650"></a></i>
+                                    <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
+                                </a>
+                            </h8><br>
+                            <h8 class="w3-left" style="margin-right: 10px">
+                                <a href="user/profile/{{user.username}}">
+                                    <img src="{{ user.profile.image.url }}" class ="w3-circle" style="width:80%;"/><br>
+                                    <a href="/like-picture/{{ item.user.username }}/"><i class="fa fa-thumbs-up" style="color: #50766650"></a></i>
+                                    <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
+                                </a>
+                            </h8>
+
+                            
+                        </div>
+                        <div style="display: flex">
+                            {%for item in items%} 
+                                {% if item.like %}
+                                    <h8 class="w3-left ">
+                                        <a href="user/profile/{{user.username}}">
+                                            <img src="{{ user.profile.image.url }}" class ="w3-circle" style="width:25%;"/><br>
+                                            <a href="/unlike-picture/{{ item.user.username }}/"><i class="fa fa-thumbs-up" style="color: #50766650"></a></i>
+                                            <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
+                                        </a>
+                                    </h8>
+                                {% else %}
+                                    <h8 class="w3-left "><br>
+                                        <a href="user/profile/{{user.username}}">
+                                            <img src="{{ user.profile.image.url }}" class ="w3-circle" style="width:25%;"/><br>
+                                            <a href="/unlike-picture/{{ item.user.username }}/"><i class="fa fa-thumbs-up" style="color: #50766650"></a></i>
+                                            <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
+                                        </a>
+                                    </h8>
+                                {% endif %}
+                                {% if forloop.counter|divisibleby:3 %}
+                                    <br>
+                                {% endif %}
+                            {%endfor%}
+                        </div>
+                    <br>
                     </div>
                 </div>
+                <br>
+            <!-- End Right Column -->
+            </div>
 
-              </div>
-            </a>
-
-        {% endif %}
+        <!-- End Grid -->  
+        </div>
+        <br>
+    
+        <!-- End Page Container -->
+    </div>
     <br>
-    {% endfor %}
-</div>
-<div class="item-box">
-    {% infinite_scroll_box %}
-</div>
-    {% set_infinite_scroll %}
-{% endblock content%}
+{%endblock PageContent%}

@@ -1,0 +1,10 @@
+django
+filters-django
+djangorestframework
+datetime
+abc
+math
+django-infinite-scroll
+selenium
+djongo
+pytest

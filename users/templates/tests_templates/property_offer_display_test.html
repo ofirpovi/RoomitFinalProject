@@ -1,0 +1,35 @@
+{% extends "tests_templates/display_test.html"%} 
+{% load crispy_forms_tags %}
+    {% block MiddleColoumContent%}
+        <h3 class="border-bottom mb-4"> Property Info </h3>
+        <div class="content-section"> 
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    {% for hidden in property_form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    {{property_form|crispy}}
+                    <h5> Property's Images</h5>
+                    {% if formset %}
+                        {% for form in formset %}
+                            <img src="{{ form.instance.image.url }}" width="100" >             
+                        {% endfor %}
+                    {% else %}
+                            <p>No images for this property<p>
+                    {% endif %}
+                    <br><br>
+                    {% if user.username == user_profile.username%}
+                        <label for="id_image">Upload Images:</label>
+                        <input type="file" name="image" id="id_image" multiple>
+                    {%endif%}
+                </fieldset>    
+                {% if user.username == user_profile.username %}
+                    <div class="form-group">
+                        <button class="btn btn-outline-info" type="submit">Update</button>
+                    </div>
+                {% endif %}
+            </form>
+          </div>
+      <!-- End Middle Column --> 
+    {% endblock MiddleColoumContent%}
