@@ -41,6 +41,7 @@ class RequirementsP(models.Model):
     ShelterNearby = models.BooleanField(blank=False, default=False)
     Furnished = models.BooleanField(blank=False, default=False)
     SharedLivingRoom = models.BooleanField(blank=False, default=False)
+    Location = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         super(RequirementsP, self).save(*args, **kwargs)

@@ -230,7 +230,6 @@ def display_property_offer(request, username):
         'formset': formset,
         'images': images,
     }
-    #return render(request, 'tests_templates/property_offer_display_test.html', context)
     return render(request, 'users/for_display/property_offer_display.html', context)
 
 
@@ -240,6 +239,7 @@ def display_property_reqs(request, username):
     if request.method == 'POST':
         form = UpdateRequirementsPForm(request.POST)
         if form.is_valid():
+            print("in post, location = ", request.POST.get('Location'))
            # check if the RequirementsP for the current user already exists
             if RequirementsP.objects.filter(user_id=user.id).exists():
                 # update the existing RequirementsP instance

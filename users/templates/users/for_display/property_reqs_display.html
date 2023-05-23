@@ -1,26 +1,75 @@
-{% extends "users/for_display/display_base.html"%} 
+{% extends "users/for_display/display_base.html" %}
 {% load crispy_forms_tags %}
-    {%block MiddleColoumContent%}
-        <h3 class="border-bottom mb-4"> Property Requirements </h3>
-        <div class="content-section"> 
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <fieldset class="form-group">
-                  {% for hidden in property_form.hidden_fields %}
-                      {{ hidden }}
-                  {% endfor %}       
-                  {{property_form|crispy}}
-                  <br><br>
-                </fieldset>
-                {% if user.username == user_profile.username %}
-                  <div class="form-group">
-                      <button class="btn btn-outline-info" type="submit">Update</button>
-                  </div>
-                {% endif %}
-              </form>
-             
-            </div>  
-          </div>
-      <!-- End Middle Column --> 
-      </div>
-{%endblock%}
+
+{% block MiddleColoumContent %}
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    </head>
+    <h1 class="border-bottom mb-4"> Property Requirements </h1>
+    <div class="content-section">
+        <div class="content-section">
+            <h3 class="border-bottom mb-4">Property Location</h3>
+            <div id="map" style="height: 400px;"></div>
+            <script>
+            // Initialize the map and set its view
+            var map = L.map('map').setView([31.0461, 34.8516], 8);
+
+            // Add the tile layer from OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                maxZoom: 18,
+            }).addTo(map);
+
+            var drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
+
+            var drawControl = new L.Control.Draw({
+                draw: {
+                    polygon: true,
+                    marker: false,
+                    circle: false,
+                    polyline: false,
+                    rectangle: false,
+                },
+                edit: {
+                    featureGroup: drawnItems,
+                    edit: false,
+                    remove: true,
+                },
+            });
+            map.addControl(drawControl);
+
+            map.on('draw:created', function (e) {
+                var layer = e.layer;
+                drawnItems.clearLayers();
+                drawnItems.addLayer(layer);
+                var selectedArea = layer.toGeoJSON();
+
+                // Update the representation of the selected area in the location field
+                var locationField = document.getElementById('id_location');
+                locationField.value = JSON.stringify(selectedArea.geometry);
+            });
+
+            </script>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                {% for hidden in property_form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+                {{ property_form|crispy }}
+                <br><br>
+            </fieldset>
+            {% if user.username == user_profile.username %}
+                <div class="form-group">
+                    <button class="btn btn-outline-info" type="submit">Update</button>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+{% endblock %}

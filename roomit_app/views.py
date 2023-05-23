@@ -37,6 +37,7 @@ def requirementsP(request, username):
                 messages.success(request, f'Your Requirements have been saved!')
                 update_scores(request)
                 return redirect('requirementsR', user)
+
         else:
             form = UpdateRequirementsPForm(instance=requirements)
         return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
@@ -384,6 +385,12 @@ def calculate_score(reqs, user):
         return score / req_counter
 
 
+# def save_location(request):
+#     if request.method == 'POST':
+#         user = request.user
+#         data = request.POST.get('Location')
+#         print(data)
+#     return None
 
 
 class Posts:
@@ -397,3 +404,5 @@ class Posts:
 class UserHomepageView(APIView):
     def get(self, request):
         return render(request, 'post_list_test.html')
+
+
