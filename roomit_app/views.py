@@ -270,48 +270,107 @@ def unlike_picture(request, username):
 
 # todo: add requirements for country, city, neighbourhood
 # todo: need to add somehow functionality for disqualifiers
+# def make_requirementsP(user):
+#     try:
+#         reqP = []
+#         requirementP = RequirementsP.objects.get_or_create(user=user)[0]
+#         reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
+#         reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
+#         reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
+#         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
+#         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
+#         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roomates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
+#         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
+#         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
+#         reqP.append(YNReq.YNReq(False, requirementP.Weight, "shelter_inside", requirementP.ShelterInside))
+#         reqP.append(YNReq.YNReq(False, requirementP.Weight, "shelter_nerbay", requirementP.ShelterNearby))
+#         reqP.append(YNReq.YNReq(False, requirementP.Weight, "furnished", requirementP.Furnished))
+#         reqP.append(YNReq.YNReq(False, requirementP.Weight, "renovated", requirementP.Renovated))
+#         reqP.append(YNReq.YNReq(False, requirementP.Weight, "shared_livingroom", requirementP.SharedLivingRoom))
+#         return reqP
+#     except Exception as e:
+#         print(e)
+#         return reqP
 def make_requirementsP(user):
     try:
         reqP = []
         requirementP = RequirementsP.objects.get_or_create(user=user)[0]
-        reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
-        reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
-        reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
-        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
-        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
-        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roomates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
-        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
-        reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-        reqP.append(YNReq.YNReq(False, requirementP.Weight, "shelter_inside", requirementP.ShelterInside))
-        reqP.append(YNReq.YNReq(False, requirementP.Weight, "shelter_nerbay", requirementP.ShelterNearby))
-        reqP.append(YNReq.YNReq(False, requirementP.Weight, "furnished", requirementP.Furnished))
-        reqP.append(YNReq.YNReq(False, requirementP.Weight, "renovated", requirementP.Renovated))
-        reqP.append(YNReq.YNReq(False, requirementP.Weight, "shared_livingroom", requirementP.SharedLivingRoom))
+
+        field_mappings = {
+            "Country": requirementP.Country,
+            "City": requirementP.City,
+            "Neighborhood": requirementP.Neighborhood,
+            "rent": (requirementP.MinRent, requirementP.MaxRent),
+            "rooms_number": (requirementP.MinRooms, requirementP.MaxRooms),
+            "roomates_number": (requirementP.MinRoommates, requirementP.MaxRoommates),
+            "toilets_number": (requirementP.MinToilets, None),
+            "showers_number": (requirementP.MinShowers, None),
+            "shelter_inside": requirementP.ShelterInside,
+            "shelter_nerbay": requirementP.ShelterNearby,
+            "furnished": requirementP.Furnished,
+            "renovated": requirementP.Renovated,
+            "shared_livingroom": requirementP.SharedLivingRoom
+        }
+
+        for field, value in field_mappings.items():
+            if field in ["rent", "rooms_number", "roomates_number", "toilets_number", "showers_number"]:
+                reqP.append(RangReq.RangeReq(False, requirementP.Weight, field, *value))
+            else:
+                reqP.append(ListReq.ListReq(True, requirementP.Weight, field, value))
+
         return reqP
     except Exception as e:
         print(e)
-        return reqP
+        return []
+
 
 
 
 # todo: need to add somehow functionality for disqualifiers
+# def make_requirementsR(user):
+#     try:
+#         reqR = []
+#         requirementR = RequirementsR.objects.get_or_create(user=user)[0]
+#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
+#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
+#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))
+#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "diet", requirementR.Diet))
+#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "status", requirementR.Status))
+#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "hospitality", requirementR.Hospitality))
+#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "kosher", requirementR.Kosher))
+#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.Expense_Management))
+#         reqR.append(RangReq.RangeReq(False, requirementR.Weight, "birthdate", requirementR.MinAge, requirementR.MaxAge))
+#         return reqR
+#     except Exception as e:
+#         print(e)
+#         return reqR
 def make_requirementsR(user):
     try:
         reqR = []
         requirementR = RequirementsR.objects.get_or_create(user=user)[0]
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "diet", requirementR.Diet))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "status", requirementR.Status))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "hospitality", requirementR.Hospitality))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "kosher", requirementR.Kosher))
-        reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.Expense_Management))
-        reqR.append(RangReq.RangeReq(False, requirementR.Weight, "birthdate", requirementR.MinAge, requirementR.MaxAge))
+
+        field_mappings = {
+            "gender": requirementR.Gender,
+            "occupation": requirementR.Occupation,
+            "smoker": requirementR.Smoker,
+            "diet": requirementR.Diet,
+            "status": requirementR.Status,
+            "hospitality": requirementR.Hospitality,
+            "kosher": requirementR.Kosher,
+            "expense_management": requirementR.Expense_Management,
+            "birthdate": (requirementR.MinAge, requirementR.MaxAge),
+        }
+
+        for field, value in field_mappings.items():
+            if field == "birthdate":
+                reqR.append(RangReq.RangeReq(False, requirementR.Weight, field, *value))
+            else:
+                reqR.append(ListReq.ListReq(False, requirementR.Weight, field, value))
+
         return reqR
     except Exception as e:
         print(e)
-        return reqR
+        return []
 
 
 def calculate_score(reqs, user):
