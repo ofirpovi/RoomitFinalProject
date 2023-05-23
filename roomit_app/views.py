@@ -12,7 +12,7 @@ from .models import RequirementsP, RequirementsR, Scores, Likes
 from .requirements import ListReq, RangReq, YNReq
 from django.views.generic.list import ListView
 from .filters import PropertyOfferFilter, RoommateFilter
-
+from.recommendation_system.recommendations import recommend_roommates
 
 
 def home(request):
@@ -151,9 +151,10 @@ def post_list(request):
         }
         data.update(paginated)
         context['data']= data
-        return render(request, 'post_list.html', context)
-        # return render(request, 'tests_templates/post_list_test.html', data)
+        context['recommended_roommates'] = User.objects.filter(username__in=['NewUser1', 'NewUser5'])
 
+        return render(request, 'post_list.html', context)
+        
  
 def get_queryset(request, users):
     data_to_return = []

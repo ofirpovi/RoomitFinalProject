@@ -11,7 +11,7 @@ def recommend_roommates(user):
     status = user.profile.profile_status
 
     # Get all the users that the given user has liked
-    same_status_users = get_other_users(user, status)
+    same_status_users = get_other_users(status)
 
     # Initialize an empty list to store recommended roommates
     recommended_roommates = []
@@ -34,7 +34,7 @@ def recommend_roommates(user):
 
 def compare_users(user1, user2):
     # get profile, roommate requirements, and property requiremenets similarity score
-    profile_score, fields_in_profile = compare_profiles(user1, user2)
+    profile_score, fields_in_profile = compare_profiles(user1.profile, user2.profile)
     reqP_score, fields_in_reqP = compare_reqP(user1, user2)
     reqR_score, fields_in_reqR = compare_reqR(user1, user2)
 
