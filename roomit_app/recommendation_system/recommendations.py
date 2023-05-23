@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from roomit_app.models import Likes
+from roomit_app.models import Likes, RequirementsP, RequirementsR
 from roomit_app.recommendation_system.compare_profiles import compare_profiles
 from roomit_app.recommendation_system.compare_reqs import compare_reqP, compare_reqR
 
@@ -33,10 +33,18 @@ def recommend_roommates(user):
 
 
 def compare_users(user1, user2):
-    # get profile, roommate requirements, and property requiremenets similarity score
-    profile_score, fields_in_profile = compare_profiles(user1, user2)
-    reqP_score, fields_in_reqP = compare_reqP(user1, user2)
-    reqR_score, fields_in_reqR = compare_reqR(user1, user2)
+    # get profile similarity score
+    profile_score, fields_in_profile = compare_profiles(user1.profile, user2.profile)
+
+    # get property requirements similarity score
+    reqP1 = RequirementsP.objects.get(user=user1)
+    reqP2 = RequirementsP.objects.get(user=user2)
+    reqP_score, fields_in_reqP = compare_reqP(reqP1, reqP2)
+
+    # get roommate requirements similarity score
+    reqR1 = RequirementsR.objects.get(user=user1)
+    reqR2 = RequirementsR.objects.get(user=user2)
+    reqR_score, fields_in_reqR = compare_reqR(reqR1, reqR2)
 
     # calc numerator & denominator
     numerator = profile_score + reqP_score + reqR_score
@@ -56,7 +64,7 @@ def get_liked_users(user, status):
 
 
 # returns all users with similar profiles, sorted in descending order keyed by the number of users they liked
-def get_other_users(status):
+def get_other_users(user, status):
     users = User.objects.filter(profile__profile_status=status)
 
     # Create an empty dictionary to store the like counts for each user

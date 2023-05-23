@@ -21,7 +21,6 @@ def home(request):
 
 @login_required
 def requirementsP(request, username):
-    user = User.objects.get(username=request.user.username)
     try:
         user = get_object_or_404(User, username=request.user.username)
         try:
