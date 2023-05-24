@@ -64,23 +64,31 @@ def get_liked_users(user, status):
 
 
 # returns all users with similar profiles, sorted in descending order keyed by the number of users they liked
-def get_other_users(user, status):
+def get_other_users(online_user, status):
     users = User.objects.filter(profile__profile_status=status)
 
     # Create an empty dictionary to store the like counts for each user
     user_like_counts = {}
-
+    # create list of users to compare
     for user in users:
-        # Count the number of likes for the current user
-        if status == "StatusEnter":
-            like_count = Likes.objects.filter(User_enter=user, enter_likes_insert=True).count()
-        else:
-            like_count = Likes.objects.filter(User_insert=user, insert_likes_enter=True).count()
+        # if online user is the current user, don't add him to the list
+        # todo: check if username is a unique user identifier
+        if not (online_user.username == user.username):
+            # Count the number of likes for the current user
+            if status == "StatusEnter":
+                like_count = Likes.objects.filter(User_enter=user, enter_likes_insert=True).count()
+            else:
+                like_count = Likes.objects.filter(User_insert=user, insert_likes_enter=True).count()
 
-        # Store the like count for the user in the dictionary
-        user_like_counts[user] = like_count
+            # Store the like count for the user in the dictionary
+            user_like_counts[user] = like_count
 
     # Sort the users based on the like counts in descending order
     sorted_users = sorted(user_like_counts, key=user_like_counts.get, reverse=True)
 
     return sorted_users
+
+
+# user_check = User.objects.get(username="Eylon")
+# user_list = recommend_roommates(user_check)
+# print(user_list)
