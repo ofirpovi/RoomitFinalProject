@@ -13,8 +13,7 @@ def image_upload_path(instance, filename, flag):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(help_text='Choose your profile-picture', default='default_for_profile.jpg', upload_to= partial(image_upload_path, flag=1))
-    profile_status = models.CharField(max_length=15, default=' ', help_text='What you are looking for', choices=[('StatusInsert', 'insert in'),
-                                                                                                                 ('StatusEnter', 'enter in'),])
+    profile_status = models.CharField(max_length=15, default=' ', help_text='What you are looking for', choices=[('StatusInsert', 'insert in'),                                                                                                   ('StatusEnter', 'enter in'),])
     first_name = models.CharField(max_length=30, default='')
     last_name = models.CharField(max_length=30, default='')
     birthdate = models.DateField(null=True, blank=False)
@@ -28,8 +27,6 @@ class Profile(models.Model):
                                                                        ('S', 'Student'),
                                                                        ('P', 'Part-time job'),
                                                                        ('D', "Doesn't matter"),
-                                                                       ('empty',
-                                                                        '---'),
                                                                        ])
     smoker = models.CharField(max_length=15, blank=True, choices=[('Yes', 'Yes'),
                                                                   ('No', 'No'),
@@ -53,9 +50,9 @@ class Profile(models.Model):
                                                                   ('In a relationship',
                                                                    'In a relationship'),
                                                                   ('D', "Doesn't matter"),
-                                                                  ], default='empty'
-                              )
-    hospitality = models.CharField(max_length=15, blank=True, default='empty', choices=[('L', 'Love'),
+                                                                  ])
+                              
+    hospitality = models.CharField(max_length=15, blank=True, default='', choices=[('L', 'Love'),
                                                                                         ('N', 'Prefer not'),])
     kosher = models.CharField(max_length=15, blank=True, choices=[('Y', 'Yes'),
                                                                   ('N', 'No'),])
@@ -74,9 +71,8 @@ class PropertyForOffer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='property')
     country = models.CharField(max_length=25, default='')
     city = models.CharField(max_length=25, default='')
-    neighborhood = models.CharField(max_length=25, default='')
-    rent = MoneyField(max_digits=14, decimal_places=2, default_currency='ILS')
-
+    neighborhood = models.CharField(max_length=25, default='', null=True)
+    rent = MoneyField(max_digits=14, decimal_places=2, default_currency='ILS', null=True)
     square_meters = models.FloatField(blank=True, null=True)
     description = models.TextField(blank=True, default='')
     renovated = models.BooleanField(blank=True, default=False)

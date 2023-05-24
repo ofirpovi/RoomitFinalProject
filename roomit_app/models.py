@@ -24,8 +24,8 @@ class Scores(models.Model):
 class RequirementsP(models.Model):
     Requirement_ID = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    Country = models.CharField(max_length=25, default='', blank=True)
-    City = models.CharField(max_length=25, default='', blank=True)
+    Country = models.CharField(max_length=25, default='', blank=True, null=False)
+    City = models.CharField(max_length=25, default='', blank=True, null= False)
     Neighborhood = models.CharField(max_length=25, default='', blank=True)
     MinRent = models.IntegerField(null=True, default=None, blank=True)
     MaxRent = models.IntegerField(null=True, default=None, blank=True)
@@ -53,32 +53,25 @@ class RequirementsR(models.Model):
                                                                                                 ('S', 'Student'),
                                                                                                 ('P', 'Part-time job'),
                                                                                                 ('D', "Doesn't matter"),
-                                                                                                ('empty',
-                                                                                                 '---'),
                                                                                                 ])
     MinAge = models.IntegerField(null=True, default=None, blank=True)
     MaxAge = models.IntegerField(null=True, default=None, blank=True)
     Gender = models.CharField(max_length=10, null=True, default=None, blank=True, choices=[('F', 'Female'),
                                                                                            ('M', 'Male'),
                                                                                            ('N', 'Not Defined'),
+                                                                                           ('D', "Doesn't matter"),
                                                                                            ])
     Smoker = models.CharField(max_length=15, null=True, default=None, blank=True, choices=[('Yes', 'Yes'),
-                                                                                           ('No',
-                                                                                            'No'),
-                                                                                           ('Occasionally',
-                                                                                            'Occasionally'),
-                                                                                           ('Socially',
-                                                                                            'Socially'),
+                                                                                           ('No','No'),
+                                                                                           ('Occasionally','Occasionally'),
+                                                                                           ('Socially','Socially'),
                                                                                            ])
     Diet = models.CharField(max_length=15, null=True, default=None, blank=True, choices=[('Carnivore', 'Carnivore'),
-                                                                                         ('Pescetarian',
-                                                                                          'Pescetarian'),
-                                                                                         ('Vegan',
-                                                                                          'Vegan'),
-                                                                                         ('Vegetarian',
-                                                                                          'Vegetarian'),
-                                                                                         ('Raw Veganism',
-                                                                                          'Raw Veganism'),
+                                                                                         ('Pescetarian','Pescetarian'),
+                                                                                         ('Vegan','Vegan'),
+                                                                                         ('Vegetarian','Vegetarian'),
+                                                                                         ('Raw Veganism','Raw Veganism'),
+                                                                                         ('D', "Doesn't matter"),
                                                                                          ])
     Kosher = models.CharField(max_length=15, null=True, default=None, blank=True, choices=[('Y', 'Yes'),
                                                                                            ('N', 'No'),])

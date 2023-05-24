@@ -23,19 +23,17 @@ from django.core.files import File
 
 def register(request):
     if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(
-                request, 'Hi {}, welcome to ROOMIT! You can now edit your profile'.format(username))
-            new_user = authenticate(username=form.cleaned_data['username'],
-                                    password=form.cleaned_data['password1'],)
-            login(request, new_user)
-            return redirect('fill_info', new_user)
+            form = UserRegisterForm(request.POST)
+            if form.is_valid():
+                form.save()
+                username = form.cleaned_data.get('username')
+                messages.warning(request, f'Hi {username}, welcome to ROOMIT! You can now edit your profile')
+                new_user = authenticate(username=form.cleaned_data['username'],
+                                        password=form.cleaned_data['password1'],)
+                login(request, new_user)
+                return redirect('fill_info', new_user)
     else:
         form = UserRegisterForm()
-        #return render(request, 'tests_templates/register_test.html', {'form': form})
     return render(request, 'users/register.html', {'form': form})
 
 
@@ -67,7 +65,6 @@ def profile(request, username):
         'p_form': p_form,
         'read_only': read_only,
     }
-    #return render(request, 'tests_templates/profile_test.html', context)
     return render(request, 'users/profile.html', context)
     
 
@@ -81,8 +78,7 @@ def info(request, username):
         if p_form.is_valid():
             p_form.save()
             messages.success(request, "Your personal details have been saved and your profile has been created. You can see your profile and edit it at any time by clicking on the 'profile' tab on the top right of the screen.")
-            return render(request, 'tests_templates/choose_status_test.html')
-            #return render(request, 'users/choose_status.html')
+            return render(request, 'users/choose_status.html')
 
     else:
         p_form = ProfileUpdateForm(instance=request.user.profile)
@@ -90,7 +86,6 @@ def info(request, username):
     context = {
         'p_form': p_form
     }
-    return render(request, 'tests_templates/fill_info_test.html', context)
     return render(request, 'users/fill_info.html', context)
 
 
@@ -142,7 +137,6 @@ def create_property_offer_view(request, username):
             'formset': formset,
             'image_form': image_form,
         }
-    #return render(request, 'tests_templates/property_offer_test.html', context)
     return render(request, 'users/property_offer.html', context)
 
 
@@ -230,7 +224,6 @@ def display_property_offer(request, username):
         'formset': formset,
         'images': images,
     }
-    #return render(request, 'tests_templates/property_offer_display_test.html', context)
     return render(request, 'users/for_display/property_offer_display.html', context)
 
 
@@ -266,7 +259,6 @@ def display_property_reqs(request, username):
             'user_profile': user,
             'property_form': property_form,
         }
-        #return render(request, 'tests_templates/property_reqs_display_test.html', context)
         return render(request, 'users/for_display/property_reqs_display.html', context)
 
 
@@ -307,9 +299,5 @@ def display_roomi_reqs(request, username):
             'user_profile': user,
             'form': roomi_form,
         }
-        #return render(request, 'tests_templates/roomi_reqs_display_test.html', context)
         return render(request, 'users/for_display/roomi_reqs_display.html', context)
 
-
-def test_templates(request):
-    return render(request, 'tests_templates/post_list_test.html')
