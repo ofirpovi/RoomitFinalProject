@@ -21,14 +21,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!7wez!r43==t#rrd^)o_nz3j==70+oit1k^n%$rh_944o4bl0u'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-!7wez!r43==t#rrd^)o_nz3j==70+oit1k^n%$rh_944o4bl0u')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 # ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = [ '127.0.0.1', 'localhost', 'testserver', ]
+ALLOWED_HOSTS = [ '132.73.84.204', 'www.roomit.cs.bgu.ac.il' ]
 
 # Application definition
 
@@ -186,11 +187,6 @@ LOGIN_URL = 'login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # development ONLY
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
 
 # if 'test' in sys.argv:
 #     DATABASES['default'] = DATABASES['test']

@@ -11,7 +11,7 @@ def recommend_roommates(user):
     status = user.profile.profile_status
 
     # Get all the users that the given user has liked
-    same_status_users = get_other_users(status)
+    same_status_users = get_other_users(user, status)
 
     # Initialize an empty list to store recommended roommates
     recommended_roommates = []

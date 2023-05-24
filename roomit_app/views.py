@@ -150,7 +150,7 @@ def post_list(request):
         }
         data.update(paginated)
         context['data']= data
-        context['recommended_roommates'] = recommend_roommates(request.user)
+        # context['recommended_roommates'] = recommend_roommates(request.user)
         return render(request, 'post_list.html', context)
         
  
