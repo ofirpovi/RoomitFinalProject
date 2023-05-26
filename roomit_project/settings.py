@@ -25,11 +25,11 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-!7wez!r43==t#r
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
-DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+DEBUG = False
 
 # ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = [ '132.73.84.204', 'www.roomit.cs.bgu.ac.il' ]
+ALLOWED_HOSTS = ['127.0.0.1', '132.73.84.204', 'roomit.cs.bgu.ac.il', 'www.roomit.cs.bgu.ac.il' ]
 
 # Application definition
 
@@ -170,6 +170,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'roomit_app/static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
