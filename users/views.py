@@ -239,12 +239,16 @@ def display_property_reqs(request, username):
     if request.method == 'POST':
         form = UpdateRequirementsPForm(request.POST)
         if form.is_valid():
-            print("in post, selectedArea = ", request.POST.get('selectedArea'))
-
+            selectedArea = request.POST.get('selectedArea')
+            # print("before the for, delected area  =  ", selectedArea)
+            # print("in post, selectedArea = ", request.POST.get('selectedArea'))
            # check if the RequirementsP for the current user already exists
             if RequirementsP.objects.filter(user_id=user.id).exists():
                 # update the existing RequirementsP instance
                 propertyR = RequirementsP.objects.get(user_id=user.id)
+                if selectedArea:
+                    # print("in if selected area")
+                    propertyR.Location = selectedArea  # Update the Location field
                 form = UpdateRequirementsPForm(
                     request.POST, instance=propertyR)
             else:

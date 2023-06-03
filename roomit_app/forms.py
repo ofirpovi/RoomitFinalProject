@@ -21,13 +21,12 @@ class UpdateRequirementsRForm(forms.ModelForm):
 
 
 class UpdateRequirementsPForm(forms.ModelForm):
-
     class Meta:
         model = RequirementsP
         fields = ['MinRent', 'MaxRent', 'MinRooms', 'MaxRooms',
                   'MinRoommates', 'MaxRoommates', 'MinToilets', 'MinShowers', 'Renovated',
-                  'ShelterInside', 'ShelterNearby', 'Furnished', 'SharedLivingRoom', 'Location']
-        exclude = ['Requirement_ID', 'Roommates_ID', 'Country', 'City', 'Neighborhood']
+                  'ShelterInside', 'ShelterNearby', 'Furnished', 'SharedLivingRoom']
+        exclude = ['Requirement_ID', 'Roommates_ID', 'Country', 'City', 'Neighborhood', 'Location']
         labels = {
             'MinRent': 'Min Rent',
             'MaxRent': 'Max Rent',
@@ -42,8 +41,6 @@ class UpdateRequirementsPForm(forms.ModelForm):
             'ShelterNearby': 'Shelter Nearby',
             'Furnished': 'Furnished',
             'SharedLivingRoom': 'Shared Living Room',
-            'Location': 'Location'
+            'Location': 'selectedArea'
         }
-        widgets = {
-            'Location': forms.HiddenInput(),
-        }
+

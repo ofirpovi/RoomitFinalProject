@@ -5,71 +5,112 @@
     <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-<!--        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />-->
-<!--        <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>-->
+        <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     </head>
     <h1 class="border-bottom mb-4"> Property Requirements </h1>
     <div class="content-section">
         <div class="content-section">
             <h3 class="border-bottom mb-4">Property Location</h3>
+            <div>
+                <input type="text" id="streetInput" placeholder="Street" />
+                <input type="text" id="houseNumberInput" placeholder="House Number" />
+                <input type="text" id="cityInput" placeholder="City" />
+                <input type="text" id="countryInput" placeholder="Country" />
+                <button id="goButton">Go</button>
+            </div>
             <div id="map" style="height: 400px;"></div>
             <script>
-            // Initialize the map and set its view
-            var map = L.map('map').setView([31.0461, 34.8516], 8);
+                // Initialize the map and set its view
+                var map = L.map('map').setView([31.0461, 34.8516], 8);
 
-            // Add the tile layer from OpenStreetMap
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-                maxZoom: 18,
-            }).addTo(map);
+                // Add the tile layer from OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                    maxZoom: 18,
+                }).addTo(map);
 
-            var drawnItems = new L.FeatureGroup();
-            map.addLayer(drawnItems);
+                var drawnItems = new L.FeatureGroup();
+                map.addLayer(drawnItems);
 
-            var drawControl = new L.Control.Draw({
-                draw: {
-                    polygon: true,
-                    marker: true,
-                    circle: false,
-                    polyline: false,
-                    rectangle: false,
-                },
-                edit: {
-                    featureGroup: drawnItems,
-                    edit: false,
-                    remove: true,
-                },
-            });
-            map.addControl(drawControl);
+                var drawControl = new L.Control.Draw({
+                    draw: {
+                        polygon: true,
+                        marker: true,
+                        circle: false,
+                        polyline: false,
+                        rectangle: false,
+                    },
+                    edit: {
+                        featureGroup: drawnItems,
+                        edit: false,
+                        remove: true,
+                    },
+                });
+                map.addControl(drawControl);
 
-            map.on('draw:created', function (e) {
-<!--            console.log(e.layer._latlng.lat);-->
-                var layer = e.layer;
-                drawnItems.clearLayers();
-                drawnItems.addLayer(layer);
-                var selectedArea = layer.toGeoJSON();
-                document.getElementById('selectedAreaInput').value = JSON.stringify(selectedArea);
+                map.on('draw:created', function (e) {
+                    var layer = e.layer;
+                    console.log("layer - ", layer)
+                    var coordinates = layer._latlngs
+                    console.log("_latlngs - ", coordinates)
+                    drawnItems.clearLayers();
+                    drawnItems.addLayer(layer);
+                    document.getElementById('selectedAreaInput').value = JSON.stringify(coordinates);
 
-<!--                marker = L.marker(e.latlng).addTo(map);  // Add a new marker at the clicked location-->
+                });
 
-<!--               // Retrieve the coordinates-->
-<!--                var latitude = e.layer._latlng.lat;-->
-<!--                var longitude = e.layer._latlng.lng;-->
+                // Handle the "Go" button click event
+                document.getElementById('goButton').addEventListener('click', function () {
+                    var street = document.getElementById('streetInput').value;
+                    var houseNumber = document.getElementById('houseNumberInput').value;
+                    var city = document.getElementById('cityInput').value;
+                    var country = document.getElementById('countryInput').value;
+                    var validAddress = false
+                    // Validate the input fields
+                    if (street && houseNumber && city && country) {
+                        // Construct the address based on the entered fields
+                        var address = houseNumber + ' ' + street + ', ' + city + ', ' + country;
+                        validAddress = true
+                    }
+                    else if (street && !houseNumber && city && country) {
+                        // Construct the address based on the entered fields
+                        var address = street + ', ' + city + ', ' + country;
+                        validAddress = true
+                    }
+                    else if (!street && !houseNumber && city && country) {
+                        // Construct the address based on the entered fields
+                        var address = city + ', ' + country;
+                        validAddress = true
+                    }
+                    else if (!street && !houseNumber && !city && country) {
+                        // Construct the address based on the entered fields
+                        var address = country;
+                        validAddress = true
+                    }
+                    if(validAddress){
+                        console.log('city:', city);
+                        console.log('address:', address);
 
-                // Use the coordinates as desired (e.g., send them to the server)
-<!--                console.log('Coordinates:', latitude, longitude);-->
-                console.log('selectedArea:', selectedArea);
-<!--                // Update the representation of the selected area in the location field-->
-<!--                var locationField = document.getElementById('id_location');-->
-<!--                locationField.value = JSON.stringify(selectedArea.geometry);-->
-            });
+                        // Use a geocoding service to get the coordinates for the entered address
+                        var geocoder = L.Control.Geocoder.nominatim();
+                        geocoder.geocode(address, function (results) {
+                            if (results.length > 0) {
+                                var result = results[0];
+                                var coordinates = result.center;
+                                console.log('coordinates:', coordinates);
+                                map.setView(coordinates, 13); // Set the map view to the geocoded location
+                                L.marker(coordinates).addTo(map); // Add a marker at the geocoded location
+                            }
+                        });
+                    }else{
+                    console.log('Please fill in all the required fields.');
+                    }
 
-
-
+                });
             </script>
-
         </div>
 
         <form method="POST" enctype="multipart/form-data">
