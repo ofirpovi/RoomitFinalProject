@@ -12,7 +12,7 @@ from .models import RequirementsP, RequirementsR, Scores, Likes
 from .requirements import ListReq, RangReq, YNReq
 from django.views.generic.list import ListView
 from .filters import PropertyOfferFilter, RoommateFilter
-
+from .recommendation_system import recommendations as rec_sys
 
 
 def home(request):
@@ -75,13 +75,23 @@ def likes_me(request):
         online_status = profile.profile_status
         items_to_return =[]
         if online_status == "StatusEnter":
+            print("problem  here    ----->    1")
             list_items = list_items.filter(User_enter=user)
+            print("problem  here    ----->    2")
             list_items = list_items.filter(insert_likes_enter=True)
+            print("problem  here    ----->    3")
             for item in list_items:
+                print("problem  here    ----->    4")
                 score = Scores.objects.get(Username_enter = user, Username_insert = item.User_insert)
+                print("problem  here    ----->    5")
                 prop = PropertyForOffer.objects.get(user = item.User_insert)
+                print("problem  here    ----->    6")
                 image = Image.objects.filter(property = prop).first()
+                print("problem  here    ----->    7")
+                print("score  --  ", score)
+                print("image  --  ", type(image), image)
                 items_to_return.append(Posts(score, image, True))
+                print("problem  here    ----->    8 ")
         else:
             list_items = list_items.filter(User_insert=user)
             list_items = list_items.filter(enter_likes_insert=True)
@@ -153,8 +163,9 @@ def post_list(request):
         return render(request, 'post_list.html', context)
         # return render(request, 'tests_templates/post_list_test.html', data)
 
- 
+
 def get_queryset(request, users):
+    users = rec_sys.recommend_roommates(request.user)
     data_to_return = []
     print(f'\nrequest_data: {request.GET}\n')
     print(f'users: {users}\n')
@@ -445,7 +456,7 @@ def calculate_score(reqs, user):
 
 
 class Posts:
-    def __init__(self, item, prop,image, like):
+    def __init__(self, item=None, prop=None,image=None, like=None):
         self.prop = prop
         self.image = image
         self.item = item

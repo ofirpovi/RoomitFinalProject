@@ -4,7 +4,8 @@
 {% load infinite_scroll %}
 {%block PageContent%}
 <!-- Page Container -->
-<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px"
+     xmlns:style="http://www.w3.org/1999/xhtml">
   <!-- The Grid -->
   <div class="w2-row">
 
@@ -14,7 +15,7 @@
         {% for item in list_items %}
           <br>
           {% if request.user == item.item.Username_insert %}
-            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
+            <div class="card" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
                 <img  src="{{ item.item.Username_enter.profile.image.url }}" alt={{item.item.Username_enter}} style="width:100%">
                 <h5 class="w3-left "><a  style="color:black" href="/user/profile/{{item.item.Username_enter}}" ><br><i class="fa fa-hand-o-right"></i> {{item.item.Username_enter}} </a></h5>
                 <h5>score: {{ item.item.Insert_score }} </h5>
@@ -24,7 +25,7 @@
                 <br>
             </div>
           {%else%}
-            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
+            <div class="card" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
               {% if item.image != None %}
                   <img src="{{ item.image.image.url }}" alt={{item.item.Username_insert}} style="width:100%;">
               {%else%}

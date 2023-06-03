@@ -7,7 +7,7 @@ from users.models import Profile
 def compare_profiles(profile1: Profile, profile2: Profile):
     counter, total_fields = 0, 9
     if profile1.profile_status == profile2.profile_status:
-        if calculate_age(profile1.birthdate) == calculate_age(profile2.birthdate):
+        if abs(calculate_age(profile1.birthdate) - calculate_age(profile2.birthdate)) < 3:
             counter += 1
         if profile1.gender == profile2.gender:
             counter += 1

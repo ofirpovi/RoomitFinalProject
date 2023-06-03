@@ -37,14 +37,17 @@ def compare_users(user1, user2):
     profile_score, fields_in_profile = compare_profiles(user1.profile, user2.profile)
 
     # get property requirements similarity score
-    reqP1 = RequirementsP.objects.get(user=user1)
-    reqP2 = RequirementsP.objects.get(user=user2)
-    reqP_score, fields_in_reqP = compare_reqP(reqP1, reqP2)
+    if user1.profile.profile_status == "StatusEnter":
+        reqP1, reqP2 = RequirementsP.objects.get(user=user1), RequirementsP.objects.get(user=user2)
+        reqP_score, fields_in_reqP = compare_reqP(reqP1, reqP2)
+    else:
+        # todo compare properties
+        reqP_score, fields_in_reqP = 0, 0
 
     # get roommate requirements similarity score
-    reqR1 = RequirementsR.objects.get(user=user1)
-    reqR2 = RequirementsR.objects.get(user=user2)
+    reqR1, reqR2 = RequirementsR.objects.get(user=user1), RequirementsR.objects.get(user=user2)
     reqR_score, fields_in_reqR = compare_reqR(reqR1, reqR2)
+
 
     # calc numerator & denominator
     numerator = profile_score + reqP_score + reqR_score
