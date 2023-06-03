@@ -8,4 +8,4 @@ djongo
 pytest
 django-crispy-forms
 crispy-bootstrap5
-verify-email
+django-phonenumber-field
