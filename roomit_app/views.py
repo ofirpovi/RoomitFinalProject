@@ -334,7 +334,6 @@ def make_requirementsP(user):
         return reqP
 
 
-
 # todo: need to add somehow functionality for disqualifiers
 def make_requirementsR(user):
     try:

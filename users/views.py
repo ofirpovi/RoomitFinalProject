@@ -239,7 +239,7 @@ def display_property_reqs(request, username):
     if request.method == 'POST':
         form = UpdateRequirementsPForm(request.POST)
         if form.is_valid():
-            print("in post, location = ", request.POST.get('Location'))
+            print("in post, location = ", request.POST.get('locationField'))
            # check if the RequirementsP for the current user already exists
             if RequirementsP.objects.filter(user_id=user.id).exists():
                 # update the existing RequirementsP instance
