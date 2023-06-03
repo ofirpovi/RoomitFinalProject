@@ -12,3 +12,4 @@ django-phonenumber-field
 django-money
 psycopg2
 django-extensions
+phonenumbers
