@@ -19,7 +19,7 @@
                 <input type="text" id="houseNumberInput" placeholder="House Number" />
                 <input type="text" id="cityInput" placeholder="City" />
                 <input type="text" id="countryInput" placeholder="Country" />
-                <button id="goButton">Go</button>
+                <button id="goButton">Search</button>
             </div>
             <div id="map" style="height: 400px;"></div>
             <script>
@@ -38,10 +38,11 @@
                 var drawControl = new L.Control.Draw({
                     draw: {
                         polygon: true,
-                        marker: true,
+                        marker: false,
                         circle: false,
                         polyline: false,
-                        rectangle: false,
+                        rectangle: true,
+                        circlemarker: false,
                     },
                     edit: {
                         featureGroup: drawnItems,
