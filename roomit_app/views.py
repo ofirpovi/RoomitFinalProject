@@ -315,9 +315,9 @@ def make_requirementsP(user):
     try:
         reqP = []
         requirementP = RequirementsP.objects.get_or_create(user=user)[0]
-        reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
-        reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
-        reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
+        # reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
+        # reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
+        # reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roomates_number", requirementP.MinRoommates, requirementP.MaxRoommates))

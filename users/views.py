@@ -102,10 +102,15 @@ def create_property_offer_view(request, username):
     if request.method == 'POST':
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
+            # selectedArea = request.POST.get('selectedArea')
+            # print("selected area - ", selectedArea)
            # check if the property for the current user already exists
             if PropertyForOffer.objects.filter(user_id=user.id).exists():
                 # update the existing property instance
                 property = PropertyForOffer.objects.get(user_id=user.id)
+                # if selectedArea:
+                #     print("in if selected area")
+                #     property.Location = selectedArea  # Update the Location field
                 pOffer_form = OfferPropertyForm(
                     request.POST, instance=property)
             else:
@@ -184,15 +189,23 @@ def display_property_offer(request, username):
     if request.method == 'POST':
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
+            selectedArea = request.POST.get('selectedArea')
+            # print("selected area - ", selectedArea)
            # check if the property for the current user already exists
             if PropertyForOffer.objects.filter(user_id=user.id).exists():
                 # update the existing property instance
                 property = PropertyForOffer.objects.get(user_id=user.id)
+                if selectedArea:
+                    # print("in if selected area")
+                    property.Location = selectedArea  # Update the Location field
                 pOffer_form = OfferPropertyForm(
                     request.POST, instance=property)
             else:
                 # create a new property instance for the user
                 property = pOffer_form.save(commit=False)
+                if selectedArea:
+                    # print("in if selected area")
+                    property.Location = selectedArea  # Update the Location field
                 property.user_id = user.id
             pOffer_form.save()
             formset = ImageFormSet(
