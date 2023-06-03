@@ -45,19 +45,22 @@
             map.addControl(drawControl);
 
             map.on('draw:created', function (e) {
-            console.log(e);
-<!--                var layer = e.layer;-->
-<!--                drawnItems.clearLayers();-->
-<!--                drawnItems.addLayer(layer);-->
-<!--                var selectedArea = layer.toGeoJSON();-->
-                marker = L.marker(e.latlng).addTo(map);  // Add a new marker at the clicked location
+<!--            console.log(e.layer._latlng.lat);-->
+                var layer = e.layer;
+                drawnItems.clearLayers();
+                drawnItems.addLayer(layer);
+                var selectedArea = layer.toGeoJSON();
+                document.getElementById('selectedAreaInput').value = JSON.stringify(selectedArea);
 
-               // Retrieve the coordinates
-                var latitude = e.layer._latlng.lat;
-                var longitude = e.layer._latlng.lng;
+<!--                marker = L.marker(e.latlng).addTo(map);  // Add a new marker at the clicked location-->
+
+<!--               // Retrieve the coordinates-->
+<!--                var latitude = e.layer._latlng.lat;-->
+<!--                var longitude = e.layer._latlng.lng;-->
 
                 // Use the coordinates as desired (e.g., send them to the server)
-                console.log('Coordinates:', latitude, longitude);
+<!--                console.log('Coordinates:', latitude, longitude);-->
+                console.log('selectedArea:', selectedArea);
 <!--                // Update the representation of the selected area in the location field-->
 <!--                var locationField = document.getElementById('id_location');-->
 <!--                locationField.value = JSON.stringify(selectedArea.geometry);-->
@@ -80,6 +83,7 @@
             </fieldset>
             {% if user.username == user_profile.username %}
                 <div class="form-group">
+                    <input type="hidden" id="selectedAreaInput" name="selectedArea" />
                     <button class="btn btn-outline-info" type="submit">Update</button>
                 </div>
             {% endif %}
