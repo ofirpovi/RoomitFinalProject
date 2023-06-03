@@ -75,23 +75,13 @@ def likes_me(request):
         online_status = profile.profile_status
         items_to_return =[]
         if online_status == "StatusEnter":
-            print("problem  here    ----->    1")
             list_items = list_items.filter(User_enter=user)
-            print("problem  here    ----->    2")
             list_items = list_items.filter(insert_likes_enter=True)
-            print("problem  here    ----->    3")
             for item in list_items:
-                print("problem  here    ----->    4")
                 score = Scores.objects.get(Username_enter = user, Username_insert = item.User_insert)
-                print("problem  here    ----->    5")
                 prop = PropertyForOffer.objects.get(user = item.User_insert)
-                print("problem  here    ----->    6")
                 image = Image.objects.filter(property = prop).first()
-                print("problem  here    ----->    7")
-                print("score  --  ", score)
-                print("image  --  ", type(image), image)
                 items_to_return.append(Posts(score, image, True))
-                print("problem  here    ----->    8 ")
         else:
             list_items = list_items.filter(User_insert=user)
             list_items = list_items.filter(enter_likes_insert=True)
@@ -347,9 +337,9 @@ def make_requirementsP(user):
         requirementP = RequirementsP.objects.get_or_create(user=user)[0]
 
         field_mappings = {
-            "Country": requirementP.Country,
-            "City": requirementP.City,
-            "Neighborhood": requirementP.Neighborhood,
+            # "Country": requirementP.Country,
+            # "City": requirementP.City,
+            # "Neighborhood": requirementP.Neighborhood,
             "rent": (requirementP.MinRent, requirementP.MaxRent),
             "rooms_number": (requirementP.MinRooms, requirementP.MaxRooms),
             "roomates_number": (requirementP.MinRoommates, requirementP.MaxRoommates),
@@ -372,7 +362,6 @@ def make_requirementsP(user):
     except Exception as e:
         print(e)
         return []
-
 
 
 

@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.forms.widgets import DateInput
 from .models import Profile, PropertyForOffer, Image  # , PropertyImage
-from roomit_app.models import RequirementsP, RequirementsR
 
 
 class UserRegisterForm(UserCreationForm):
@@ -39,7 +38,7 @@ class OfferPropertyForm(forms.ModelForm):
     class Meta:
         model = PropertyForOffer
         fields = '__all__'
-        exclude = ['user']
+        exclude = ['user', 'Location']
 
         description = forms.TextInput(attrs={'size': '10'})
         renovated = forms.BooleanField(label='Is the property renovated?')
@@ -72,7 +71,9 @@ class OfferPropertyForm(forms.ModelForm):
                                                     (3, '3'),
                                                     (4, '4'),
                                                     (5, '5'),], label='Number of toilets:')
-
+        labels = {
+            'Location': 'selectedArea'
+        }
 
 class ImageForm(forms.ModelForm):
     class Meta:

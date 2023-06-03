@@ -24,9 +24,9 @@ class Scores(models.Model):
 class RequirementsP(models.Model):
     Requirement_ID = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    Country = models.CharField(max_length=25, default='', blank=True)
-    City = models.CharField(max_length=25, default='', blank=True)
-    Neighborhood = models.CharField(max_length=25, default='', blank=True)
+    # Country = models.CharField(max_length=25, default='', blank=True)
+    # City = models.CharField(max_length=25, default='', blank=True)
+    # Neighborhood = models.CharField(max_length=25, default='', blank=True)
     MinRent = models.IntegerField(null=True, default=None, blank=True)
     MaxRent = models.IntegerField(null=True, default=None, blank=True)
     MinRooms = models.IntegerField(null=True, default=None, blank=True)
@@ -41,6 +41,7 @@ class RequirementsP(models.Model):
     ShelterNearby = models.BooleanField(blank=False, default=False)
     Furnished = models.BooleanField(blank=False, default=False)
     SharedLivingRoom = models.BooleanField(blank=False, default=False)
+    Location = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         super(RequirementsP, self).save(*args, **kwargs)

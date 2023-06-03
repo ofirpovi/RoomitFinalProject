@@ -72,9 +72,9 @@ class Profile(models.Model):
 
 class PropertyForOffer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='property')
-    country = models.CharField(max_length=25, default='')
-    city = models.CharField(max_length=25, default='')
-    neighborhood = models.CharField(max_length=25, default='')
+    # country = models.CharField(max_length=25, default='')
+    # city = models.CharField(max_length=25, default='')
+    # neighborhood = models.CharField(max_length=25, default='')
     rent = MoneyField(max_digits=14, decimal_places=2, default_currency='ILS')
 
     square_meters = models.FloatField(blank=True, null=True)
@@ -108,7 +108,7 @@ class PropertyForOffer(models.Model):
                                                   (3, '3'),
                                                   (4, '4'),
                                                   (5, '5'),], blank=False, default='1')
-
+    Location = models.TextField(blank=True)
     # nearby_choices = [('Supermarket','Supermarket'), ('Bakery','Bakery'), ('Synagogue','Synagogue'), ('Clinic','Clinic'), ('Bars','Bars'), ('Restaurants','Restaurants'), ('University','University'), ('School','School'),('Kindergarten','Kindergarten'), ('Shopping center','Shopping center')]
     # available_nearby = ArrayField(models.CharField(max_length=100, choices = nearby_choices, blank=True, null=True), blank=True, null= True)
     def __str__(self):

@@ -102,10 +102,15 @@ def create_property_offer_view(request, username):
     if request.method == 'POST':
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
+            # selectedArea = request.POST.get('selectedArea')
+            # print("selected area - ", selectedArea)
            # check if the property for the current user already exists
             if PropertyForOffer.objects.filter(user_id=user.id).exists():
                 # update the existing property instance
                 property = PropertyForOffer.objects.get(user_id=user.id)
+                # if selectedArea:
+                #     print("in if selected area")
+                #     property.Location = selectedArea  # Update the Location field
                 pOffer_form = OfferPropertyForm(
                     request.POST, instance=property)
             else:
@@ -184,15 +189,23 @@ def display_property_offer(request, username):
     if request.method == 'POST':
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
+            selectedArea = request.POST.get('selectedArea')
+            # print("selected area - ", selectedArea)
            # check if the property for the current user already exists
             if PropertyForOffer.objects.filter(user_id=user.id).exists():
                 # update the existing property instance
                 property = PropertyForOffer.objects.get(user_id=user.id)
+                if selectedArea:
+                    # print("in if selected area")
+                    property.Location = selectedArea  # Update the Location field
                 pOffer_form = OfferPropertyForm(
                     request.POST, instance=property)
             else:
                 # create a new property instance for the user
                 property = pOffer_form.save(commit=False)
+                if selectedArea:
+                    # print("in if selected area")
+                    property.Location = selectedArea  # Update the Location field
                 property.user_id = user.id
             pOffer_form.save()
             formset = ImageFormSet(
@@ -230,7 +243,6 @@ def display_property_offer(request, username):
         'formset': formset,
         'images': images,
     }
-    #return render(request, 'tests_templates/property_offer_display_test.html', context)
     return render(request, 'users/for_display/property_offer_display.html', context)
 
 
@@ -240,10 +252,16 @@ def display_property_reqs(request, username):
     if request.method == 'POST':
         form = UpdateRequirementsPForm(request.POST)
         if form.is_valid():
+            selectedArea = request.POST.get('selectedArea')
+            # print("before the for, delected area  =  ", selectedArea)
+            # print("in post, selectedArea = ", request.POST.get('selectedArea'))
            # check if the RequirementsP for the current user already exists
             if RequirementsP.objects.filter(user_id=user.id).exists():
                 # update the existing RequirementsP instance
                 propertyR = RequirementsP.objects.get(user_id=user.id)
+                if selectedArea:
+                    # print("in if selected area")
+                    propertyR.Location = selectedArea  # Update the Location field
                 form = UpdateRequirementsPForm(
                     request.POST, instance=propertyR)
             else:

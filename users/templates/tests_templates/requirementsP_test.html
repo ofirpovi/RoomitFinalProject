@@ -1,4 +1,4 @@
-{% extends "tests_templates/base_test.html"%} 
+{% extends "tests_templates/base_test.html"%}
 {% load crispy_forms_tags %}
 {%block PageContent%}
 <!-- Page Container -->
@@ -8,7 +8,7 @@
       <!-- Middle Column -->
       <div class="w3-col m7">
        <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-        <div class="content-section"> 
+        <div class="content-section">
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <fieldset class="form-group">
@@ -36,12 +36,12 @@
                     </div>
                 {%endif%}
             </form>
-      <!-- End Middle Column --> 
+      <!-- End Middle Column -->
       </div>
-    <!-- End Grid -->  
+    <!-- End Grid -->
     </div>
     <br>
-  
+
 
     <!-- End Page Container -->
 </div>

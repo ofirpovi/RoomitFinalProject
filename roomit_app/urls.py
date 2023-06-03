@@ -18,4 +18,5 @@ urlpatterns = [
          app_views.unlike_picture, name='unlike_picture'),
     path('likes-me/', app_views.likes_me, name='likes_me'),
     path('i-like/', app_views.i_like, name='i_like'),
+    # path('save-location/', app_views.save_location, name='save_location'),
 ]
