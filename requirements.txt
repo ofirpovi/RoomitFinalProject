@@ -6,3 +6,4 @@ django-infinite-scroll
 selenium
 djongo
 pytest
+django-crispy-forms
