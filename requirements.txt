@@ -1,5 +1,5 @@
 django
-filters-django
+django-filter
 djangorestframework
 datetime
 django-infinite-scroll
