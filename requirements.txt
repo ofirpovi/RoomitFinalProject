@@ -10,3 +10,4 @@ django-crispy-forms
 crispy-bootstrap5
 django-phonenumber-field
 django-money
+psycopg2
