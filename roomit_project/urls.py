@@ -21,7 +21,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('verification/', include('verify_email.urls')),
+    #path('verification/', include('verify_email.urls')),
     path('user/', include('users.urls')),
     path('', include('roomit_app.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
