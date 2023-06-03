@@ -8,3 +8,4 @@ djongo
 pytest
 django-crispy-forms
 crispy-bootstrap5
+verify-email
