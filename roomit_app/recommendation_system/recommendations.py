@@ -25,18 +25,20 @@ def recommend_roommates(user):
         print("SCORE :  ", similarity_score, "\t USER :  ", liked_user)
 
         # If the similarity score is high enough, add the liked user's likes to the recommended roommates list
+        print("similarity_score  -  ", similarity_score, "  >=  matching_score_to_pass  -   ",matching_score_to_pass, "\t", similarity_score >= matching_score_to_pass)
         if similarity_score >= matching_score_to_pass:
-            recommended_roommates.extend(get_liked_users(liked_user, status))
-
+            users_to_append = get_liked_users(liked_user, status)
+            recommended_roommates.extend(users_to_append)
+            print(users_to_append)
 
     # Remove duplicates from the recommended roommates list
     recommended_roommates = list(set(recommended_roommates))
 
+    if user in recommended_roommates:
+        recommended_roommates.remove(user)
+
     print("RECOMMENDED ROOMMATES")
-    recs = 1
-    for roommate in recommended_roommates:
-        print(recs, "  --->  ", roommate)
-        recs += 1
+    print(recommended_roommates)
 
     return recommended_roommates
 
@@ -73,9 +75,11 @@ def compare_users(user1, user2):
 def get_liked_users(user, status):
     if status == "StatusEnter":
         liked_users = Likes.objects.filter(User_enter=user, enter_likes_insert=True)
+        users_list = [like.User_insert for like in liked_users]
     else:
         liked_users = Likes.objects.filter(User_insert=user, insert_likes_enter=True)
-    return liked_users
+        users_list = [like.User_enter for like in liked_users]
+    return list(users_list)
 
 
 # returns all users with similar profiles, sorted in descending order keyed by the number of users they liked

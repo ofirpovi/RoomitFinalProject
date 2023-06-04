@@ -39,6 +39,7 @@ def requirementsP(request, username):
             form = UpdateRequirementsPForm(instance=requirements)
         return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
     except Exception as e:
+        print(" error   --   ", e)
         return e
 
 
@@ -149,14 +150,14 @@ def post_list(request):
         }
         data.update(paginated)
         context['data']= data
-        # context['recommended_roommates'] = recommend_roommates(request.user)
+        context['recommended_roommates'] = rec_sys.recommend_roommates(request.user)
         return render(request, 'post_list.html', context)
         # return render(request, 'tests_templates/post_list_test.html', data)
 
  
 def get_queryset(request, users):
     # todo : this is for debugging, remove when finished
-    rec_sys.recommend_roommates(request.user)
+    # rec_sys.recommend_roommates(request.user)
     data_to_return = []
     # print(f'\nrequest_data: {request.GET}\n')
     # print(f'users: {users}\n')

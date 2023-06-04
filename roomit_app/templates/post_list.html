@@ -43,7 +43,7 @@
                     {% for item in data.feed %}
                     <br>
                         {% if request.user.profile.profile_status == "StatusInsert" %}
-                            <div class="card" style:"max-width: 200px; margin: auto; text-align: center;">
+                            <div class="card" style="max-width: 200px; margin: auto; text-align: center;">
                                 <img  src="{{ item.user.profile.image.url }}" alt={{item.user.username}} style="width: 100% ">
                                 <h6 class="w3-left "><a href="user/profile/{{item.user.username}}" style="color:black"><br><i class="fa fa-hand-o-right"></i> More about {{item.user.username}} </a></h6>
                                 <h5>score: {{ item.score }} </h5>
