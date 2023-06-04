@@ -1,6 +1,5 @@
 from roomit_app.models import RequirementsP, RequirementsR
 
-
 # check if reqP1 fields are within the bounds or equal to reqP2
 # todo: add calculations like in range req
 # todo: add consideration for idk answers and no answer
