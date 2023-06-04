@@ -20,9 +20,7 @@ class PropertyOfferFilter(django_filters.FilterSet):
     class Meta:
         model = PropertyForOffer
         fields = {
-            'country': ['exact'],
-            'city': ['exact'],
-            'neighborhood': ['exact'],
+            'Location': ['exact'],
             'rent': ['exact'],
             'square_meters': ['exact'],
             'rooms_number': ['exact'],
