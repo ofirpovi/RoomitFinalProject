@@ -143,7 +143,7 @@ def post_list(request):
             context['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
         else: 
             context['offerP_form'] = None
-            context['reqsR_form'] =RoommateFilter(request.GET, Profile.objects.all())
+            context['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
         paginated = get_pagination(request, items)
         data = {
             'more_posts_url': reverse('more'),
@@ -155,19 +155,19 @@ def post_list(request):
 
 
 def get_queryset(request, users):
-    users = rec_sys.recommend_roommates(request.user)
+    rec_sys.recommend_roommates(request.user)
     data_to_return = []
-    print(f'\nrequest_data: {request.GET}\n')
-    print(f'users: {users}\n')
+    # print(f'\nrequest_data: {request.GET}\n')
+    # print(f'users: {users}\n')
     if request.user.profile.profile_status == 'StatusEnter':
         profiles_filterset = RoommateFilter(request.GET, Profile.objects.filter(user__in = users))
         if profiles_filterset.is_valid():
-            print(f'profiles_filterset: {profiles_filterset.qs}\n' )
+            # print(f'profiles_filterset: {profiles_filterset.qs}\n' )
             filter_users= [profile.user for profile in profiles_filterset.qs]
-            print(f'filter_users: {filter_users}\n')
+            # print(f'filter_users: {filter_users}\n')
             prop_filterset = PropertyOfferFilter(request.GET, queryset=PropertyForOffer.objects.filter(user__in = filter_users))
             if prop_filterset.is_valid():
-                print(f'prop_filterset: {prop_filterset.qs}\n')
+                # print(f'prop_filterset: {prop_filterset.qs}\n')
                 for prop in prop_filterset.qs:
                     scores = Scores.objects.filter(Username_insert=prop.user, Username_enter=request.user)
                     if scores:
@@ -194,7 +194,7 @@ def get_queryset(request, users):
                         'image': None,
                         'like': like.insert_likes_enter}
                     data_to_return.append(context)
-        print(f'data_to_return: {data_to_return}\n')
+        # print(f'data_to_return: {data_to_return}\n')
 
     data_to_return = sorted(data_to_return, key=lambda x: x['score'], reverse=True)
     return data_to_return
