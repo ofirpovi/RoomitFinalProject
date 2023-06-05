@@ -6,6 +6,7 @@ from django.urls import reverse
 from infscroll.utils import get_pagination
 from infscroll.views import more_items
 from rest_framework.views import APIView
+from users.forms import ProfileUpdateForm, UserUpdateForm
 from users.models import Profile, PropertyForOffer, Image
 from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
 from .models import RequirementsP, RequirementsR, Scores, Likes
@@ -308,6 +309,50 @@ def unlike_picture(request, username):
         like.insert_likes_enter = False
         like.save()
     return redirect('post_list_page')
+
+@login_required
+def like_profile(request, username):
+    other_user = User.objects.get(username=username)
+    profile = Profile.objects.get(user=request.user)
+    online_status = profile.profile_status
+    if online_status == "StatusEnter":
+        like = Likes.objects.get_or_create(
+            User_enter=request.user, User_insert=other_user)[0]
+        like.enter_likes_insert = True
+        like.save()
+    else:
+        like = Likes.objects.get_or_create(
+            User_enter=other_user, User_insert=request.user)[0]
+        like.insert_likes_enter = True
+        like.save()
+    context={
+        'user_profile':other_user,
+        'u_form': UserUpdateForm(instance=other_user),
+        'p_form': ProfileUpdateForm(instance=other_user.profile),
+        'like': True}
+    return render(request, 'users/profile.html', context)
+
+@login_required
+def unlike_profile(request, username):
+    other_user = User.objects.get(username=username)
+    profile = Profile.objects.get(user=request.user)
+    online_status = profile.profile_status
+    if online_status == "StatusEnter":
+        like = Likes.objects.get_or_create(
+            User_enter=request.user, User_insert=other_user)[0]
+        like.enter_likes_insert = False
+        like.save()
+    else:
+        like = Likes.objects.get_or_create(
+            User_enter=other_user, User_insert=request.user)[0]
+        like.insert_likes_enter = False
+        like.save()
+    context={
+        'user_profile':other_user,
+        'u_form': UserUpdateForm(instance=other_user),
+        'p_form': ProfileUpdateForm(instance=other_user.profile),
+        'like': True}
+    return render(request, 'users/profile.html', context)
 
 
 # todo: add requirements for country, city, neighbourhood

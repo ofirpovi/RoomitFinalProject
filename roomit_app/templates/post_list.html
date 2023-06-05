@@ -100,22 +100,23 @@
                 <div class="w3-card w3-round w3-white w3-center">
                     <div class="w3-container">
                         <br>
-                        <h5>You may also like</h5>
-                        <div style="display: flex">
+                        <h5>You may also like</h5><br>
+                        <div style="column-count: 3; column-gap: 10px;" >
                             {%for user in recommended_roommates%} 
                                 {% if user.like %}
                                     <h8 class="w3-left ">
                                         <a href="user/profile/{{user.username}}">
-                                            <img src="{{ user.profile.image.url }}" class ="w3-circle" style="width:70%;"/><br>
-                                            <a href="/unlike-picture/{{ user.username }}/"><i class="fa fa-thumbs-up" style="color: #50766650"></a></i>
+                                            <img src="{{ user.profile.image.url }}" class ="w3-circle" style="width:40%;"/><br>
+                                            <a href="/unlike-picture/{{ user.username }}"></i></a>
                                             <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
                                         </a>
                                     </h8>
                                 {% else %}
-                                    <h8 class="w3-left "><br>
+                                    <h8 class="w3-left ">
                                         <a href="user/profile/{{user.username}}">
-                                            <img src="{{ user.profile.image.url }}" class ="w3-circle" style="width:70%;"/><br>
-                                            <a href="/unlike-picture/{{ user.username }}/"><i class="fa fa-thumbs-up" style="color: #50766650"></a></i>
+                                            <img src="{{ user.profile.image.url }}" class ="w3-circle" style="width:40%;"/><br>
+                                            {% comment %} <a href="/like-picture/{{ user.username }}/"><button class="button" class="w3-button w3-theme-d1 w3-margin-bottom" ><i class="fa fa-thumbs-up" style="background-color: #50766650"></i></a> {% endcomment %}
+                                            <a href="/like-picture/{{ user.username }}"data-user="{{ user.username}}"></a>
                                             <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
                                         </a>
                                     </h8>
