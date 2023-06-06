@@ -136,14 +136,7 @@ def more(request):
 
 @login_required
 def post_list(request):
-    print('in post_list')
-    NU1 = User.objects.filter(username='NU1')[0]
-    result = Likes.objects.filter(User_insert=NU1, User_enter=request.user).values('enter_likes_insert').first()
-    if result:
-        enter_likes_insert_value = result['enter_likes_insert']
-        print(f'Field value: {enter_likes_insert_value}')
-    else:
-        print("No matching record found.")
+
     if request.method == 'GET':
         context ={}
         if request.user.profile.profile_status == 'StatusEnter':
