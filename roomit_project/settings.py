@@ -29,7 +29,7 @@ DEBUG = True
 # DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = [ '127.0.0.1', 'localhost', 'testserver']
+ALLOWED_HOSTS = [ '127.0.0.1', 'localhost', 'testserver','roomit.pythonanywhere.com']
 # ALLOWED_HOSTS = [ '132.73.84.204', 'www.roomit.cs.bgu.ac.il' ]
 
 # Application definition
