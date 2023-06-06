@@ -27,7 +27,7 @@ def recommend_roommates(user):
         # If the similarity score is high enough, add the liked user's likes to the recommended roommates list
         #print("similarity_score  -  ", similarity_score, "  >=  matching_score_to_pass  -   ",matching_score_to_pass, "\t", similarity_score >= matching_score_to_pass)
         if similarity_score >= matching_score_to_pass:
-            users_to_append = get_liked_users(liked_user, status)
+            users_to_append = get_liked_users(liked_user, status, user)
             recommended_roommates.extend(users_to_append)
             #print(users_to_append)
 
@@ -54,9 +54,7 @@ def compare_users(user1, user2):
         reqP_score, fields_in_reqP = compare_reqP(reqP1, reqP2)
         # print("reqP :  \t", reqP_score, fields_in_reqP)
     else:
-        # todo compare properties
         reqP_score, fields_in_reqP = 0, 0
-        # print("reqP :  \t", reqP_score, fields_in_reqP, "\t SHOULD BE ZERO!")
 
     # get roommate requirements similarity score
     reqR1, reqR2 = RequirementsR.objects.get(user=user1), RequirementsR.objects.get(user=user2)
@@ -72,13 +70,26 @@ def compare_users(user1, user2):
 
 
 # returns all users liked by user
-def get_liked_users(user, status):
+# for each user check if he was already liked by the online user
+# only the users that he didn't like already will be added
+def get_liked_users(user, status, online_user):
+    users_list = []
     if status == "StatusEnter":
         liked_users = Likes.objects.filter(User_enter=user, enter_likes_insert=True)
-        users_list = [like.User_insert for like in liked_users]
+        for like in liked_users:
+            liked_user = like.User_insert
+            try:
+                Likes.objects.get(User_enter=online_user, User_insert=liked_user ,enter_likes_insert=True)
+            except Likes.DoesNotExist:
+                users_list.append(liked_user)
     else:
         liked_users = Likes.objects.filter(User_insert=user, insert_likes_enter=True)
-        users_list = [like.User_enter for like in liked_users]
+        for like in liked_users:
+            liked_user = like.User_enter
+            try:
+                Likes.objects.get(User_insert=online_user, User_enter=liked_user ,insert_likes_enter=True)
+            except Likes.DoesNotExist:
+                users_list.append(liked_user)
     return list(users_list)
 
 
@@ -91,7 +102,6 @@ def get_other_users(online_user, status):
     # create list of users to compare
     for user in users:
         # if online user is the current user, don't add him to the list
-        # todo: check if username is a unique user identifier
         if not (online_user.username == user.username):
             # Count the number of likes for the current user
             if status == "StatusEnter":
@@ -106,6 +116,7 @@ def get_other_users(online_user, status):
     sorted_users = sorted(user_like_counts, key=user_like_counts.get, reverse=True)
 
     return sorted_users
+
 
 
 # user_check = User.objects.get(username="Eylon")
