@@ -22,14 +22,14 @@ def recommend_roommates(user):
         # Compare the liked user's profile with the given user's profile
         similarity_score = compare_users(user, liked_user)
 
-        print("SCORE :  ", similarity_score, "\t USER :  ", liked_user)
+       # print("SCORE :  ", similarity_score, "\t USER :  ", liked_user)
 
         # If the similarity score is high enough, add the liked user's likes to the recommended roommates list
-        print("similarity_score  -  ", similarity_score, "  >=  matching_score_to_pass  -   ",matching_score_to_pass, "\t", similarity_score >= matching_score_to_pass)
+        #print("similarity_score  -  ", similarity_score, "  >=  matching_score_to_pass  -   ",matching_score_to_pass, "\t", similarity_score >= matching_score_to_pass)
         if similarity_score >= matching_score_to_pass:
             users_to_append = get_liked_users(liked_user, status)
             recommended_roommates.extend(users_to_append)
-            print(users_to_append)
+            #print(users_to_append)
 
     # Remove duplicates from the recommended roommates list
     recommended_roommates = list(set(recommended_roommates))
@@ -37,8 +37,8 @@ def recommend_roommates(user):
     if user in recommended_roommates:
         recommended_roommates.remove(user)
 
-    print("RECOMMENDED ROOMMATES")
-    print(recommended_roommates)
+    # print("RECOMMENDED ROOMMATES")
+    # print(recommended_roommates)
 
     return recommended_roommates
 
@@ -46,22 +46,22 @@ def recommend_roommates(user):
 def compare_users(user1, user2):
     # get profile similarity score
     profile_score, fields_in_profile = compare_profiles(user1.profile, user2.profile)
-    print("PROFILE :  \t", profile_score, fields_in_profile)
+    # print("PROFILE :  \t", profile_score, fields_in_profile)
 
     # get property requirements similarity score
     if user1.profile.profile_status == "StatusEnter":
         reqP1, reqP2 = RequirementsP.objects.get(user=user1), RequirementsP.objects.get(user=user2)
         reqP_score, fields_in_reqP = compare_reqP(reqP1, reqP2)
-        print("reqP :  \t", reqP_score, fields_in_reqP)
+        # print("reqP :  \t", reqP_score, fields_in_reqP)
     else:
         # todo compare properties
         reqP_score, fields_in_reqP = 0, 0
-        print("reqP :  \t", reqP_score, fields_in_reqP, "\t SHOULD BE ZERO!")
+        # print("reqP :  \t", reqP_score, fields_in_reqP, "\t SHOULD BE ZERO!")
 
     # get roommate requirements similarity score
     reqR1, reqR2 = RequirementsR.objects.get(user=user1), RequirementsR.objects.get(user=user2)
     reqR_score, fields_in_reqR = compare_reqR(reqR1, reqR2)
-    print("reqR :  \t", reqR_score, fields_in_reqR)
+    # print("reqR :  \t", reqR_score, fields_in_reqR)
 
     # calc numerator & denominator
     numerator = profile_score + reqP_score + reqR_score

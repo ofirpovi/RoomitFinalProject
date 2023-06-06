@@ -97,8 +97,8 @@ class Likes(models.Model):
         User, related_name='enter_likes_insert', on_delete=models.CASCADE)
     User_enter = models.ForeignKey(
         User, related_name='insert_likes_enter', on_delete=models.CASCADE)
-    enter_likes_insert = models.BooleanField(blank=False, default=False)
-    insert_likes_enter = models.BooleanField(blank=False, default=False)
+    enter_likes_insert = models.BooleanField(blank=True, default=None, null=True)
+    insert_likes_enter = models.BooleanField(blank=True, default=None, null=True)
 
     def save(self, *args, **kwargs):
         super(Likes, self).save(*args, **kwargs)

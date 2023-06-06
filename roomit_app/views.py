@@ -136,15 +136,28 @@ def more(request):
 
 @login_required
 def post_list(request):
+    print('in post_list')
+    NU1 = User.objects.filter(username='NU1')[0]
+    result = Likes.objects.filter(User_insert=NU1, User_enter=request.user).values('enter_likes_insert').first()
+    if result:
+        enter_likes_insert_value = result['enter_likes_insert']
+        print(f'Field value: {enter_likes_insert_value}')
+    else:
+        print("No matching record found.")
     if request.method == 'GET':
         context ={}
-        items = get_queryset(request, User.objects.all())
         if request.user.profile.profile_status == 'StatusEnter':
+            not_display = Likes.objects.filter(User_enter=request.user, enter_likes_insert=False)
+            not_display = [like.User_insert.username for like in not_display] 
             context['offerP_form'] = PropertyOfferFilter(request.GET, PropertyForOffer.objects.all())
             context['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
-        else: 
+        else:
+            not_display = Likes.objects.filter(User_insert=request.user, insert_likes_enter=False)
+            not_display = [like.User_enter.username for like in not_display]  
             context['offerP_form'] = None
             context['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
+        
+        items = get_queryset(request, User.objects.exclude(username__in=not_display))
         paginated = get_pagination(request, items)
         data = {
             'more_posts_url': reverse('more'),
@@ -301,6 +314,24 @@ def unlike_picture(request, username):
     if online_status == "StatusEnter":
         like = Likes.objects.get_or_create(
             User_enter=request.user, User_insert=other_user)[0]
+        like.enter_likes_insert = None
+        like.save()
+    else:
+        like = Likes.objects.get_or_create(
+            User_enter=other_user, User_insert=request.user)[0]
+        like.insert_likes_enter = None
+        like.save()
+    return redirect('post_list_page')
+
+@login_required
+def remove_picture(request, username):
+    print('in remove_picture')
+    other_user = User.objects.get(username=username)
+    profile = Profile.objects.get(user=request.user)
+    online_status = profile.profile_status
+    if online_status == "StatusEnter":
+        like = Likes.objects.get_or_create(
+            User_enter=request.user, User_insert=other_user)[0]
         like.enter_likes_insert = False
         like.save()
     else:
@@ -340,6 +371,29 @@ def unlike_profile(request, username):
     if online_status == "StatusEnter":
         like = Likes.objects.get_or_create(
             User_enter=request.user, User_insert=other_user)[0]
+        like.enter_likes_insert = None
+        like.save()
+    else:
+        like = Likes.objects.get_or_create(
+            User_enter=other_user, User_insert=request.user)[0]
+        like.insert_likes_enter = None
+        like.save()
+    context={
+        'user_profile':other_user,
+        'u_form': UserUpdateForm(instance=other_user),
+        'p_form': ProfileUpdateForm(instance=other_user.profile),
+        'like': False}
+    return render(request, 'users/profile.html', context)
+
+@login_required
+def remove_recommand(request, username):
+    print('in remove_recommand')
+    other_user = User.objects.get(username=username)
+    profile = Profile.objects.get(user=request.user)
+    online_status = profile.profile_status
+    if online_status == "StatusEnter":
+        like = Likes.objects.get_or_create(
+            User_enter=request.user, User_insert=other_user)[0]
         like.enter_likes_insert = False
         like.save()
     else:
@@ -347,12 +401,7 @@ def unlike_profile(request, username):
             User_enter=other_user, User_insert=request.user)[0]
         like.insert_likes_enter = False
         like.save()
-    context={
-        'user_profile':other_user,
-        'u_form': UserUpdateForm(instance=other_user),
-        'p_form': ProfileUpdateForm(instance=other_user.profile),
-        'like': True}
-    return render(request, 'users/profile.html', context)
+    return redirect('post_list_page')
 
 
 # todo: add requirements for country, city, neighbourhood

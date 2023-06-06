@@ -16,11 +16,16 @@ urlpatterns = [
           app_views.like_picture, name='like_picture'),
      path('unlike-picture/<str:username>/',
           app_views.unlike_picture, name='unlike_picture'),
+     path('remove-picture/<str:username>/',
+          app_views.remove_picture, name='remove_picture'),
      path('likes-me/', app_views.likes_me, name='likes_me'),
      path('i-like/', app_views.i_like, name='i_like'),
      path('like-profile/<str:username>/',
           app_views.like_profile, name='like_profile'),
-      path('unlike-profile/<str:username>/',
-         app_views.unlike_profile, name='unlike_profile'),     
+     path('unlike-profile/<str:username>/',
+          app_views.unlike_profile, name='unlike_profile'),
+     path('remove-recommand/<str:username>/',
+          app_views.remove_recommand, name='remove_recommand'),
+     
     # path('save-location/', app_views.save_location, name='save_location'),
 ]
