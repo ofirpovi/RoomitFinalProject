@@ -22,14 +22,14 @@ def recommend_roommates(user):
         # Compare the liked user's profile with the given user's profile
         similarity_score = compare_users(user, liked_user)
 
-        print("SCORE :  ", similarity_score, "\t USER :  ", liked_user)
+        # print("SCORE :  ", similarity_score, "\t USER :  ", liked_user)
 
         # If the similarity score is high enough, add the liked user's likes to the recommended roommates list
-        print("similarity_score  -  ", similarity_score, "  >=  matching_score_to_pass  -   ",matching_score_to_pass, "\t", similarity_score >= matching_score_to_pass)
+        # print("similarity_score  -  ", similarity_score, "  >=  matching_score_to_pass  -   ",matching_score_to_pass, "\t", similarity_score >= matching_score_to_pass)
         if similarity_score >= matching_score_to_pass:
             users_to_append = get_liked_users(liked_user, status, user)
             recommended_roommates.extend(users_to_append)
-            print(users_to_append)
+            # print(users_to_append)
 
     # Remove duplicates from the recommended roommates list
     recommended_roommates = list(set(recommended_roommates))

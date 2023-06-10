@@ -14,6 +14,8 @@ from .requirements import ListReq, RangReq, YNReq
 from django.views.generic.list import ListView
 from .filters import PropertyOfferFilter, RoommateFilter
 from .recommendation_system import recommendations as rec_sys
+from .requirements.LocationReq import LocationReq
+
 
 def home(request):
     return render(request, 'roomit_app/post_list.html')
@@ -32,13 +34,21 @@ def requirementsP(request, username):
         if request.method == 'POST':
             form = UpdateRequirementsPForm(request.POST, instance=requirements)
             if form.is_valid():
+                selectedArea = request.POST.get('selectedArea')
+                if selectedArea:
+                    print("in if selected area")
+                    requirements.Location = selectedArea  # Update the Location field
                 form.save()
                 messages.success(request, f'Your Requirements have been saved!')
                 update_scores(request)
                 return redirect('requirementsR', user)
         else:
+            try:
+                pl = requirements.Location
+            except:
+                pl = None
             form = UpdateRequirementsPForm(instance=requirements)
-        return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username})
+        return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username, 'property_location': pl,})
     except Exception as e:
         print(" error   --   ", e)
         return e
@@ -204,6 +214,7 @@ def get_queryset(request, users):
    
 
 def update_scores(request):
+    # print("    -----------------    SCORE UPDATE    -----------------    ")
     online_user = request.user
     Scores.objects.filter(Username_enter=online_user).delete()
     Scores.objects.filter(Username_insert=online_user).delete()
@@ -215,23 +226,25 @@ def update_scores(request):
     if online_status == 'StatusEnter':
         reqP = make_requirementsP(request.user)
         for user in potential_profiles:
-            score_enter = round(update_scores_enter(reqR, reqP, user))
+            score_enter = round(update_scores_enter(reqR, reqP, user.user))
             requirement = make_requirementsR(user.user)
             score_insert = round(update_scores_insert(
-                requirement, online_user.profile))
+                requirement, online_user))
             score = Scores(Username_enter=online_user, Username_insert=user.user,
                            Enter_score=score_enter, Insert_score=score_insert)
             score.save()
+            # print("score insert - (", online_user.username,")\t", score_insert, "\nscore enter (", user.user.username,")- \t", score_enter)
     else:
         for user in potential_profiles:
             requirement = make_requirementsR(user.user)
             reqP = make_requirementsP(user.user)
             score_enter = round(update_scores_enter(
-                requirement, reqP, online_user.profile))
-            score_insert = round(update_scores_insert(reqR, user))
+                requirement, reqP, online_user))
+            score_insert = round(update_scores_insert(reqR, user.user))
             score = Scores(Username_enter=user.user, Username_insert=online_user,
                            Enter_score=score_enter, Insert_score=score_insert)
             score.save()
+            # print("score insert - (", user.user.username,")\t\n", score_insert, "score enter (", online_user.username,")- \t", score_enter)
 
 
 def after_status_update(request):
@@ -355,55 +368,38 @@ def unlike_profile(request, username):
     return render(request, 'users/profile.html', context)
 
 
-# todo: add requirements for country, city, neighbourhood
 # todo: need to add somehow functionality for disqualifiers
-# def make_requirementsP(user):
-#     try:
-#         reqP = []
-#         requirementP = RequirementsP.objects.get_or_create(user=user)[0]
-#         reqP.append(ListReq.ListReq(True, requirementP.Weight, "Country", requirementP.Country))
-#         reqP.append(ListReq.ListReq(True, requirementP.Weight, "City", requirementP.City))
-#         reqP.append(ListReq.ListReq(True, requirementP.Weight, "Neighborhood", requirementP.Neighborhood))
-#         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rent", requirementP.MinRent, requirementP.MaxRent))
-#         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "rooms_number", requirementP.MinRooms, requirementP.MaxRooms))
-#         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "roomates_number", requirementP.MinRoommates, requirementP.MaxRoommates))
-#         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "toilets_number", requirementP.MinToilets, None))
-#         reqP.append(RangReq.RangeReq(False, requirementP.Weight, "showers_number", requirementP.MinShowers, None))
-#         reqP.append(YNReq.YNReq(False, requirementP.Weight, "shelter_inside", requirementP.ShelterInside))
-#         reqP.append(YNReq.YNReq(False, requirementP.Weight, "shelter_nerbay", requirementP.ShelterNearby))
-#         reqP.append(YNReq.YNReq(False, requirementP.Weight, "furnished", requirementP.Furnished))
-#         reqP.append(YNReq.YNReq(False, requirementP.Weight, "renovated", requirementP.Renovated))
-#         reqP.append(YNReq.YNReq(False, requirementP.Weight, "shared_livingroom", requirementP.SharedLivingRoom))
-#         return reqP
-#     except Exception as e:
-#         print(e)
-#         return reqP
 def make_requirementsP(user):
     try:
         reqP = []
         requirementP = RequirementsP.objects.get_or_create(user=user)[0]
 
         field_mappings = {
-            # "Country": requirementP.Country,
-            # "City": requirementP.City,
-            # "Neighborhood": requirementP.Neighborhood,
-            "rent": (requirementP.MinRent, requirementP.MaxRent),
+            "rent": ((requirementP.MinRent), requirementP.MaxRent),
             "rooms_number": (requirementP.MinRooms, requirementP.MaxRooms),
             "roomates_number": (requirementP.MinRoommates, requirementP.MaxRoommates),
             "toilets_number": (requirementP.MinToilets, None),
             "showers_number": (requirementP.MinShowers, None),
             "shelter_inside": requirementP.ShelterInside,
-            "shelter_nerbay": requirementP.ShelterNearby,
+            "shelter_nearby": requirementP.ShelterNearby,
             "furnished": requirementP.Furnished,
             "renovated": requirementP.Renovated,
-            "shared_livingroom": requirementP.SharedLivingRoom
+            "shared_livingroom": requirementP.SharedLivingRoom,
+            "Location": requirementP.Location
         }
 
         for field, value in field_mappings.items():
             if field in ["rent", "rooms_number", "roomates_number", "toilets_number", "showers_number"]:
-                reqP.append(RangReq.RangeReq(False, requirementP.Weight, field, *value))
+                if field == "rent":
+                    reqP.append(RangReq.RangeReq(False, requirementP.Weight, field, *value))
+                else:
+                    reqP.append(RangReq.RangeReq(False, requirementP.Weight, field, *value))
+            elif field == "location":
+                reqP.append(LocationReq(False, requirementP.Weight, field, value))
+            elif field in ["shared_livingroom", "renovated", "furnished", "shelter_nearby", "shelter_inside"]:
+                reqP.append((YNReq.YNReq(False, requirementP.Weight, field, value)))
             else:
-                reqP.append(ListReq.ListReq(True, requirementP.Weight, field, value))
+                reqP.append(ListReq.ListReq(False, requirementP.Weight, field, value))
 
         return reqP
     except Exception as e:
@@ -411,25 +407,7 @@ def make_requirementsP(user):
         return []
 
 
-
 # todo: need to add somehow functionality for disqualifiers
-# def make_requirementsR(user):
-#     try:
-#         reqR = []
-#         requirementR = RequirementsR.objects.get_or_create(user=user)[0]
-#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "gender", requirementR.Gender))
-#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "occupation", requirementR.Occupation))
-#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "smoker", requirementR.Smoker))
-#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "diet", requirementR.Diet))
-#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "status", requirementR.Status))
-#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "hospitality", requirementR.Hospitality))
-#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "kosher", requirementR.Kosher))
-#         reqR.append(ListReq.ListReq(False, requirementR.Weight, "expense_management", requirementR.Expense_Management))
-#         reqR.append(RangReq.RangeReq(False, requirementR.Weight, "birthdate", requirementR.MinAge, requirementR.MaxAge))
-#         return reqR
-#     except Exception as e:
-#         print(e)
-#         return reqR
 def make_requirementsR(user):
     try:
         reqR = []
@@ -460,35 +438,50 @@ def make_requirementsR(user):
 
 
 def calculate_score(reqs, user):
+    # print("in calculate score")
+    print("\t\t---------------------\t\t", user.username,"\t\t---------------------\t\t")
     score = 0
     req_counter = 0
     try:
         property = PropertyForOffer.objects.get(user=user)
-    except:
+    except Exception as e1:
+        # print("property error - \t",e1)
         property = None
+        # print("property is none")
     for req in reqs:
         req_text = req._text
         try:
             req_score = req.calculate_score(getattr(user, req_text))
-        except AttributeError:
+            # print("in first try")
+        except Exception as e2:
+            # print("2.\t",e2)
             try:
                 req_score = req.calculate_score(
                     getattr(user.profile, req_text))
-            except AttributeError:
+                # print("in second try")
+            except Exception as e3:
+                # print("3.\t",e3)
                 try:
                     req_score = req.calculate_score(
                         getattr(property, req_text))
-                except AttributeError:
+                    # print("in third try")
+                except Exception as e4:
+                    print("\t\t-------------\t\tDOESNT WORK\t\t-------------\t\t")
+                    print("req text  -  ", req_text)
+                    print(e2,'\n', e3,'\n', e4,'\n')
                     req_score = None
         if req_score is not None:
             score += req_score
             req_counter += 1
+            req_score = None
     if req_counter == 0:
+        # print("counter = 0,\tscore = ", score)
+        # print("\t\t-------------------------------------------------------------------\t\t\n\n")
         return 0
     else:
+        # print("counter = ",req_counter,"\tscore = ", score)
+        # print("\t\t-------------------------------------------------------------------\t\t\n\n")
         return score / req_counter
-
-
 
 
 class Posts:

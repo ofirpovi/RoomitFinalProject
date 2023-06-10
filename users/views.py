@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy
-
+import json
 from roomit_app.views import update_scores, after_status_update
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ImageForm, OfferPropertyForm
 from .models import PropertyForOffer, Image, Profile
@@ -97,20 +97,24 @@ def create_property_offer_view(request, username):
     if request.method == 'POST':
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
+            selectedArea = request.POST.get('selectedArea')
             # selectedArea = request.POST.get('selectedArea')
             # print("selected area - ", selectedArea)
            # check if the property for the current user already exists
             if PropertyForOffer.objects.filter(user_id=user.id).exists():
                 # update the existing property instance
                 property = PropertyForOffer.objects.get(user_id=user.id)
-                # if selectedArea:
-                #     print("in if selected area")
-                #     property.Location = selectedArea  # Update the Location field
+                if selectedArea:
+                    print("in if selected area")
+                    property.Location = selectedArea  # Update the Location field
                 pOffer_form = OfferPropertyForm(
                     request.POST, instance=property)
             else:
                 # create a new property instance for the user
                 property = pOffer_form.save(commit=False)
+                if selectedArea:
+                    # print("in if selected area")
+                    property.Location = selectedArea  # Update the Location field
                 property.user_id = user.id
             pOffer_form.save()
             formset = ImageFormSet(
@@ -127,11 +131,13 @@ def create_property_offer_view(request, username):
             return redirect('requirementsR', request.user)
     else:
         image_form = None
+        pl = None
         try:
             property = get_object_or_404(PropertyForOffer, user=user)
             pOffer_form = OfferPropertyForm(instance=property)
             formset = ImageFormSet(instance=property)
             image_form = ImageForm()
+            pl = property.Location
         except:
             pOffer_form = OfferPropertyForm()
             formset = ImageFormSet()
@@ -141,6 +147,8 @@ def create_property_offer_view(request, username):
             'pOffer_form': pOffer_form,
             'formset': formset,
             'image_form': image_form,
+            'property_location': pl,
+
         }
     return render(request, 'users/property_offer.html', context)
 
@@ -184,7 +192,8 @@ def display_property_offer(request, username):
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
             selectedArea = request.POST.get('selectedArea')
-            # print("selected area - ", selectedArea)
+            # print("selected area length - ", len(selectedArea))
+            # print("selected area length with json load - ", len(json.loads(selectedArea)))
            # check if the property for the current user already exists
             if PropertyForOffer.objects.filter(user_id=user.id).exists():
                 # update the existing property instance
@@ -221,21 +230,25 @@ def display_property_offer(request, username):
             return redirect('property-offer-display', request.user)
 
     images = None
+    pl = None
     try:
 
         property = get_object_or_404(PropertyForOffer, user=user)
         pOffer_form = OfferPropertyForm(instance=property)
         formset = ImageFormSet(instance=property)
         images = Image.objects.filter(property=property)
+        pl = property.Location
 
     except:
         pOffer_form = OfferPropertyForm()
         formset = ImageFormSet()
+
     context = {
         'user_profile': user,
         'property_form':  pOffer_form,
         'formset': formset,
         'images': images,
+        'property_location': pl,
     }
     return render(request, 'users/for_display/property_offer_display.html', context)
 
@@ -247,6 +260,11 @@ def display_property_reqs(request, username):
         form = UpdateRequirementsPForm(request.POST)
         if form.is_valid():
             selectedArea = request.POST.get('selectedArea')
+
+                # print("selected area - ", type(selectedArea))
+                # print("selected area length - ", len(selectedArea))
+                # print("selected area length with json load - ", len(json.loads(selectedArea)))
+                # print("selected area length with json load - ", json.loads(selectedArea))
             # print("before the for, delected area  =  ", selectedArea)
             # print("in post, selectedArea = ", request.POST.get('selectedArea'))
            # check if the RequirementsP for the current user already exists
@@ -254,7 +272,7 @@ def display_property_reqs(request, username):
                 # update the existing RequirementsP instance
                 propertyR = RequirementsP.objects.get(user_id=user.id)
                 if selectedArea:
-                    # print("in if selected area")
+                    print("in if selected area")
                     propertyR.Location = selectedArea  # Update the Location field
                 form = UpdateRequirementsPForm(
                     request.POST, instance=propertyR)
@@ -274,9 +292,12 @@ def display_property_reqs(request, username):
             property_form = UpdateRequirementsPForm(instance=propertyR)
         except:
             property_form = UpdateRequirementsPForm()
+        # pl = json.loads(propertyR.Location)
+        pl = propertyR.Location
         context = {
             'user_profile': user,
             'property_form': property_form,
+            'property_location': pl,
         }
         return render(request, 'users/for_display/property_reqs_display.html', context)
 

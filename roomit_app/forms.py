@@ -40,7 +40,6 @@ class UpdateRequirementsPForm(forms.ModelForm):
             'ShelterInside': 'Shelter Inside',
             'ShelterNearby': 'Shelter Nearby',
             'Furnished': 'Furnished',
-            'SharedLivingRoom': 'Shared Living Room',
-            'Location': 'selectedArea'
+            'SharedLivingRoom': 'Shared Living Room'
         }
 

@@ -7,12 +7,13 @@ class ListReq(Requirement):
         self._desired_answer = desired_answer
 
     def calculate_score(self, answer):
+        # print("List - \n\tanswer  -\t", answer, "\n\tdesired answer:  -\t", self._desired_answer)
         # if there is no desired answer
         if self._desired_answer is None or self._desired_answer == []:
             return None
         # if desired answer is don't care -> grade = weight
         # todo: check id D is don't care
-        elif self._desired_answer == 'D':
+        elif self._desired_answer == 'D' or self._desired_answer == 'empty':
             return self._weight
         # if there is a desired answer for the requirement but there is no answer
         elif answer is None:
