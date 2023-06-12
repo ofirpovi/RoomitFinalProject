@@ -26,11 +26,11 @@
               <div class="w3-center">
                 {%if like %}
                 <a href="/unlike-profile/{{ user_profile.username }}/">
-                  <button class="button" style="background-color: #50766650" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ user_profile.username}}"><i class="fa fa-thumbs-up"></i> Like</button>
+                  <button class="button" style="background-color:" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ user_profile.username}}"><i class="fa fa-thumbs-up"></i></button>
                 </a>
                 {%else%}
                 <a href="/like-profile/{{ user_profile.username }}/">
-                  <button class="button" style="background-color: #50766650" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ user_profile.username}}"><i class="fa fa-thumbs-down"></i> unLike</button>
+                  <button class="button" style="background-color: #50766650" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ user_profile.username}}"><i class="fa fa-thumbs-o-up"></i></button>
                 </a>
                 {%endif%}
               </div>

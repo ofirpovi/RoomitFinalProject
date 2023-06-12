@@ -305,22 +305,22 @@ def display_property_reqs(request, username):
 
 @login_required
 def display_roomi_reqs(request, username):
-    print('In display-roomi-reqs')
-    print(request.method)
+    # print('In display-roomi-reqs')
+    # print(request.method)
     user = User.objects.get(username=username)
     if request.method == 'POST':
         print('In display-roomi-reqs, POST')
         form = UpdateRequirementsRForm(request.POST)
         if form.is_valid():
-            print('In display-roomi-reqs, Form Is Valid')
+            # print('In display-roomi-reqs, Form Is Valid')
            # check if the RequirementsR for the current user already exists
             if RequirementsR.objects.filter(user_id=user.id).exists():
-                print('In display-roomi-reqs, Form Is Exist')
+                # print('In display-roomi-reqs, Form Is Exist')
                 # update the existing RequirementsR instance
                 roomiR = RequirementsR.objects.get(user_id=user.id)
                 form = UpdateRequirementsRForm(request.POST, instance=roomiR)
             else:
-                print('In display-roomi-reqs, Form Is Not Exist')
+                # print('In display-roomi-reqs, Form Is Not Exist')
                 # create a new RequirementsR instance for the user
                 roomiR = form.save(commit=False)
                 roomiR.user_id = user.id

@@ -347,6 +347,24 @@ def unlike_picture(request, username):
     if online_status == "StatusEnter":
         like = Likes.objects.get_or_create(
             User_enter=request.user, User_insert=other_user)[0]
+        like.enter_likes_insert = None
+        like.save()
+    else:
+        like = Likes.objects.get_or_create(
+            User_enter=other_user, User_insert=request.user)[0]
+        like.insert_likes_enter = None
+        like.save()
+    return redirect('post_list_page')
+
+@login_required
+def remove_picture(request, username):
+    print('in remove_picture')
+    other_user = User.objects.get(username=username)
+    profile = Profile.objects.get(user=request.user)
+    online_status = profile.profile_status
+    if online_status == "StatusEnter":
+        like = Likes.objects.get_or_create(
+            User_enter=request.user, User_insert=other_user)[0]
         like.enter_likes_insert = False
         like.save()
     else:
@@ -386,6 +404,29 @@ def unlike_profile(request, username):
     if online_status == "StatusEnter":
         like = Likes.objects.get_or_create(
             User_enter=request.user, User_insert=other_user)[0]
+        like.enter_likes_insert = None
+        like.save()
+    else:
+        like = Likes.objects.get_or_create(
+            User_enter=other_user, User_insert=request.user)[0]
+        like.insert_likes_enter = None
+        like.save()
+    context={
+        'user_profile':other_user,
+        'u_form': UserUpdateForm(instance=other_user),
+        'p_form': ProfileUpdateForm(instance=other_user.profile),
+        'like': False}
+    return render(request, 'users/profile.html', context)
+
+@login_required
+def remove_recommand(request, username):
+    print('in remove_recommand')
+    other_user = User.objects.get(username=username)
+    profile = Profile.objects.get(user=request.user)
+    online_status = profile.profile_status
+    if online_status == "StatusEnter":
+        like = Likes.objects.get_or_create(
+            User_enter=request.user, User_insert=other_user)[0]
         like.enter_likes_insert = False
         like.save()
     else:
@@ -393,12 +434,7 @@ def unlike_profile(request, username):
             User_enter=other_user, User_insert=request.user)[0]
         like.insert_likes_enter = False
         like.save()
-    context={
-        'user_profile':other_user,
-        'u_form': UserUpdateForm(instance=other_user),
-        'p_form': ProfileUpdateForm(instance=other_user.profile),
-        'like': True}
-    return render(request, 'users/profile.html', context)
+    return redirect('post_list_page')
 
 
 # # todo: need to add somehow functionality for disqualifiers
