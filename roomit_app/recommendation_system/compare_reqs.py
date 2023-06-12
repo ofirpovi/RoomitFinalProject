@@ -12,7 +12,7 @@ def compare_reqP(reqP1: RequirementsP, reqP2: RequirementsP):
         if not_none(var1, var2):
             if var1 >= var2:
                 counter += 1
-        elif var1 is None and var2 is None:
+        elif var1 == 'D' or var1 is None:
             total_fields -= 1
 
     def check_both_and_increment(var11, var12, var21, var22):
@@ -74,7 +74,7 @@ def compare_reqR(reqR1: RequirementsR, reqR2: RequirementsR):
         if not_none(var1, var2):
             if var1 == var2:
                 counter += 1
-        elif var1 is None and var2 is None:
+        elif var1 == 'D' or var1 is None:
             total_fields -= 1
 
     def check_both_and_increment(var11, var12, var21, var22):

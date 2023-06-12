@@ -12,7 +12,7 @@ def compare_profiles(profile1: Profile, profile2: Profile):
         if not_none(var1, var2):
             if var1 == var2:
                 counter += 1
-        elif var1 is None and var2 is None:
+        elif var1 == 'D' or var1 is None:
             total_fields -= 1
 
     if profile1.profile_status == profile2.profile_status:
