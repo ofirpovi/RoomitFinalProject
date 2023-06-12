@@ -1,5 +1,5 @@
 import unittest
-from roomit_app.requirements.YNReq import YNReq
+from roomit_app.matches.requirements import YNReq
 
 
 class TestYNReq(unittest.TestCase):

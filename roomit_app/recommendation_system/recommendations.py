@@ -38,7 +38,7 @@ def recommend_roommates(user):
         recommended_roommates.remove(user)
 
     # print("RECOMMENDED ROOMMATES")
-    # print(recommended_roommates)
+    print(recommended_roommates)
 
     return recommended_roommates
 

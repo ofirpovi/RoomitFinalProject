@@ -287,13 +287,14 @@ def display_property_reqs(request, username):
             # Redirect to the RequirementsP detail page
             return redirect('property-reqs-display', request.user)
     else:
+        pl = None
         try:
             propertyR = get_object_or_404(RequirementsP, user=user)
             property_form = UpdateRequirementsPForm(instance=propertyR)
+            pl = propertyR.Location
         except:
             property_form = UpdateRequirementsPForm()
-        # pl = json.loads(propertyR.Location)
-        pl = propertyR.Location
+
         context = {
             'user_profile': user,
             'property_form': property_form,

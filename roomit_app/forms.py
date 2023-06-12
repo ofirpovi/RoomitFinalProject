@@ -6,7 +6,7 @@ class UpdateRequirementsRForm(forms.ModelForm):
     class Meta:
         model = RequirementsR
         fields = ['Occupation', 'MinAge', 'MaxAge', 'Gender', 'Smoker',
-                  'Diet', 'Kosher', 'Status', 'Expense_Management', 'Hospitality']
+                  'Diet', 'Kosher', 'Status', 'Expense_Management']
         exclude = ['Requirement_ID', 'Roommates_ID']
         labels = {
             'Occupation': 'Occupation',
@@ -15,8 +15,6 @@ class UpdateRequirementsRForm(forms.ModelForm):
             'Gender': 'Gender',
             'Status': 'Relationship Status',
             'Expense_Management': 'Shared Expenses',
-            'Hospitality': 'Hospitality'
-
         }
 
 
