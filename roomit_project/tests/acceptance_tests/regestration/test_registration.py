@@ -150,6 +150,7 @@ class TestRegistration(TestCase):
         #     except:
         #         break
         #
+
         for name in self.names:
             self.driver.find_element(By.LINK_TEXT, "Register").click()
             self.create_new_user(name)
@@ -263,3 +264,4 @@ class TestRegistration(TestCase):
             self.driver.find_element(By.CSS_SELECTOR, "#div_id_Renovated > .form-check-label").click()
         if choice(self.bools):
             self.driver.find_element(By.CSS_SELECTOR, "#div_id_SharedLivingRoom > .form-check-label").click()
+

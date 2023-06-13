@@ -138,14 +138,18 @@ def i_like(request):
 
 @login_required
 def more(request):
-    context = {}
-    items = get_queryset(request, User.objects.all())
     if request.user.profile.profile_status == 'StatusEnter':
-        context['offerP_form'] = PropertyOfferFilter(request.GET, PropertyForOffer.objects.all())
-        context['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
+        not_display = Likes.objects.filter(User_enter=request.user, enter_likes_insert=False)
+        not_display = [like.User_insert.username for like in not_display]
+        # data['offerP_form'] = PropertyOfferFilter(request.GET, PropertyForOffer.objects.all())
+        # data['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
     else:
-        context['offerP_form'] = None
-        context['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
+        not_display = Likes.objects.filter(User_insert=request.user, insert_likes_enter=False)
+        not_display = [like.User_enter.username for like in not_display]
+        # data['offerP_form'] = None
+        # data['reqsR_form'] = RoommateFilter(request.GET, Profile.objects.all())
+
+    items = get_queryset(request, User.objects.exclude(username__in=not_display))
     print("in more - ", len(items))
     return more_items(request, items, template='more.html')
 
