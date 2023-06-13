@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'verify_email.apps.VerifyEmailConfig',
     'phonenumber_field',
     'infscroll',
+    #'endless_pagination',
     'djmoney',
     'django.contrib.postgres',
     'django_filters',
