@@ -38,6 +38,7 @@
     {% endblock %}
 
     <!-- Navbar -->
+    {% block Navbar%}
     {% if user.is_authenticated %}
       <div class="w3-top w3-bar w3-theme-d2 w3-large">
         <div class="w3-left-align">
@@ -64,6 +65,7 @@
         </div>
       </div>
     {% endif %}
+    {%endblock Navbar%}
     <!-- End Navbar -->  
 
     {%block PageContent%}
