@@ -18,6 +18,7 @@ from django.views.generic import CreateView, UpdateView, TemplateView
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.files import File
+# from models import User
 # Create your views here.
 
 

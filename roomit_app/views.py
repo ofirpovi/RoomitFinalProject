@@ -1,13 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from infscroll.utils import get_pagination
 from infscroll.views import more_items
 from rest_framework.views import APIView
 from users.forms import ProfileUpdateForm, UserUpdateForm
-from users.models import Profile, PropertyForOffer, Image
+from users.models import Profile, PropertyForOffer, Image, User
 from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
 from .matches.calculate_score import update_scores
 from .models import RequirementsP, RequirementsR, Scores, Likes
