@@ -2,6 +2,9 @@ from django.forms import inlineformset_factory
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
+
+
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy
@@ -36,6 +39,13 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'users/register.html', {'form': form})
+
+
+class CustomLoginView(LoginView):
+    def get(self, request, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return redirect('post_list_page')
+        return super().get(request, *args, **kwargs)
 
 
 @login_required
