@@ -24,12 +24,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'django-insecure-!7wez!r43==t#rrd^)o_nz3j==70+oit1k^n%$rh_944o4bl0u'
 # SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-!7wez!r43==t#rrd^)o_nz3j==70+oit1k^n%$rh_944o4bl0u')
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# SECURITY WARNING: don't run with debug turned on in production!'
 DEBUG = True
 # DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = [ '127.0.0.1', 'localhost', 'testserver']
+ALLOWED_HOSTS = [ '127.0.0.1', 'localhost', '192.168.1.119', 'testserver']
 # ALLOWED_HOSTS = [ '132.73.84.204', 'www.roomit.cs.bgu.ac.il' ]
 
 # Application definition
@@ -66,6 +66,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
 ]
 
 ROOT_URLCONF = 'roomit_project.urls'

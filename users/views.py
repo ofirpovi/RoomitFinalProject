@@ -20,21 +20,30 @@ from django.contrib.auth.models import User
 from django.core.files import File
 # Create your views here.
 
+from django.middleware.csrf import get_token
+from django.http import JsonResponse
+
+def get_csrf_token(request):
+    csrf_token = get_token(request)
+    return JsonResponse({'csrfToken': csrf_token})
+
 
 def register(request):
     if request.method == 'POST':
+            print(request.POST)
             form = UserRegisterForm(request.POST)
             if form.is_valid():
                 form.save()
                 username = form.cleaned_data.get('username')
                 messages.warning(request, f'Hi {username}, welcome to ROOMIT! You can now edit your profile')
                 new_user = authenticate(username=form.cleaned_data['username'],
-                                        password=form.cleaned_data['password1'],)
+                                        password=form.cleaned_data['password1'])
                 login(request, new_user)
-                return redirect('fill_info', new_user)
-    else:
-        form = UserRegisterForm()
-    return render(request, 'users/register.html', {'form': form})
+                return JsonResponse({}, status=200)
+            else:
+                print("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+                return JsonResponse({"errors":form.errors.as_json()}, status=500)
+    return JsonResponse({'message': 'Unknown error occured'})
 
 
 @login_required

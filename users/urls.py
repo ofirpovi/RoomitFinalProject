@@ -20,4 +20,5 @@ urlpatterns = [
     path('property-offer-display/<str:username>/', users_views.display_property_offer, name='property-offer-display'),
     path('property-reqs-display/<str:username>/', users_views.display_property_reqs, name='property-reqs-display'),
     path('roomi-reqs-display/<str:username>/', users_views.display_roomi_reqs, name='roomi-reqs-display'),
+    path('get-csrf-token/', users_views.get_csrf_token, name='get_csrf_token'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
