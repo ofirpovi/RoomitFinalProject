@@ -5,6 +5,57 @@ import PhoneInput from 'react-native-phone-input';
 import * as ImagePicker from 'expo-image-picker';
 import UploadPhoto from './UploadPhoto';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker';
+
+const genderOptions = [
+  { label: 'Female', value: 'Female' },
+  { label: 'Male', value: 'Male' },
+  { label: 'Not Defined', value: 'Not Defined' },
+];
+
+const occupationOptions = [
+  { label: 'Full-time job', value: 'Full-time job' },
+  { label: 'Part-time job', value: 'Part-time job' },
+  { label: 'Student', value: 'Student' },
+  { label: 'Doesn\'t matter', value: 'Doesn\'t matter' },
+];
+
+const smokerOptions = [
+  { label: 'Yes', value: 'Yes' },
+  { label: 'No', value: 'No' },
+  { label: 'Occassionally', value: 'Occassionally' },
+  { label: 'Socially', value: 'Socially' },
+];
+
+const dietOptions = [
+  { label: 'Carnivore', value: 'Carnivore' },
+  { label: 'Pescetarian', value: 'Pescetarian' },
+  { label: 'Vegetarian', value: 'Vegetarian' },
+  { label: 'Vegan', value: 'Vegan' },
+  { label: 'Raw Veganism', value: 'Raw Veganism' },
+];
+
+const statusOptions = [
+  { label: 'Single', value: 'Single' },
+  { label: 'Married', value: 'Married' },
+  { label: 'In a relationship', value: 'In a relationship' },
+  { label: 'Doesn\'t matter', value: 'Doesn\'t matter' },
+];
+
+const hospitalityOptions = [
+  { label: 'Love', value: 'Love' },
+  { label: 'Prefer Not', value: 'Prefer Not' },
+];
+
+const kosherOptions = [
+  { label: 'Yes', value: 'Yes' },
+  { label: 'No', value: 'No' },
+];
+
+const expenseManagementOptions = [
+  { label: 'Prefer', value: 'Prefer' },
+  { label: 'Prefer Not', value: 'Prefer Not' },
+];
 
 
 const PersonalInfoScreen = ({ navigation }) => {
@@ -16,15 +67,27 @@ const PersonalInfoScreen = ({ navigation }) => {
   const [birthdateDay, setBirthdateDay] = useState('');
   const [gender, setGender] = useState('');
   const [selectedImage, setSelectedImage] = useState(require('./assets/default_for_profile.jpg'));
-  const [occupation, setOccupation] = useState(''); // 'Yes' or 'No'
-  const [smoking, setSmoking] = useState(''); // 'Yes' or 'No'
-  const [diet, setDiet] = useState(''); // 'Yes' or 'No'
-  const [kosher, setKosher] = useState(''); // 'Yes' or 'No'
-  const [single, setSingle] = useState(''); // 'Yes' or 'No'
-  const [hospitality, setHospitality] = useState(''); // 'Yes' or 'No'
-  const [sharingShopping, setSharingShopping] = useState(''); // 'Yes' or 'No'
+  // const [occupation, setOccupation] = useState(''); // 'Yes' or 'No'
+  // const [smoking, setSmoking] = useState(''); // 'Yes' or 'No'
+  // const [diet, setDiet] = useState(''); // 'Yes' or 'No'
+  // const [kosher, setKosher] = useState(''); // 'Yes' or 'No'
+  // const [single, setSingle] = useState(''); // 'Yes' or 'No'
+  // const [hospitality, setHospitality] = useState(''); // 'Yes' or 'No'
+  // const [sharingShopping, setSharingShopping] = useState(''); // 'Yes' or 'No'
   const [isFontLoaded, setIsFontLoaded] = useState(false);
   const [selection, setSelection] = useState('');
+  const [aboutMe, setAboutMe] = useState('');
+
+  const [occupation, setOccupation] = useState('');
+  const [smoker, setSmoker] = useState('');
+  const [diet, setDiet] = useState('');
+  const [status, setStatus] = useState('');
+  const [hospitality, setHospitality] = useState('');
+  const [kosher, setKosher] = useState('');
+  const [expenseManagement, setExpenseManagement] = useState('');
+
+
+
 
   const handleImageSelect = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -37,7 +100,7 @@ const PersonalInfoScreen = ({ navigation }) => {
     const result = await ImagePicker.launchImageLibraryAsync();
 
     if (!result.cancelled) {
-      setSelectedImage({uri: result.uri});
+      setSelectedImage({ uri: result.uri });
     }
   };
 
@@ -54,7 +117,7 @@ const PersonalInfoScreen = ({ navigation }) => {
     });
 
     // Navigate to the next screen
-    navigation.navigate('UploadPhoto');
+    navigation.navigate('Selection');
   };
 
   return (
@@ -111,177 +174,117 @@ const PersonalInfoScreen = ({ navigation }) => {
           />
         </View>
 
-        <TextInput
-          label="Gender"
-          value={gender}
-          onChangeText={setGender}
-          style={styles.input}
-        />
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Gender:</Text>
+          <View style={[styles.picker, gender && styles.pickerSelected]}>
+            <Picker selectedValue={gender} onValueChange={setGender}>
+              <Picker.Item label="Select gender" value="" />
+              {genderOptions.map((item, index) => (
+                <Picker.Item key={index} label={item.label} value={item.value} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+
+        <View style={styles.rowContainer}>
+          <Text style={styles.label}>About Me:</Text>
+          <TextInput
+            multiline
+            numberOfLines={6}
+            value={aboutMe}
+            onChangeText={setAboutMe}
+            style={[styles.input, { height: 120, textAlignVertical: 'top' }]}
+          />
+        </View>
 
         <UploadPhoto selectedImage={selectedImage} handleImageSelect={handleImageSelect} />
 
-        <View style={styles.additionalInfoContainer}>
-          <View style={styles.option}>
-            <MaterialIcons
-              name={occupation === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setOccupation('Yes')}
-              style={styles.icon}
-            />
-            <MaterialIcons
-              name={occupation === 'No' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setOccupation('No')}
-              style={styles.icon}
-            />
-            <TextInput
-              label="Occupation"
-              value={occupation}
-              style={styles.additionalInfoInput}
-              editable={false}
-            />
-          </View>
 
-          <View style={styles.option}>
-            <MaterialIcons
-              name={smoking === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setSmoking('Yes')}
-              style={styles.icon}
-            />
-            <MaterialIcons
-              name={smoking === 'No' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setSmoking('No')}
-              style={styles.icon}
-            />
-            <TextInput
-              label="Smoking"
-              value={smoking}
-              style={styles.additionalInfoInput}
-              editable={false}
-            />
-          </View>
-
-          <View style={styles.option}>
-            <MaterialIcons
-              name={diet === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setDiet('Yes')}
-              style={styles.icon}
-            />
-            <MaterialIcons
-              name={diet === 'No' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setDiet('No')}
-              style={styles.icon}
-            />
-            <TextInput
-              label="Diet"
-              value={diet}
-              style={styles.additionalInfoInput}
-              editable={false}
-            />
-          </View>
-
-          <View style={styles.option}>
-            <MaterialIcons
-              name={kosher === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setKosher('Yes')}
-              style={styles.icon}
-            />
-            <MaterialIcons
-              name={kosher === 'No' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setKosher('No')}
-              style={styles.icon}
-            />
-            <TextInput
-              label="Kosher"
-              value={kosher}
-              style={styles.additionalInfoInput}
-              editable={false}
-            />
-          </View>
-
-          <View style={styles.option}>
-            <MaterialIcons
-              name={single === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setSingle('Yes')}
-              style={styles.icon}
-            />
-            <MaterialIcons
-              name={single === 'No' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setSingle('No')}
-              style={styles.icon}
-            />
-            <TextInput
-              label="Single"
-              value={single}
-              style={styles.additionalInfoInput}
-              editable={false}
-            />
-          </View>
-
-          <View style={styles.option}>
-            <MaterialIcons
-              name={hospitality === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setHospitality('Yes')}
-              style={styles.icon}
-            />
-            <MaterialIcons
-              name={hospitality === 'No' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setHospitality('No')}
-              style={styles.icon}
-            />
-            <TextInput
-              label="Hospitality"
-              value={hospitality}
-              style={styles.additionalInfoInput}
-              editable={false}
-            />
-          </View>
-
-          <View style={styles.option}>
-            <MaterialIcons
-              name={sharingShopping === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setSharingShopping('Yes')}
-              style={styles.icon}
-            />
-            <MaterialIcons
-              name={sharingShopping === 'No' ? 'check-box' : 'check-box-outline-blank'}
-              size={24}
-              color="black"
-              onPress={() => setSharingShopping('No')}
-              style={styles.icon}
-            />
-            <TextInput
-              label="Sharing Shopping"
-              value={sharingShopping}
-              style={styles.additionalInfoInput}
-              editable={false}
-            />
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Occupation:</Text>
+          <View style={[styles.picker, occupation && styles.pickerSelected]}>
+            <Picker selectedValue={occupation} onValueChange={setOccupation}>
+              <Picker.Item label="Select occupation" value="" />
+              {occupationOptions.map((item, index) => (
+                <Picker.Item key={index} label={item.label} value={item.value} />
+              ))}
+            </Picker>
           </View>
         </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Smoker:</Text>
+          <View style={[styles.picker, smoker && styles.pickerSelected]}>
+            <Picker selectedValue={smoker} onValueChange={setSmoker}>
+              <Picker.Item label="Select smoker" value="" />
+              {smokerOptions.map((item, index) => (
+                <Picker.Item key={index} label={item.label} value={item.value} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Diet:</Text>
+          <View style={[styles.picker, diet && styles.pickerSelected]}>
+            <Picker selectedValue={diet} onValueChange={setDiet}>
+              <Picker.Item label="Select diet" value="" />
+              {dietOptions.map((item, index) => (
+                <Picker.Item key={index} label={item.label} value={item.value} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Status:</Text>
+          <View style={[styles.picker, status && styles.pickerSelected]}>
+            <Picker selectedValue={status} onValueChange={setStatus}>
+              <Picker.Item label="Select status" value="" />
+              {statusOptions.map((item, index) => (
+                <Picker.Item key={index} label={item.label} value={item.value} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Hospitality:</Text>
+          <View style={[styles.picker, hospitality && styles.pickerSelected]}>
+            <Picker selectedValue={hospitality} onValueChange={setHospitality}>
+              <Picker.Item label="Select hospitality" value="" />
+              {hospitalityOptions.map((item, index) => (
+                <Picker.Item key={index} label={item.label} value={item.value} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Kosher:</Text>
+          <View style={[styles.picker, kosher && styles.pickerSelected]}>
+            <Picker selectedValue={kosher} onValueChange={setKosher}>
+              <Picker.Item label="Select kosher" value="" />
+              {kosherOptions.map((item, index) => (
+                <Picker.Item key={index} label={item.label} value={item.value} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Expense Management:</Text>
+          <View style={[styles.picker, expenseManagement && styles.pickerSelected]}>
+            <Picker selectedValue={expenseManagement} onValueChange={setExpenseManagement}>
+              <Picker.Item label="Select expense management" value="" />
+              {expenseManagementOptions.map((item, index) => (
+                <Picker.Item key={index} label={item.label} value={item.value} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+
+
       </ScrollView>
       <Button mode="contained" onPress={handleNext} style={styles.button}>
         Next
@@ -333,13 +336,33 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     marginRight: 8,
   },
   image: {
     width: 200,
     height: 200,
     marginBottom: 16,
+  },
+  fieldContainer: {
+    marginBottom: 16,
+  },
+  pickerContainer: {
+    flex: 1,
+  },
+  pickerLabel: {
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  picker: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#CCCCCC',
+    padding: 8,
+  },
+  pickerSelected: {
+    backgroundColor: '#EBE2EF',
   },
 });
 
