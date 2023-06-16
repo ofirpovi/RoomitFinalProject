@@ -5,8 +5,8 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'roomit_project.settings'
-django.setup()
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'roomit_project.settings'
+# django.setup()
 
 from selenium import webdriver
 from django.test import TestCase
