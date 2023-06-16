@@ -1,247 +1,10 @@
-// import React, { useState, useEffect } from 'react';
-// import { View, StyleSheet } from 'react-native';
-// import { TextInput, Button } from 'react-native-paper';
-// import PhoneInput from 'react-native-phone-input';
-// import DatePicker from 'react-native-datepicker';
-
-// const PersonalInfoScreen = ({ navigation }) => {
-//   const [firstName, setFirstName] = useState('');
-//   const [lastName, setLastName] = useState('');
-//   const [phoneNumber, setPhoneNumber] = useState('');
-//   const [birthdate, setBirthdate] = useState('');
-//   const [gender, setGender] = useState('');
-
-//   useEffect(() => {
-//     // Perform any logic needed when the birthdate changes
-//     console.log('Birthdate:', birthdate);
-//   }, [birthdate]);
-
-//   const handleNext = () => {
-//     // Perform logic with personal info
-//     console.log('Personal Info:', {
-//       firstName,
-//       lastName,
-//       phoneNumber,
-//       birthdate,
-//       gender,
-//     });
-
-//     // Navigate to the next screen
-//     navigation.navigate('AdditionalInfo');
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <TextInput
-//         label="First Name"
-//         value={firstName}
-//         onChangeText={setFirstName}
-//         style={styles.input}
-//       />
-//       <TextInput
-//         label="Last Name"
-//         value={lastName}
-//         onChangeText={setLastName}
-//         style={styles.input}
-//       />
-
-//       <PhoneInput
-//         initialCountry="us"
-//         value={phoneNumber}
-//         onChangePhoneNumber={setPhoneNumber}
-//         textStyle={styles.phoneInput}
-//         style={styles.input}
-//       />
-
-//       {/* <DatePicker
-//         style={styles.input}
-//         date={birthdate}
-//         mode="date"
-//         placeholder="Select Birthdate"
-//         format="DD-MM-YYYY"
-//         minDate="01-01-1900"
-//         maxDate={new Date()}
-//         confirmBtnText="Confirm"
-//         cancelBtnText="Cancel"
-//         customStyles={{
-//           dateIcon: {
-//             position: 'absolute',
-//             left: 0,
-//             top: 4,
-//             marginLeft: 0,
-//           },
-//           dateInput: {
-//             marginLeft: 36,
-//           },
-//           // You can customize the styling further if needed
-//         }}
-//         onDateChange={setBirthdate}
-//         useNativeDriver={true} // Set useNativeDriver to true
-//       /> */}
-
-//       <TextInput
-//         label="Gender"
-//         value={gender}
-//         onChangeText={setGender}
-//         style={styles.input}
-//       />
-
-//       <Button mode="contained" onPress={handleNext} style={styles.button}>
-//         Next
-//       </Button>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 16,
-//     justifyContent: 'center',
-//   },
-//   input: {
-//     marginBottom: 16,
-//   },
-//   phoneInput: {
-//     fontSize: 16,
-//     paddingHorizontal: 16,
-//   },
-//   button: {
-//     marginTop: 16,
-//   },
-// });
-
-// export default PersonalInfoScreen;
-
-
-// import React, { useState, useEffect } from 'react';
-// import { View, StyleSheet, TouchableWithoutFeedback, Text } from 'react-native';
-// import { TextInput, Button } from 'react-native-paper';
-// import PhoneInput from 'react-native-phone-input';
-// import { format, parse } from 'date-fns';
-
-// const PersonalInfoScreen = ({ navigation }) => {
-//   const [firstName, setFirstName] = useState('');
-//   const [lastName, setLastName] = useState('');
-//   const [phoneNumber, setPhoneNumber] = useState('');
-//   const [birthdate, setBirthdate] = useState('');
-//   const [gender, setGender] = useState('');
-//   const [showDatePicker, setShowDatePicker] = useState(false);
-//   const [selectedDate, setSelectedDate] = useState(null);
-  
-
-//   const handleDateChange = (text) => {
-//     const parsedDate = parse(text, 'yyyy-MM-dd', new Date());
-//     if (isValid(parsedDate)) {
-//       const formattedDate = format(parsedDate, 'yyyy-MM-dd');
-//       setBirthdate(formattedDate);
-//     } else {
-//       setBirthdate('');
-//     }
-//   };
-
-//   const isValid = (date) => {
-//     return !isNaN(date) && date instanceof Date;
-//   };
-
-//   // useEffect(() => {
-//   //   // Perform any logic needed when the birthdate changes
-//   //   console.log('Birthdate:', birthdate);
-//   // }, [birthdate]);
-
-//   const handleNext = () => {
-//     // Perform logic with personal info
-//     console.log('Personal Info:', {
-//       firstName,
-//       lastName,
-//       phoneNumber,
-//       birthdate,
-//       gender,
-//     });
-
-//     // Navigate to the next screen
-//     navigation.navigate('AdditionalInfo');
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <TextInput
-//         label="First Name"
-//         value={firstName}
-//         onChangeText={setFirstName}
-//         style={styles.input}
-//       />
-//       <TextInput
-//         label="Last Name"
-//         value={lastName}
-//         onChangeText={setLastName}
-//         style={styles.input}
-//       />
-
-//       <PhoneInput
-//         initialCountry="us"
-//         value={phoneNumber}
-//         onChangePhoneNumber={setPhoneNumber}
-//         textStyle={styles.phoneInput}
-//         style={styles.input}
-//       />
-
-//       <TextInput
-//         label="Birthdate"
-//         value={birthdate}
-//         onChangeText={handleDateChange}
-//         style={styles.input}
-//         placeholder="YYYY-MM-DD"
-//       />
-
-//       <TextInput
-//         label="Gender"
-//         value={gender}
-//         onChangeText={setGender}
-//         style={styles.input}
-//       />
-
-//       <Button mode="contained" onPress={handleNext} style={styles.button} disabled={!birthdate}>
-//         Next
-//       </Button>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 16,
-//     justifyContent: 'center',
-//   },
-//   input: {
-//     marginBottom: 16,
-//     borderWidth: 1,
-//     borderColor: 'gray',
-//     borderRadius: 4,
-//     paddingVertical: 12,
-//     paddingHorizontal: 16,
-//   },
-//   phoneInput: {
-//     fontSize: 16,
-//     paddingHorizontal: 16,
-//   },
-//   button: {
-//     marginTop: 16,
-//   },
-//   dateText: {
-//     fontSize: 16,
-//   },
-// });
-
-// export default PersonalInfoScreen;
-
-
 import React, { useState } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, ScrollView } from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
 import PhoneInput from 'react-native-phone-input';
-import ImagePicker from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
+import UploadPhoto from './UploadPhoto';
+import { MaterialIcons } from '@expo/vector-icons';
 
 
 const PersonalInfoScreen = ({ navigation }) => {
@@ -252,30 +15,31 @@ const PersonalInfoScreen = ({ navigation }) => {
   const [birthdateMonth, setBirthdateMonth] = useState('');
   const [birthdateDay, setBirthdateDay] = useState('');
   const [gender, setGender] = useState('');
-  const [selectedImage, setSelectedImage] = useState(null);
-  
+  const [selectedImage, setSelectedImage] = useState(require('./assets/default_for_profile.jpg'));
+  const [occupation, setOccupation] = useState(''); // 'Yes' or 'No'
+  const [smoking, setSmoking] = useState(''); // 'Yes' or 'No'
+  const [diet, setDiet] = useState(''); // 'Yes' or 'No'
+  const [kosher, setKosher] = useState(''); // 'Yes' or 'No'
+  const [single, setSingle] = useState(''); // 'Yes' or 'No'
+  const [hospitality, setHospitality] = useState(''); // 'Yes' or 'No'
+  const [sharingShopping, setSharingShopping] = useState(''); // 'Yes' or 'No'
+  const [isFontLoaded, setIsFontLoaded] = useState(false);
+  const [selection, setSelection] = useState('');
 
   const handleImageSelect = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      console.log('Permission to access media library was denied');
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert('Permission to access the camera roll is required!');
       return;
     }
-  
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-  
+
+    const result = await ImagePicker.launchImageLibraryAsync();
+
     if (!result.cancelled) {
-      // Store the selected image
-      setSelectedImage(result.uri);
+      setSelectedImage({uri: result.uri});
     }
   };
-  
-  
 
   const handleNext = () => {
     // Perform logic with personal info
@@ -295,68 +59,230 @@ const PersonalInfoScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {selectedImage && <Image source={{ uri: selectedImage }} style={styles.image} />}
-       <Button title="Select Image" onPress={handleImageSelect} />
-      <TextInput
-        label="First Name"
-        value={firstName}
-        onChangeText={setFirstName}
-        style={styles.input}
-      />
-      <TextInput
-        label="Last Name"
-        value={lastName}
-        onChangeText={setLastName}
-        style={styles.input}
-      />
-
-      <PhoneInput
-        initialCountry="us"
-        value={phoneNumber}
-        onChangePhoneNumber={setPhoneNumber}
-        textStyle={styles.phoneInput}
-        style={styles.input}
-      />
-
-
-      <View style={styles.dateContainer}>
-        <Text style={styles.label}>Birthdate:                </Text>
+      <ScrollView>
         <TextInput
-          label="YYYY"
-          value={birthdateYear}
-          onChangeText={setBirthdateYear}
-          style={styles.dateInput}
-          placeholder="YYYY"
-          keyboardType="numeric"
+          label="First Name"
+          value={firstName}
+          onChangeText={setFirstName}
+          style={styles.input}
+        />
+        <TextInput
+          label="Last Name"
+          value={lastName}
+          onChangeText={setLastName}
+          style={styles.input}
         />
 
-        <TextInput
-          label="MM"
-          value={birthdateMonth}
-          onChangeText={setBirthdateMonth}
-          style={styles.dateInput}
-          placeholder="MM"
-          keyboardType="numeric"
+        <PhoneInput
+          initialCountry="us"
+          value={phoneNumber}
+          onChangePhoneNumber={setPhoneNumber}
+          textStyle={styles.phoneInput}
+          style={styles.input}
         />
 
+        <View style={styles.dateContainer}>
+          <Text style={styles.label}>Birthdate:                </Text>
+          <TextInput
+            label="YYYY"
+            value={birthdateYear}
+            onChangeText={setBirthdateYear}
+            style={styles.dateInput}
+            placeholder="YYYY"
+            keyboardType="numeric"
+          />
+
+          <TextInput
+            label="MM"
+            value={birthdateMonth}
+            onChangeText={setBirthdateMonth}
+            style={styles.dateInput}
+            placeholder="MM"
+            keyboardType="numeric"
+          />
+
+          <TextInput
+            label="DD"
+            value={birthdateDay}
+            onChangeText={setBirthdateDay}
+            style={styles.dateInput}
+            placeholder="DD"
+            keyboardType="numeric"
+          />
+        </View>
+
         <TextInput
-          label="DD"
-          value={birthdateDay}
-          onChangeText={setBirthdateDay}
-          style={styles.dateInput}
-          placeholder="DD"
-          keyboardType="numeric"
+          label="Gender"
+          value={gender}
+          onChangeText={setGender}
+          style={styles.input}
         />
-      </View>
 
+        <UploadPhoto selectedImage={selectedImage} handleImageSelect={handleImageSelect} />
 
-      <TextInput
-        label="Gender"
-        value={gender}
-        onChangeText={setGender}
-        style={styles.input}
-      />
+        <View style={styles.additionalInfoContainer}>
+          <View style={styles.option}>
+            <MaterialIcons
+              name={occupation === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setOccupation('Yes')}
+              style={styles.icon}
+            />
+            <MaterialIcons
+              name={occupation === 'No' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setOccupation('No')}
+              style={styles.icon}
+            />
+            <TextInput
+              label="Occupation"
+              value={occupation}
+              style={styles.additionalInfoInput}
+              editable={false}
+            />
+          </View>
 
+          <View style={styles.option}>
+            <MaterialIcons
+              name={smoking === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setSmoking('Yes')}
+              style={styles.icon}
+            />
+            <MaterialIcons
+              name={smoking === 'No' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setSmoking('No')}
+              style={styles.icon}
+            />
+            <TextInput
+              label="Smoking"
+              value={smoking}
+              style={styles.additionalInfoInput}
+              editable={false}
+            />
+          </View>
+
+          <View style={styles.option}>
+            <MaterialIcons
+              name={diet === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setDiet('Yes')}
+              style={styles.icon}
+            />
+            <MaterialIcons
+              name={diet === 'No' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setDiet('No')}
+              style={styles.icon}
+            />
+            <TextInput
+              label="Diet"
+              value={diet}
+              style={styles.additionalInfoInput}
+              editable={false}
+            />
+          </View>
+
+          <View style={styles.option}>
+            <MaterialIcons
+              name={kosher === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setKosher('Yes')}
+              style={styles.icon}
+            />
+            <MaterialIcons
+              name={kosher === 'No' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setKosher('No')}
+              style={styles.icon}
+            />
+            <TextInput
+              label="Kosher"
+              value={kosher}
+              style={styles.additionalInfoInput}
+              editable={false}
+            />
+          </View>
+
+          <View style={styles.option}>
+            <MaterialIcons
+              name={single === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setSingle('Yes')}
+              style={styles.icon}
+            />
+            <MaterialIcons
+              name={single === 'No' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setSingle('No')}
+              style={styles.icon}
+            />
+            <TextInput
+              label="Single"
+              value={single}
+              style={styles.additionalInfoInput}
+              editable={false}
+            />
+          </View>
+
+          <View style={styles.option}>
+            <MaterialIcons
+              name={hospitality === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setHospitality('Yes')}
+              style={styles.icon}
+            />
+            <MaterialIcons
+              name={hospitality === 'No' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setHospitality('No')}
+              style={styles.icon}
+            />
+            <TextInput
+              label="Hospitality"
+              value={hospitality}
+              style={styles.additionalInfoInput}
+              editable={false}
+            />
+          </View>
+
+          <View style={styles.option}>
+            <MaterialIcons
+              name={sharingShopping === 'Yes' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setSharingShopping('Yes')}
+              style={styles.icon}
+            />
+            <MaterialIcons
+              name={sharingShopping === 'No' ? 'check-box' : 'check-box-outline-blank'}
+              size={24}
+              color="black"
+              onPress={() => setSharingShopping('No')}
+              style={styles.icon}
+            />
+            <TextInput
+              label="Sharing Shopping"
+              value={sharingShopping}
+              style={styles.additionalInfoInput}
+              editable={false}
+            />
+          </View>
+        </View>
+      </ScrollView>
       <Button mode="contained" onPress={handleNext} style={styles.button}>
         Next
       </Button>
@@ -367,7 +293,13 @@ const PersonalInfoScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 10,
+    justifyContent: 'center',
+  },
+  additionalInfoContainer: {
+    justifyContent: 'center',
+  },
+  photoContainer: {
     justifyContent: 'center',
   },
   dateContainer: {
@@ -381,6 +313,10 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 16,
   },
+  additionalInfoInput: {
+    marginBottom: 16,
+    flex: 1,
+  },
   phoneInput: {
     fontSize: 16,
     paddingHorizontal: 16,
@@ -388,175 +324,23 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 16,
   },
+  option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  icon: {
+    marginRight: 16,
+  },
+  label: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  image: {
+    width: 200,
+    height: 200,
+    marginBottom: 16,
+  },
 });
 
 export default PersonalInfoScreen;
-
-
-
-// import React, { useState } from 'react';
-// import { View, StyleSheet, Image } from 'react-native';
-// import { TextInput, Button, Text } from 'react-native-paper';
-// import PhoneInput from 'react-native-phone-input';
-// import ImagePicker from 'react-native-image-picker';
-
-// const PersonalInfoScreen = ({ navigation }) => {
-//   const [firstName, setFirstName] = useState('');
-//   const [lastName, setLastName] = useState('');
-//   const [phoneNumber, setPhoneNumber] = useState('');
-//   const [birthdateYear, setBirthdateYear] = useState('');
-//   const [birthdateMonth, setBirthdateMonth] = useState('');
-//   const [birthdateDay, setBirthdateDay] = useState('');
-//   const [gender, setGender] = useState('');
-//   const [selectedImage, setSelectedImage] = useState(null);
-//   const [selectedFacebookProfile, setSelectedFacebookProfile] = useState(null);
-
-//   const handleImageSelect = async () => {
-//     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-//     if (status !== 'granted') {
-//       console.log('Permission to access media library was denied');
-//       return;
-//     }
-
-//     const result = await ImagePicker.launchImageLibraryAsync({
-//       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-//       allowsEditing: true,
-//       aspect: [1, 1],
-//       quality: 1,
-//     });
-
-//     if (!result.cancelled) {
-//       // Store the selected image
-//       setSelectedImage(result.uri);
-//     }
-//   };
-
-//   const handleFacebookProfileSelect = () => {
-//     // Logic for connecting to Facebook profile
-//     console.log('Connect to Facebook profile');
-//   };
-
-//   const handleNext = () => {
-//     // Perform logic with personal info
-//     console.log('Personal Info:', {
-//       firstName,
-//       lastName,
-//       phoneNumber,
-//       birthdateYear,
-//       birthdateMonth,
-//       birthdateDay,
-//       gender,
-//       selectedFacebookProfile,
-//     });
-
-//     // Navigate to the next screen
-//     navigation.navigate('UploadPhoto');
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       {selectedImage && <Image source={{ uri: selectedImage }} style={styles.image} />}
-//       <Button mode="contained" onPress={handleImageSelect} style={styles.button}>
-//         Select Image
-//       </Button>
-
-//       <Button mode="contained" onPress={handleFacebookProfileSelect} style={styles.button}>
-//         Connect Facebook
-//       </Button>
-
-//       <TextInput
-//         label="First Name"
-//         value={firstName}
-//         onChangeText={setFirstName}
-//         style={styles.input}
-//       />
-//       <TextInput
-//         label="Last Name"
-//         value={lastName}
-//         onChangeText={setLastName}
-//         style={styles.input}
-//       />
-
-//       <PhoneInput
-//         initialCountry="us"
-//         value={phoneNumber}
-//         onChangePhoneNumber={setPhoneNumber}
-//         textStyle={styles.phoneInput}
-//         style={styles.input}
-//       />
-
-//       <View style={styles.dateContainer}>
-//         <TextInput
-//           label="YYYY"
-//           value={birthdateYear}
-//           onChangeText={setBirthdateYear}
-//           style={styles.dateInput}
-//           placeholder="YYYY"
-//           keyboardType="numeric"
-//         />
-
-//         <TextInput
-//           label="MM"
-//           value={birthdateMonth}
-//           onChangeText={setBirthdateMonth}
-//           style={styles.dateInput}
-//           placeholder="MM"
-//           keyboardType="numeric"
-//         />
-
-//         <TextInput
-//           label="DD"
-//           value={birthdateDay}
-//           onChangeText={setBirthdateDay}
-//           style={styles.dateInput}
-//           placeholder="DD"
-//           keyboardType="numeric"
-//         />
-//       </View>
-
-//       <TextInput
-//         label="Gender"
-//         value={gender}
-//         onChangeText={setGender}
-//         style={styles.input}
-//       />
-
-//       <Button mode="contained" onPress={handleNext} style={styles.button}>
-//         Next
-//       </Button>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 16,
-//     justifyContent: 'center',
-//   },
-//   input: {
-//     marginBottom: 16,
-//   },
-//   phoneInput: {
-//     fontSize: 16,
-//     paddingHorizontal: 16,
-//   },
-//   button: {
-//     marginTop: 16,
-//   },
-//   image: {
-//     width: 200,
-//     height: 200,
-//     marginBottom: 16,
-//   },
-//   dateContainer: {
-//     flexDirection: 'row',
-//     marginBottom: 16,
-//   },
-//   dateInput: {
-//     flex: 1,
-//     marginRight: 8,
-//   },
-// });
-
-// export default PersonalInfoScreen;

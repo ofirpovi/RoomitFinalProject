@@ -1,8 +1,9 @@
 // import API from './API';
 import axios from "axios"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, TextInput, Button } from 'react-native-paper';
+import { CsrfTokenContext } from "./CsrfTokenContext";
 
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -13,6 +14,7 @@ const SignUpScreen = ({ navigation }) => {
   const [usernameError, setUsernameError] = useState(undefined);
   const [passwordError, setPasswordError] = useState(undefined);
   const [verifyPasswordError, setVerifyPasswordError] = useState(undefined);
+  const csrfToken = useContext(CsrfTokenContext);
 
   const server_url = "http://192.168.1.119:8000/user/register/";
 
@@ -22,27 +24,20 @@ const SignUpScreen = ({ navigation }) => {
     formData.append('username', username);
     formData.append('password1', password);
     formData.append('password2', verifyPassword);
-    
-    const loginResponse = await axios.get('http://192.168.1.119:8000/user/get-csrf-token/');
-    const csrfTokenHeader = loginResponse.headers['set-cookie']
-      .find(cookie => cookie.startsWith('csrftoken'));
-    
 
-    if (csrfTokenHeader) {
-      const csrfToken = csrfTokenHeader.split('=')[1].split(';')[0];
 
-      await axios.post(server_url, formData, {
-        headers: {
-          'X-CSRFToken': csrfToken,
-          'Content-Type': 'application/json',
-        },
+    await axios.post(server_url, formData, {
+      headers: {
+        'X-CSRFToken': csrfToken,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        console.log(response.data);
+        console.log('Sign up successful');
+        navigation.navigate('PersonalInfo');
       })
-      .then((response)=>{
-          console.log(response.data);
-          console.log('Sign up successful');
-          navigation.navigate('PersonalInfo');
-        })
-      .catch((error)=>{
+      .catch((error) => {
         console.log("error: ", error.response.data.errors);
         const errors = JSON.parse(error.response.data.errors);
         if (errors.email == undefined)
@@ -64,8 +59,7 @@ const SignUpScreen = ({ navigation }) => {
       }
       );
   };
-};
-  
+
 
 
   return (
@@ -119,7 +113,7 @@ const SignUpScreen = ({ navigation }) => {
       </Button>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

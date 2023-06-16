@@ -30,7 +30,6 @@ def get_csrf_token(request):
 
 def register(request):
     if request.method == 'POST':
-            print(request.POST)
             form = UserRegisterForm(request.POST)
             if form.is_valid():
                 form.save()
@@ -41,7 +40,6 @@ def register(request):
                 login(request, new_user)
                 return JsonResponse({}, status=200)
             else:
-                print("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
                 return JsonResponse({"errors":form.errors.as_json()}, status=500)
     return JsonResponse({'message': 'Unknown error occured'})
 
@@ -81,6 +79,9 @@ def profile(request, username):
 @login_required
 def info(request, username):
     if request.method == 'POST':
+        print(request.POST)
+        print(request.FILES)
+        print(request.user.profile)
         p_form = ProfileUpdateForm(request.POST,
                                    request.FILES,
                                    instance=request.user.profile)
