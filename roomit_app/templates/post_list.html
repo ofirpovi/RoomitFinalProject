@@ -119,7 +119,8 @@
                 </script>
                 {%else%}
                 <br><br>
-                <h4 class>No matching results were found</h4>
+                <h4><br>We couldn't find any matches for you :\</h4>
+
                 {%endif%}
             </div>
         </div>
@@ -128,29 +129,53 @@
         <!-- Right Column -->
         <div class="w3-col m3">
             <br>
-            {% if recommended_roommates %}
-
+   
             <div class="w3-card w3-round w3-white w3-center">
                 <div class="w3-container">
                     <br>
                     <h5>You may also like</h5><br>
-                    <div style="column-count: 3;">
-                        {% for user in recommended_roommates|slice:":3" %}
-                        <h8 class="w3-left ">
-                            <a href="user/profile/{{user.username}}">
-                                <img src="{{ user.profile.image.url }}" class="w3-circle" style="width:40%;"/><br>
-                                <a href="/like-picture/{{ user.username }}" data-user="{{ user.username}}"></a>
-                                <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
-                            </a>
-                        </h8>
-                        {%endfor%}
-                    </div>
+                    {% if recommended_roommates %}
+                        <div style="column-count: 3;">
+                            {% for user in recommended_roommates|slice:":3" %}
+                            <h8 class="w3-left ">
+                                <a href="user/profile/{{user.username}}">
+                                    <img src="{{ user.profile.image.url }}" class="w3-circle" style="width:40%;"/><br>
+                                    <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
+                                </a>
+                            </h8>
+                            {%endfor%}
+                        </div>
+                    {%else%}
+                        <h7 class>No suggestions were found </h7>
+                        <br>
+                    {% endif %}
                     <br>
                 </div>
-                {% endif %}
-
             </div>
-            <br>
+            <br><br>
+            <div class="w3-card w3-round w3-white w3-center">
+                <div class="w3-container">
+                    <br>
+                    <h5>You didn't like</h5><br>
+                    {% if removed %}
+                        <div style="column-count: 3;">
+                            {% for user in removed %}
+                            <h8 class="w3-left ">
+                                <a href="user/profile/{{user.username}}">
+                                    <img src="{{ user.profile.image.url }}" class="w3-circle" style="width:40%;"/><br>
+                                    <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
+                                    <a href="/unlike-picture/{{ user.username }}" data-user="{{ user.username}}"></a>
+                                </a>
+                            </h8>
+                            {%endfor%}
+                        </div>
+                    {%else%}
+                        <h7 class>Nothing to show </h7>
+                        <br>
+                    {% endif %}
+                    <br>
+                </div>
+            </div>
             <!-- End Right Column -->
         </div>
         <!-- End Grid -->

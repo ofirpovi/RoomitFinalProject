@@ -186,7 +186,12 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 LOGIN_REDIRECT_URL = 'post_list_page'
 LOGIN_URL = 'login'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # development ONLY
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # development ONLY
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'roomitStaff@gmail.com'
+EMAIL_HOST_PASSWORD = ''
 
 
 # if 'test' in sys.argv:

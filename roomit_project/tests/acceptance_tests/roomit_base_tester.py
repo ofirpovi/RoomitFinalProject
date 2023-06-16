@@ -1,8 +1,8 @@
 import os
 import django
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'roomit_project.settings'
-django.setup()
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'roomit_project.settings'
+# django.setup()
 
 from selenium import webdriver
 from selenium.webdriver.support.select import Select
