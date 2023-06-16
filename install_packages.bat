@@ -49,4 +49,7 @@ pip install selenium
 REM Install pytest
 pip install pytest
 
+REM Install parameterized
+pip install parameterized
+
 echo Installation complete.

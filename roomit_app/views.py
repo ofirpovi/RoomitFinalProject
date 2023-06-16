@@ -51,7 +51,7 @@ def requirementsP(request, username):
         return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username, 'property_location': pl,})
     except Exception as e:
         print(" error   --   ", e)
-        return e
+        return render(request, 'status/requirementsP.html', {'form': None, 'user_profile': username, 'property_location': None,})
 
 
 @login_required
@@ -81,7 +81,7 @@ def requirementsR(request, username):
         return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
     except Exception as e:
         print("is exception - ", e)
-        return e
+        return render(request, 'status/requirementsR.html', {'form': None, 'user_profile': None})
 
 @login_required
 def likes_me(request):
@@ -107,7 +107,7 @@ def likes_me(request):
                 items_to_return.append(Posts(score, None, True))
         return render(request, 'likes_me.html', {"list_items": items_to_return})
     except Exception as e:
-        return e
+        return render(request, 'likes_me.html', {"list_items": []})
 
 
 @login_required
@@ -134,7 +134,7 @@ def i_like(request):
                 items_to_return.append(Posts(score, None, True))
         return render(request, 'i_like.html', {"list_items": items_to_return})
     except Exception as e:
-        return e
+        return render(request, 'i_like.html', {"list_items": []})
 
 @login_required
 def more(request):
