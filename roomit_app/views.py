@@ -1,13 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from infscroll.utils import get_pagination
 from infscroll.views import more_items
 from rest_framework.views import APIView
 from users.forms import ProfileUpdateForm, UserUpdateForm
-from users.models import Profile, PropertyForOffer, Image
+from users.models import Profile, PropertyForOffer, Image, User
 from .forms import UpdateRequirementsRForm, UpdateRequirementsPForm
 from .matches.calculate_score import update_scores
 from .models import RequirementsP, RequirementsR, Scores, Likes
@@ -51,7 +51,7 @@ def requirementsP(request, username):
         return render(request, 'status/requirementsP.html', {'form': form, 'user_profile': username, 'property_location': pl,})
     except Exception as e:
         print(" error   --   ", e)
-        return e
+        return render(request, 'status/requirementsP.html', {'form': None, 'user_profile': username, 'property_location': None,})
 
 
 @login_required
@@ -81,7 +81,7 @@ def requirementsR(request, username):
         return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
     except Exception as e:
         print("is exception - ", e)
-        return e
+        return render(request, 'status/requirementsR.html', {'form': None, 'user_profile': None})
 
 @login_required
 def likes_me(request):
@@ -107,7 +107,7 @@ def likes_me(request):
                 items_to_return.append(Posts(score, None, True))
         return render(request, 'likes_me.html', {"list_items": items_to_return})
     except Exception as e:
-        return e
+        return render(request, 'likes_me.html', {"list_items": []})
 
 
 @login_required
@@ -134,7 +134,7 @@ def i_like(request):
                 items_to_return.append(Posts(score, None, True))
         return render(request, 'i_like.html', {"list_items": items_to_return})
     except Exception as e:
-        return e
+        return render(request, 'i_like.html', {"list_items": []})
 
 @login_required
 def more(request):
@@ -200,6 +200,7 @@ def post_list(request):
 
         items = get_queryset(request, User.objects.exclude(username__in=not_display))
         data['recommended_roommates'] = rec_sys.recommend_roommates(request.user)
+        data['removed'] = not_display
         paginated = get_pagination(request, items)
         data.update(paginated)
         return render(request, 'post_list.html', data)
@@ -423,8 +424,8 @@ def unlike_profile(request, username):
     return render(request, 'users/profile.html', context)
 
 @login_required
-def remove_recommand(request, username):
-    print('in remove_recommand')
+def remove_match(request, username):
+    print('in remove_match')
     other_user = User.objects.get(username=username)
     profile = Profile.objects.get(user=request.user)
     online_status = profile.profile_status
@@ -565,6 +566,3 @@ class Posts:
         self.like = like
 
 
-class UserHomepageView(APIView):
-    def get(self, request):
-        return render(request, 'post_list_test.html')

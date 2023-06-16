@@ -25,7 +25,7 @@ urlpatterns = [
      path('unlike-profile/<str:username>/',
           app_views.unlike_profile, name='unlike_profile'),
      path('remove-recommand/<str:username>/',
-          app_views.remove_recommand, name='remove_recommand'),
+          app_views.remove_match, name='remove_recommand'),
      
     # path('save-location/', app_views.save_location, name='save_location'),
 ]
