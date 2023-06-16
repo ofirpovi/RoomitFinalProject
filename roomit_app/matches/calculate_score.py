@@ -7,7 +7,6 @@ from users.models import PropertyForOffer, Profile
 
 
 def update_scores(request):
-    # print("    -----------------    SCORE UPDATE    -----------------    ")
     online_user = request.user
     Scores.objects.filter(Username_enter=online_user).delete()
     Scores.objects.filter(Username_insert=online_user).delete()
@@ -26,7 +25,6 @@ def update_scores(request):
             score = Scores(Username_enter=online_user, Username_insert=user.user,
                            Enter_score=score_enter, Insert_score=score_insert)
             score.save()
-            # print("score insert - (", online_user.username,")\t", score_insert, "\nscore enter (", user.user.username,")- \t", score_enter)
     else:
         for user in potential_profiles:
             requirement = make_requirementsR(user.user)
@@ -37,8 +35,6 @@ def update_scores(request):
             score = Scores(Username_enter=user.user, Username_insert=online_user,
                            Enter_score=score_enter, Insert_score=score_insert)
             score.save()
-            # print("score insert - (", user.user.username,")\t\n", score_insert, "score enter (", online_user.username,")- \t", score_enter)
-
 
 
 def update_scores_enter(requirementsR, requirementsP, user):
@@ -154,9 +150,6 @@ def calculate_score(reqs, user):
                     req_score = req.calculate_score(
                         getattr(property, req_text))
                 except Exception as e4:
-                    # print("\t\t-------------\t\tDOESNT WORK\t\t-------------\t\t")
-                    # print("req text  -  ", req_text)
-                    # print(e2,'\n', e3,'\n', e4,'\n')
                     req_score = None
         if req_score is not None:
             score += req_score

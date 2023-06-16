@@ -19,7 +19,6 @@ class LocationReq(Requirement):
         coordinates_list = []
         for coordinate in area_data:
             coordinates_list.append((coordinate['lng'], coordinate['lat']))
-            # print("(", coordinate['lat'],", ", coordinate['lng'], ")")
         area = Polygon(coordinates_list)
 
         # Get the coordinate of the specific place
