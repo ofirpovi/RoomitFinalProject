@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Image, ScrollView } from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
 import PhoneInput from 'react-native-phone-input';
@@ -6,6 +6,19 @@ import * as ImagePicker from 'expo-image-picker';
 import UploadPhoto from './UploadPhoto';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
+import { CsrfTokenContext } from "./CsrfTokenContext";
+import axios from "axios"
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+async function getCsrfToken() {
+  const loginResponse = await axios.get('http://192.168.1.119:8000/user/get-csrf-token/');
+  const csrfTokenHeader = loginResponse.headers['set-cookie']
+    .find(cookie => cookie.startsWith('csrftoken'));
+  if (csrfTokenHeader) {
+    const csrfToken = csrfTokenHeader.split('=')[1].split(';')[0];
+    setCsrfToken(csrfToken);
+  }
+}
 
 const genderOptions = [
   { label: 'Female', value: 'Female' },
@@ -65,15 +78,10 @@ const PersonalInfoScreen = ({ navigation }) => {
   const [birthdateYear, setBirthdateYear] = useState('');
   const [birthdateMonth, setBirthdateMonth] = useState('');
   const [birthdateDay, setBirthdateDay] = useState('');
+  const [birthdate, setBirthdate] = useState(new Date());
   const [gender, setGender] = useState('');
   const [selectedImage, setSelectedImage] = useState(require('./assets/default_for_profile.jpg'));
-  // const [occupation, setOccupation] = useState(''); // 'Yes' or 'No'
-  // const [smoking, setSmoking] = useState(''); // 'Yes' or 'No'
-  // const [diet, setDiet] = useState(''); // 'Yes' or 'No'
-  // const [kosher, setKosher] = useState(''); // 'Yes' or 'No'
-  // const [single, setSingle] = useState(''); // 'Yes' or 'No'
-  // const [hospitality, setHospitality] = useState(''); // 'Yes' or 'No'
-  // const [sharingShopping, setSharingShopping] = useState(''); // 'Yes' or 'No'
+
   const [isFontLoaded, setIsFontLoaded] = useState(false);
   const [selection, setSelection] = useState('');
   const [aboutMe, setAboutMe] = useState('');
@@ -86,7 +94,28 @@ const PersonalInfoScreen = ({ navigation }) => {
   const [kosher, setKosher] = useState('');
   const [expenseManagement, setExpenseManagement] = useState('');
 
+  const [firstNameError, setFirstNameError] = useState(undefined);
+  const [lastNameError, setLastNameError] = useState(undefined);
+  const [phoneNumberError, setPhoneNumberError] = useState(undefined);
+  const [birthdateError, setBirthdateError] = useState(undefined);
+  const [genderError, setGenderError] = useState(undefined);
+  const [selectedImageError, setSelectedImageError] = useState(undefined);
+  const [aboutMeError, setAboutMeError] = useState(undefined);
+  const [occupationError, setOccupationError] = useState(undefined);
+  const [smokerError, setSmokerError] = useState(undefined);
+  const [dietError, setDietError] = useState(undefined);
+  const [statusError, setStatusError] = useState(undefined);
+  const [hospitalityError, setHospitalityError] = useState(undefined);
+  const [kosherError, setKosherError] = useState(undefined);
+  const [expenseManagementError, setExpenseManagementError] = useState(undefined);
 
+  useEffect(()=>{
+    console.log(birthdate);
+  }, [birthdate])
+
+  const csrfToken = useContext(CsrfTokenContext);
+
+  const server_url = "http://192.168.1.119:8000/user/register";
 
 
   const handleImageSelect = async () => {
@@ -104,20 +133,110 @@ const PersonalInfoScreen = ({ navigation }) => {
     }
   };
 
-  const handleNext = () => {
-    // Perform logic with personal info
-    console.log('Personal Info:', {
-      firstName,
-      lastName,
-      phoneNumber,
-      birthdateYear,
-      birthdateMonth,
-      birthdateDay,
-      gender,
-    });
+  const handleNext = async () => {
+    const formData = new FormData();
+    formData.append('firstName', firstName);
+    formData.append('lastName', lastName);
+    formData.append('phoneNumber', phoneNumber);
+    formData.append('birthdate', birthdate);
+    formData.append('gender', gender);
+    formData.append('selectedImage', selectedImage);
+    formData.append('aboutMe', aboutMe);
+    formData.append('occupation', occupation);
+    formData.append('smoker', smoker);
+    formData.append('diet', diet);
+    formData.append('status', status);
+    formData.append('hospitality', hospitality);
+    formData.append('kosher', kosher);
+    formData.append('expenseManagement', expenseManagement);
 
-    // Navigate to the next screen
-    navigation.navigate('Selection');
+    await axios.post(server_url, formData, {
+      headers: {
+        'X-CSRFToken': getCsrfToken(),
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        console.log(response.data);
+        console.log('Sign up successful');
+        navigation.navigate('Selection');
+      })
+      .catch((error) => {
+        console.log("error: ", error.response.data.errors);
+        const errors = JSON.parse(error.response.data.errors);
+
+        if (errors.firstName == undefined)
+          setFirstNameError(undefined);
+        else
+          setFirstNameError(errors.firstName[0].message);
+
+        if (errors.lastName == undefined)
+          setLastNameError(undefined);
+        else
+          setLastNameError(errors.lastName[0].message);
+
+        if (errors.phoneNumber == undefined)
+          setPhoneNumberError(undefined);
+        else
+          setPhoneNumberError(errors.phoneNumber[0].message);
+
+        if (errors.birthdateDate == undefined)
+          setBirthdateError(undefined);
+        else
+          setBirthdateError(errors.birthdateDate[0].message);
+
+        if (errors.gender == undefined)
+          setGenderError(undefined);
+        else
+          setGenderError(errors.gender[0].message);
+
+        if (errors.selectedImage == undefined)
+          setSelectedImageError(undefined);
+        else
+          setSelectedImageError(errors.selectedImage[0].message);
+
+        if (errors.aboutMe == undefined)
+          setAboutMeError(undefined);
+        else
+          setAboutMeError(errors.aboutMe[0].message);
+
+        if (errors.occupation == undefined)
+          setOccupationError(undefined);
+        else
+          setOccupationError(errors.occupation[0].message);
+
+        if (errors.smoker == undefined)
+          setSmokerError(undefined);
+        else
+          setSmokerError(errors.smoker[0].message);
+
+        if (errors.diet == undefined)
+          setDietError(undefined);
+        else
+          setDietError(errors.diet[0].message);
+
+        if (errors.status == undefined)
+          setStatusError(undefined);
+        else
+          setStatusError(errors.status[0].message);
+
+        if (errors.hospitality == undefined)
+          setHospitalityError(undefined);
+        else
+          setHospitalityError(errors.hospitality[0].message);
+
+        if (errors.kosher == undefined)
+          setKosherError(undefined);
+        else
+          setKosherError(errors.kosher[0].message);
+
+        if (errors.expenseManagement == undefined)
+          setExpenseManagementError(undefined);
+        else
+          setExpenseManagementError(errors.expenseManagement[0].message);
+
+      }
+      );
   };
 
   return (
@@ -129,12 +248,18 @@ const PersonalInfoScreen = ({ navigation }) => {
           onChangeText={setFirstName}
           style={styles.input}
         />
+        {
+          firstNameError && <Text style={{ color: 'red' }}>{firstNameError}</Text>
+        }
         <TextInput
           label="Last Name"
           value={lastName}
           onChangeText={setLastName}
           style={styles.input}
         />
+        {
+          lastNameError && <Text style={{ color: 'red' }}>{lastNameError}</Text>
+        }
 
         <PhoneInput
           initialCountry="us"
@@ -143,10 +268,18 @@ const PersonalInfoScreen = ({ navigation }) => {
           textStyle={styles.phoneInput}
           style={styles.input}
         />
+        {
+          phoneNumberError && <Text style={{ color: 'red' }}>{phoneNumberError}</Text>
+        }
 
         <View style={styles.dateContainer}>
           <Text style={styles.label}>Birthdate:                </Text>
-          <TextInput
+          <DateTimePicker
+            value={birthdate}
+            onChange={(dateStr, date)=> {console.log(); setBirthdate(date);}}
+          />
+
+          {/* <TextInput
             label="YYYY"
             value={birthdateYear}
             onChangeText={setBirthdateYear}
@@ -171,7 +304,11 @@ const PersonalInfoScreen = ({ navigation }) => {
             style={styles.dateInput}
             placeholder="DD"
             keyboardType="numeric"
-          />
+          /> */}
+
+          {
+            birthdateError && <Text style={{ color: 'red' }}>{birthdateError}</Text>
+          }
         </View>
 
         <View style={styles.fieldContainer}>
@@ -185,6 +322,9 @@ const PersonalInfoScreen = ({ navigation }) => {
             </Picker>
           </View>
         </View>
+        {
+          genderError && <Text style={{ color: 'red' }}>{genderError}</Text>
+        }
 
         <View style={styles.rowContainer}>
           <Text style={styles.label}>About Me:</Text>
@@ -196,9 +336,14 @@ const PersonalInfoScreen = ({ navigation }) => {
             style={[styles.input, { height: 120, textAlignVertical: 'top' }]}
           />
         </View>
+        {
+          aboutMeError && <Text style={{ color: 'red' }}>{aboutMeError}</Text>
+        }
 
         <UploadPhoto selectedImage={selectedImage} handleImageSelect={handleImageSelect} />
-
+        {
+          selectedImageError && <Text style={{ color: 'red' }}>{selectedImageError}</Text>
+        }
 
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Occupation:</Text>
@@ -211,6 +356,9 @@ const PersonalInfoScreen = ({ navigation }) => {
             </Picker>
           </View>
         </View>
+        {
+          occupationError && <Text style={{ color: 'red' }}>{occupationError}</Text>
+        }
 
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Smoker:</Text>
@@ -223,6 +371,9 @@ const PersonalInfoScreen = ({ navigation }) => {
             </Picker>
           </View>
         </View>
+        {
+          smokerError && <Text style={{ color: 'red' }}>{smokerError}</Text>
+        }
 
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Diet:</Text>
@@ -235,6 +386,9 @@ const PersonalInfoScreen = ({ navigation }) => {
             </Picker>
           </View>
         </View>
+        {
+          dietError && <Text style={{ color: 'red' }}>{dietError}</Text>
+        }
 
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Status:</Text>
@@ -247,6 +401,9 @@ const PersonalInfoScreen = ({ navigation }) => {
             </Picker>
           </View>
         </View>
+        {
+          statusError && <Text style={{ color: 'red' }}>{statusError}</Text>
+        }
 
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Hospitality:</Text>
@@ -259,6 +416,9 @@ const PersonalInfoScreen = ({ navigation }) => {
             </Picker>
           </View>
         </View>
+        {
+          hospitalityError && <Text style={{ color: 'red' }}>{hospitalityError}</Text>
+        }
 
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Kosher:</Text>
@@ -271,6 +431,9 @@ const PersonalInfoScreen = ({ navigation }) => {
             </Picker>
           </View>
         </View>
+        {
+          kosherError && <Text style={{ color: 'red' }}>{kosherError}</Text>
+        }
 
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Expense Management:</Text>
@@ -283,6 +446,9 @@ const PersonalInfoScreen = ({ navigation }) => {
             </Picker>
           </View>
         </View>
+        {
+          expenseManagementError && <Text style={{ color: 'red' }}>{expenseManagementError}</Text>
+        }
 
 
       </ScrollView>
