@@ -156,17 +156,21 @@
             <div class="w3-card w3-round w3-white w3-center">
                 <div class="w3-container">
                     <br>
-                    <h5>You didn't like</h5><br>
+                    <h5>You didn't like</h5>
+                    <h9> Click cancel if you want to return to the feed </h9>
+                    <br><br>
                     {% if removed %}
                         <div style="column-count: 3;">
                             {% for user in removed %}
-                            <h8 class="w3-left ">
+                            <h8 class="w3-left">
                                 <a href="user/profile/{{user.username}}">
-                                    <img src="{{ user.profile.image.url }}" class="w3-circle" style="width:40%;"/><br>
+                                    <img src="{{ user.profile.image.url }}" class="w3-circle" style="width:40%;" /><br>
                                     <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
-                                    <a href="/unlike-picture/{{ user.username }}" data-user="{{ user.username}}"></a>
                                 </a>
+                                <br>
+                                <a href="/unlike-picture/{{ user.username }}" data-user="{{ user.username }}">cancel</a>
                             </h8>
+                            
                             {%endfor%}
                         </div>
                     {%else%}
