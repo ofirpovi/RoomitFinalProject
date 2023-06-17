@@ -156,7 +156,7 @@
             <div class="w3-card w3-round w3-white w3-center">
                 <div class="w3-container">
                     <br>
-                    <h5>You didn't like</h5>
+                    <h5>Removed from feed</h5>
                     <h9> Click cancel if you want to return to the feed </h9>
                     <br><br>
                     {% if removed %}
@@ -168,7 +168,7 @@
                                     <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
                                 </a>
                                 <br>
-                                <a href="/unlike-picture/{{ user.username }}" data-user="{{ user.username }}">cancel</a>
+                                <a href="/unlike-picture/{{ user.username }}/"  data-user="{{ user }}"> cancel</a>
                             </h8>
                             
                             {%endfor%}
