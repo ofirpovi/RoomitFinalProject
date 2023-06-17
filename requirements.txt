@@ -16,3 +16,4 @@ selenium
 pytest
 parameterized
 shapely
+gunicorn
