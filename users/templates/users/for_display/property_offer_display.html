@@ -10,6 +10,28 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    {% block extra_css %}
+    <style>
+        /* Add custom CSS styles */
+        body {
+          padding-top: 50px; /* Add padding to the body to create space for the fixed navigation bar */
+        }
+      
+        .navbar-fixed-top {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+        }
+      
+        #map {
+          margin-top: 50px; /* Add margin to the map to create space for the fixed navigation bar */
+          height: 400px; /* Adjust the height as needed */
+        }
+      </style>
+    </style>
+    {% endblock %}
 </head>
 <h3 class="border-bottom mb-4"> Property Info </h3>
 <div class="content-section">
@@ -22,8 +44,13 @@
         <input type="text" id="countryInput" placeholder="Country"/>
         <button id="goButton">Search</button>
     </div>
+
     {% endif %}
-    <div id="map" style="height: 400px;"></div>
+
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
     {% if user.username == user_profile.username %}
     <script>
                 // Initialize the map and set its view

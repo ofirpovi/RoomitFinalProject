@@ -77,7 +77,7 @@ class Profile(models.Model):
 
 class PropertyForOffer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='property')
-    rent = models.IntegerField(blank=True, default=None)
+    rent = models.IntegerField(blank=True, default=None, null=True)
     square_meters = models.FloatField(blank=True, null=True)
     description = models.TextField(blank=True, default='')
     renovated = models.BooleanField(blank=True, default=False)

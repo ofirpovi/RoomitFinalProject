@@ -29,7 +29,7 @@ class RequirementsP(models.Model):
     # City = models.CharField(max_length=25, default='', blank=True)
     # Neighborhood = models.CharField(max_length=25, default='', blank=True)
     # MinRent = MoneyField(max_digits=14, decimal_places=2, default_currency='ILS',null=True, default=None, blank=True)
-    # MaxRent = MoneyField(max_digits=14, decimal_places=2, default_currency='ILS',null=True, default=None, blank=True)
+    # MaxRent = MoneyField(max_d אםigits=14, decimal_places=2, default_currency='ILS',null=True, default=None, blank=True)
     MinRent = models.IntegerField(null=True, default=None, blank=True)
     MaxRent = models.IntegerField(null=True, default=None, blank=True)
     MinRooms = models.IntegerField(null=True, default=None, blank=True)
