@@ -1,41 +1,204 @@
-{% extends "roomit_app/base.html"%} 
+{% extends "roomit_app/base.html"%}
 {% load crispy_forms_tags %}
 {%block PageContent%}
 <!-- Page Container -->
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+</head>
 <div class=" w3-content w3-content w3-margin-right" style="max-width: 1000px; margin-top: 80px;">
     <!-- The Grid -->
     <div class="w2-row">
-      <!-- Left Column -->
-      <div class=" w3-col m3">
+        <!-- Left Column -->
+        <div class=" w3-col m3">
         </div>
-      <!-- End Left Column -->
-      </div>
+        <!-- End Left Column -->
+    </div>
 
-      <!-- Middle Column -->
-      <div class="w3-col m7">
-        <div class="w3-container w3-card w3-white w3-round w3-margin-right content-section d-flex flex-column justify-content-center"><br>
-        <div class="content-section"> 
-            <form id="post_form" method="post" action="{% url 'property-offer-create' username=user_profile.username %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                {% for hidden in form.hidden_fields %}
+    <!-- Middle Column -->
+    <div class="w3-col m7">
+        <div class="w3-container w3-card w3-white w3-round w3-margin-right content-section d-flex flex-column justify-content-center">
+            <br>
+            <div class="content-section">
+                <form id="post_form" method="post"
+                      action="{% url 'property-offer-create' username=user_profile.username %}"
+                      enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <h1 class="display-10 fw-bold">Fill Your Property Info</h1>
+                    <div class="content-section">
+                        <h3 class="border-bottom mb-4">Property Location</h3>
+                        {% if user.username == user_profile.username %}
+                        <div>
+                            <input type="text" id="streetInput" placeholder="Street"/>
+                            <input type="text" id="houseNumberInput" placeholder="House Number"/>
+                            <input type="text" id="cityInput" placeholder="City"/>
+                            <input type="text" id="countryInput" placeholder="Country"/>
+                            <button id="goButton">Search</button>
+                        </div>
+                        {% endif %}
+                        <div id="map" style="height: 400px;"></div>
+                        {% if user.username == user_profile.username %}
+                        <script>
+                // Initialize the map and set its view
+                var map = L.map('map').setView([31.0461, 34.8516], 8);
+
+                // Add the tile layer from OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                    maxZoom: 18,
+                }).addTo(map);
+
+                // display saved location value
+                var locationValue = '{{ property_location }}';
+                console.log("locationValue  -  ", locationValue);
+                if(locationValue && locationValue != "None"){
+                    var jsonString = locationValue.replace(/&quot;/g, '"');
+                    console.log("jsonString  -  ", jsonString);
+                    var parsedData = JSON.parse(jsonString);
+                    console.log("parsedData  -  ", parsedData);
+                    var marker = L.marker(parsedData).addTo(map);
+                }
+                var drawnItems = new L.FeatureGroup();
+                map.addLayer(drawnItems);
+
+                var drawnItems = new L.FeatureGroup();
+                map.addLayer(drawnItems);
+
+                var drawControl = new L.Control.Draw({
+                    draw: {
+                        polygon: false,
+                        marker: true,
+                        circle: false,
+                        polyline: false,
+                        rectangle: false,
+                        circlemarker: false,
+                    },
+                    edit: {
+                        featureGroup: drawnItems,
+                        edit: false,
+                        remove: true,
+                    },
+                });
+                map.addControl(drawControl);
+
+                map.on('draw:created', function (e) {
+                    var layer = e.layer;
+                    console.log("layer - ", layer)
+                    var coordinates = layer._latlng
+                    console.log("_latlng - ", coordinates)
+                    drawnItems.clearLayers();
+                    console.log("document  -  ", document);
+                    document.getElementById('selectedAreaInput').value = JSON.stringify(coordinates);
+
+                });
+
+                // Handle the "Go" button click event
+                document.getElementById('goButton').addEventListener('click', function () {
+                    var street = document.getElementById('streetInput').value;
+                    var houseNumber = document.getElementById('houseNumberInput').value;
+                    var city = document.getElementById('cityInput').value;
+                    var country = document.getElementById('countryInput').value;
+                    var validAddress = false
+                    // Validate the input fields
+                    if (street && houseNumber && city && country) {
+                        // Construct the address based on the entered fields
+                        var address = houseNumber + ' ' + street + ', ' + city + ', ' + country;
+                        validAddress = true
+                    }
+                    else if (street && !houseNumber && city && country) {
+                        // Construct the address based on the entered fields
+                        var address = street + ', ' + city + ', ' + country;
+                        validAddress = true
+                    }
+                    else if (!street && !houseNumber && city && country) {
+                        // Construct the address based on the entered fields
+                        var address = city + ', ' + country;
+                        validAddress = true
+                    }
+                    else if (!street && !houseNumber && !city && country) {
+                        // Construct the address based on the entered fields
+                        var address = country;
+                        validAddress = true
+                    }
+                    if(validAddress){
+                        console.log('city:', city);
+                        console.log('address:', address);
+
+                        // Use a geocoding service to get the coordinates for the entered address
+                        var geocoder = L.Control.Geocoder.nominatim();
+                        geocoder.geocode(address, function (results) {
+                            if (results.length > 0) {
+                                var result = results[0];
+                                var coordinates = result.center;
+                                console.log('coordinates:', coordinates);
+                                map.setView(coordinates, 13); // Set the map view to the geocoded location
+                                L.marker(coordinates).addTo(map); // Add a marker at the geocoded location
+                            }
+                        });
+                    }else{
+                    console.log('Please fill in all the required fields.');
+                    }
+
+                });
+
+
+
+
+                        </script>
+                        {% else %}
+                        <script>
+                // Initialize the map and set its view
+                var map = L.map('map').setView([31.0461, 34.8516], 8);
+
+                // Add the tile layer from OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                    maxZoom: 18,
+                }).addTo(map);
+
+                // display saved location value
+                var locationValue = '{{ property_location }}';
+                if(locationValue && locationValue != "None"){
+                    var jsonString = locationValue.replace(/&quot;/g, '"');
+                    console.log("jsonString  -  ", jsonString);
+                    var parsedData = JSON.parse(jsonString);
+                    console.log("parsedData  -  ", parsedData);
+                    var marker = L.marker(parsedData).addTo(map);
+
+                }
+
+
+
+
+                        </script>
+                        {% endif %}
+                    </div>
+                    {% for hidden in form.hidden_fields %}
                     {{ hidden }}
-                {% endfor %}
-                <h1 class="display-10 fw-bold">Fill Your Property Info</h1>
-                {{pOffer_form |crispy}}
-                <input type="file" name="image" id="id_image" multiple>
-                <br><br>
-                <div class="form-group">
-                  <button class="btn btn-outline-info" type="submit">OK</button>
-              </div>
-              </form>
-      <!-- End Middle Column --> 
-      </div>
-    <!-- End Grid -->  
+                    {% endfor %}
+                    {{pOffer_form |crispy}}
+                    <input type="file" name="image" id="id_image" multiple>
+                    <br><br>
+                    <div class="form-group">
+                        <input type="hidden" id="selectedAreaInput" name="selectedArea"/>
+                        <button class="btn btn-outline-info" type="submit">OK</button>
+                    </div>
+                </form>
+                <!-- End Middle Column -->
+            </div>
+            <!-- End Grid -->
+        </div>
+        <br>
+
+
+        <!-- End Page Container -->
     </div>
     <br>
-  
-
-    <!-- End Page Container -->
-</div>
-<br>
-{%endblock%}
+    {%endblock%}

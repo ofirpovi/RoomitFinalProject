@@ -14,3 +14,4 @@ Pillow
 datetime
 selenium
 pytest
+parameterized

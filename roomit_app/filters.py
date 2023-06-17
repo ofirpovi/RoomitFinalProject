@@ -37,7 +37,6 @@ class PropertyOfferFilter(django_filters.FilterSet):
 class RoommateFilter(django_filters.FilterSet):
     smoker = django_filters.BooleanFilter()
     kosher = django_filters.BooleanFilter()
-    expense_management = django_filters.ChoiceFilter()
     min_age = filters.NumberFilter(field_name='birthdate', method='filter_min_age', label='Minimum Age')
     max_age = filters.NumberFilter(field_name='birthdate', method='filter_max_age', label='Maximum Age')
    

@@ -56,7 +56,11 @@
       <!-- Middle Column -->
         <div class="w3-col m7">
             <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-                {% block MiddleColoumContent%}        
+                {% block MiddleColoumContent%} 
+                <head>
+                    <!-- Include your CSS and JavaScript dependencies here -->
+                    {% block extra_css %}{% endblock %}
+                  </head>       
                 {% endblock MiddleColoumContent%}
             
             </div>

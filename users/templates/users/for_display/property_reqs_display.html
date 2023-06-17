@@ -2,27 +2,38 @@
 {% load crispy_forms_tags %}
 
 {% block MiddleColoumContent %}
-    <head>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-        <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    </head>
-    <h1 class="border-bottom mb-4"> Property Requirements </h1>
-    <div class="content-section">
-        <div class="content-section">
-            <h3 class="border-bottom mb-4">Property Location</h3>
-            <div>
-                <input type="text" id="streetInput" placeholder="Street" />
-                <input type="text" id="houseNumberInput" placeholder="House Number" />
-                <input type="text" id="cityInput" placeholder="City" />
-                <input type="text" id="countryInput" placeholder="Country" />
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+</head>
+<h1 class="border-bottom mb-4"> Property Requirements </h1>
+
+
+<div>
+
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <div class="content-section">
+                <h3 class="border-bottom mb-4">Property Location</h3>
+                {% if user.username == user_profile.username %}
+                <input type="text" id="streetInput" placeholder="Street"/>
+                <input type="text" id="houseNumberInput" placeholder="House Number"/>
+                <input type="text" id="cityInput" placeholder="City"/>
+                <input type="text" id="countryInput" placeholder="Country"/>
                 <button id="goButton">Search</button>
-            </div>
-            <div id="map" style="height: 400px;"></div>
-            <script>
+                {% endif %}
+
+                <div id="map" style="height: 400px;"></div>
+                {% if user.username == user_profile.username %}
+                <script>
                 // Initialize the map and set its view
                 var map = L.map('map').setView([31.0461, 34.8516], 8);
 
@@ -31,6 +42,28 @@
                     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
                     maxZoom: 18,
                 }).addTo(map);
+
+                // display saved location value
+                var locationValue = '{{ property_location }}';
+                if(locationValue && locationValue != "None"){
+                    var jsonString = locationValue.replace(/&quot;/g, '"');
+                    var parsedData = JSON.parse(jsonString);
+
+                    var openStreetMapCoordinates = parsedData[0].map(function(obj) {
+                        return [obj.lat, obj.lng];
+                    });
+
+                    var drawnItems = new L.FeatureGroup();
+                    map.addLayer(drawnItems);
+                    if(openStreetMapCoordinates.length == 5){
+                    var polygon = L.polygon(openStreetMapCoordinates).addTo(map);
+                    map.fitBounds(polygon.getBounds());
+                    }
+                    if(openStreetMapCoordinates.length == 4){
+                    var rectangle = L.rectangle(openStreetMapCoordinates).addTo(map);
+                    map.fitBounds(rectangle.getBounds());
+                    }
+                }
 
                 var drawnItems = new L.FeatureGroup();
                 map.addLayer(drawnItems);
@@ -111,24 +144,58 @@
                     }
 
                 });
-            </script>
-        </div>
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <fieldset class="form-group">
-                {% for hidden in property_form.hidden_fields %}
-                    {{ hidden }}
-                {% endfor %}
-                {{ property_form|crispy }}
-                <br><br>
-            </fieldset>
-            {% if user.username == user_profile.username %}
-                <div class="form-group">
-                    <input type="hidden" id="selectedAreaInput" name="selectedArea" />
-                    <button class="btn btn-outline-info" type="submit">Update</button>
-                </div>
-            {% endif %}
-        </form>
-    </div>
+
+                </script>
+                {% else %}
+                <script>
+                // Initialize the map and set its view
+                var map = L.map('map').setView([31.0461, 34.8516], 8);
+
+                // Add the tile layer from OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                    maxZoom: 18,
+                }).addTo(map);
+
+                // display saved location value
+                var locationValue = '{{ property_location }}';
+                if(locationValue && locationValue != "None"){
+                    var jsonString = locationValue.replace(/&quot;/g, '"');
+                    var parsedData = JSON.parse(jsonString);
+
+                    var openStreetMapCoordinates = parsedData[0].map(function(obj) {
+                        return [obj.lat, obj.lng];
+                    });
+
+                    var drawnItems = new L.FeatureGroup();
+                    map.addLayer(drawnItems);
+                    if(openStreetMapCoordinates.length == 5){
+                    var polygon = L.polygon(openStreetMapCoordinates).addTo(map);
+                    map.fitBounds(polygon.getBounds());
+                    }
+                    if(openStreetMapCoordinates.length == 4){
+                    var rectangle = L.rectangle(openStreetMapCoordinates).addTo(map);
+                    map.fitBounds(rectangle.getBounds());
+                    }
+                }
+
+
+                </script>
+                {% endif %}
+            </div>
+            {% for hidden in property_form.hidden_fields %}
+            {{ hidden }}
+            {% endfor %}
+            {{ property_form|crispy }}
+            <br><br>
+        </fieldset>
+        {% if user.username == user_profile.username %}
+        <div class="form-group">
+            <input type="hidden" id="selectedAreaInput" name="selectedArea"/>
+            <button class="btn btn-outline-info" type="submit">Update</button>
+        </div>
+        {% endif %}
+    </form>
+</div>
 {% endblock %}

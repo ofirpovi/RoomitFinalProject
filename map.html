@@ -1,89 +1,308 @@
-<!DOCTYPE HTML>
+<!--<!DOCTYPE HTML>-->
 
-<html>
+<!--<html>-->
 
-<head>
-    <title>CLICK HANDLER</title>
-    <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
-    <script>
-        var map,vectorLayer,selectMarkerControl,selectedFeature;
-        var lat             =   21.7679;
-        var lon            =    78.8718;
-        var zoom        =   5;
-        var curpos = new Array();
-        var position;
+<!--<head>-->
 
-            var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
-            var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css"/>-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>-->
+<!--    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"-->
+<!--            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="-->
+<!--            crossorigin=""></script>-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>-->
+<!--    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>-->
+<!--</head>-->
+<!--<title>CLICK HANDLER</title>-->
+<!--    <div id="map" style="height: 400px;"></div>-->
+<!--<script>-->
 
-            var cntrposition       = new OpenLayers.LonLat(lon, lat).transform( fromProjection, toProjection);
+<!--        function init()-->
+<!--        {-->
 
-        function init()
-        {
-                map = new OpenLayers.Map("Map",{
-                            controls:
-                            [
-                                        new OpenLayers.Control.PanZoomBar(),
-                            new OpenLayers.Control.LayerSwitcher({}),
-                            new OpenLayers.Control.Permalink(),
-                            new OpenLayers.Control.MousePosition({}),
-                            new OpenLayers.Control.ScaleLine(),
-                            new OpenLayers.Control.OverviewMap(),
-                                    ]
-                              }
-                                );
-                var mapnik      = new OpenLayers.Layer.OSM("MAP");
-                var markers     = new OpenLayers.Layer.Markers( "Markers" );
+<!--                // Initialize the map and set its view-->
+<!--                var map = L.map('map').setView([31.0461, 34.8516], 8);-->
 
-            map.addLayers([mapnik,markers]);
-            map.addLayer(mapnik);
-            map.setCenter(cntrposition, zoom);
+<!--                // Add the tile layer from OpenStreetMap-->
+<!--                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {-->
+<!--                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',-->
+<!--                    maxZoom: 18,-->
+<!--                }).addTo(map);-->
 
-            markers.addMarker(new OpenLayers.Marker(cntrposition));
+<!--                // display saved location value-->
+<!--                var locationValue = '[{"lat": 30.12345, "lng": 40.67890}, {"lat": 31.23456, "lng": 41.78901}, {"lat": 32.34567, "lng": 42.89012}, {"lat": 33.45678, "lng": 43.90123}]';-->
+<!--                if(locationValue && locationValue != "None"){-->
+<!--                    var jsonString = locationValue.replace(/&quot;/g, '"');-->
+<!--                    var parsedData = JSON.parse(jsonString);-->
 
-            var click = new OpenLayers.Control.Click();
-            map.addControl(click);
+<!--                    var openStreetMapCoordinates = parsedData.map(function(obj) {-->
+<!--                        return [obj.lat, obj.lng];-->
+<!--                    });-->
 
-            click.activate();
-};
+<!--                    var drawnItems = new L.FeatureGroup();-->
+<!--                    map.addLayer(drawnItems);-->
+<!--                    if(openStreetMapCoordinates.length == 5){-->
+<!--                    var polygon = L.polygon(openStreetMapCoordinates).addTo(map);-->
+<!--                    map.fitBounds(polygon.getBounds());-->
+<!--                    }-->
+<!--                    if(openStreetMapCoordinates.length == 4){-->
+<!--                    var rectangle = L.rectangle(openStreetMapCoordinates).addTo(map);-->
+<!--                    map.fitBounds(rectangle.getBounds());-->
+<!--                    }-->
+<!--                }-->
+<!--                var locationValue = '{"lat": 31.78901, "lng": 41.83456}';-->
+<!--                if(locationValue && locationValue != "None"){-->
+<!--                    var jsonString = locationValue.replace(/&quot;/g, '"');-->
+<!--                    console.log("jsonString  -  ", jsonString);-->
+<!--                    var parsedData = JSON.parse(jsonString);-->
+<!--                    console.log("parsedData  -  ", parsedData);-->
+<!--                    var marker = L.marker(parsedData).addTo(map);-->
 
-OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
- defaultHandlerOptions: {
-  'single': true,
-  'double': false,
-  'pixelTolerance': 0,
-  'stopSingle': false,
-  'stopDouble': false
- },
+<!--                }-->
 
- initialize: function(options) {
-  this.handlerOptions = OpenLayers.Util.extend(
-   {}, this.defaultHandlerOptions
-  );
-  OpenLayers.Control.prototype.initialize.apply(
-   this, arguments
-  );
-  this.handler = new OpenLayers.Handler.Click(
-   this, {
-    'click': this.trigger
-   }, this.handlerOptions
-  );
- },
 
- trigger: function(e) {
-  var lonlat = map.getLonLatFromPixel(e.xy);
-  lonlat1= new OpenLayers.LonLat(lonlat.lon,lonlat.lat).transform(toProjection,fromProjection);
-  alert("Hello..."+lonlat1.lon + "  " +lonlat1.lat);
+<!--}-->
 
- }
 
-});
-</script>
-</head>
+<!--</script>-->
 
-<body onload='init();'>
-    <div id="Map" style="height: 650px" ></div>
 
-</body>
+<!--<body onload='init();'>-->
+<!--<div id="Map" style="height: 650px"></div>-->
 
-</html>
+<!--</body>-->
+
+<!--</html>-->
+
+<!--<div class="item-box">-->
+<!--    {%if data.feed%}-->
+<!--    {% for item in feed %}-->
+<!--    <br>-->
+<!--    {% if request.user.profile.profile_status == "StatusInsert" %}-->
+<!--    <div class="card" style="max-width: 200px; margin: auto; text-align: center;">-->
+<!--        <img src="{{ item.user.profile.image.url }}" alt={{item.user.username}} style="width: 100% ">-->
+<!--        <h6 class="w3-left "><a href="user/profile/{{item.user.username}}" style="color:black"><br><i-->
+<!--                class="fa fa-hand-o-right"></i> More about {{item.user.username}} </a></h6>-->
+<!--        <h5>score: {{ item.score }} </h5>-->
+<!--        {% if item.like %}-->
+<!--        <a href="/unlike-picture/{{ item.user.username }}/">-->
+<!--            <button class="button" style="background-color: #50766650"-->
+<!--                    class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user }}"><i-->
+<!--                    class="fa fa-thumbs-down "></i> Unlike-->
+<!--            </button>-->
+<!--        </a>-->
+<!--        {% else %}-->
+<!--        <a href="/like-picture/{{ item.user.username }}/">-->
+<!--            <button class="button" style="background-color: #50766650 "-->
+<!--                    class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user.username }}"><i-->
+<!--                    class="fa fa-thumbs-up"></i> Like-->
+<!--            </button>-->
+<!--        </a>-->
+<!--        {% endif %}-->
+<!--        <br>-->
+<!--    </div>-->
+
+<!--    {%else%}-->
+<!--    <div class="card" style="max-width: 100px; margin: auto; text-align: center;">-->
+<!--        {% if item.image != None %}-->
+<!--        <img src="{{ item.image.image.url }}" alt={{item.user.username}} style="width:100%; height: 170px">-->
+<!--        {%else%}-->
+<!--        <br><h5><i class="fa fa-close"></i> No images for this property</h5>-->
+<!--        {% endif %}-->
+<!--        <h6 class="w3-left "><br><a href="user/profile/{{item.user.username}}" style="color:black"><img-->
+<!--                src="{{ item.user.profile.image.url }}" class="w3-circle" style="width:25%;"/><br><i-->
+<!--                class="fa fa-hand-o-right"></i> More about {{item.user.username}} </a></h6>-->
+<!--        <h5>score: {{ item.score }}</h5>-->
+<!--        {% if item.like %}-->
+<!--        <a href="/unlike-picture/{{ item.user.username }}/">-->
+<!--            <button class="button" style="background-color: #50766650"-->
+<!--                    class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user }}"><i-->
+<!--                    class="fa fa-thumbs-down "></i> Unlike-->
+<!--            </button>-->
+<!--        </a>-->
+<!--        {% else %}-->
+<!--        <a href="/like-picture/{{ item.user.username }}/">-->
+<!--            <button class="button" style="background-color: #50766650 "-->
+<!--                    class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user.username}}"><i-->
+<!--                    class="fa fa-thumbs-up"></i> Like-->
+<!--            </button>-->
+<!--        </a>-->
+<!--        {% endif %}-->
+<!--        <br>-->
+<!--    </div>-->
+<!--    {%endif%}-->
+<!--    <br>-->
+<!--    {%endfor%}-->
+
+<!--    &lt;!&ndash;                {%else%}&ndash;&gt;-->
+<!--    &lt;!&ndash;                <br><br>&ndash;&gt;-->
+<!--    &lt;!&ndash;                <h4 class>No matching results were found</h4>&ndash;&gt;-->
+<!--    &lt;!&ndash;                {%endif%}&ndash;&gt;-->
+<!--</div>-->
+{% extends "roomit_app/base.html"%}
+{%load static%}
+{% load crispy_forms_tags %}
+{% load infinite_scroll %}
+{%block PageContent%}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Page Container -->
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+    <!-- The Grid -->
+    <div class="w2-row">
+
+        <!-- Left Column -->
+        <div class=" w3-col m3">
+            <!-- Filterbar -->
+            <div class="w3-card w3-round w3-white w3-margin">
+                <div class="w3-container"><br>
+                    <form method="GET" action="{% url 'post_list_page' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <fieldset class="form-group">
+                            <h3 class="border-bottom mb-4">Filter your matches</h3>
+
+                            <h5> About Roommate: </h5>
+                            <br>
+                            {{reqsR_form.form|crispy}}
+                            {% if request.user.profile.profile_status == 'StatusEnter' %}
+                            <div class="border-bottom mb-4"></div>
+                            <h5> About Property: </h5>
+                            <br>
+                            {{offerP_form.form|crispy}}
+
+                            {%endif%}
+                            <button type="submit" class="btn btn-primary mt-3 "
+                                    style="background-color: #50766650; border: #50766650;">Filter
+                            </button>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+            <!-- End Left Column -->
+        </div>
+
+        <!-- Middle Column -->
+        <div class="w3-col m6" style="display: flex; justify-content: center;">
+            <div class="item-box">
+                {%if data.feed%}
+                {% for item in data.feed %}
+                <br>
+                {% if request.user.profile.profile_status == "StatusInsert" %}
+                <div class="card" style="max-width: 200px; margin: auto; text-align: center;">
+                    <a href="/remove-picture/{{ item.user.username }}/">
+                        <button class="close" data-username="{{ item.user.username }}"
+                                style="cursor: pointer; position: absolute; top: 5%; right: 0%;  transform: translate(0%, -50%); padding: 10px 8px; border: none; background: none;">
+                            <i class="fa fa-times" style="font-size: 14px;"></i>
+                        </button>
+                    </a>
+                    <img src="{{ item.user.profile.image.url }}" alt={{item.user.username}} style="width: 100% ">
+                    <h6 class="w3-left "><a href="user/profile/{{item.user.username}}" style="color:black"><br><i
+                            class="fa fa-hand-o-right"></i> More about {{item.user.username}} </a></h6>
+                    <h5>score: {{ item.score }} </h5>
+                    {% if item.like %}
+                    <a href="/unlike-picture/{{ item.user.username }}/">
+                        <button class="button" style="background-color: #50766650"
+                                class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user }}"><i
+                                class="fa fa-thumbs-down "></i> Unlike
+                        </button>
+                    </a>
+                    {% else %}
+                    <a href="/like-picture/{{ item.user.username }}/">
+                        <button class="button" style="background-color: #50766650 "
+                                class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user.username }}"><i
+                                class="fa fa-thumbs-up"></i> Like
+                        </button>
+                    </a>
+                    {% endif %}
+                    <br>
+                </div>
+
+                {%else%}
+                <div class="card" style:
+                "max-width: 100px; margin: auto; text-align: center;">
+                <a href="/remove-picture/{{ item.user.username }}/">
+                    <button class="close" data-username="{{ item.user.username }}"
+                            style="cursor: pointer; position: absolute; top: 5%; right: 0%;  transform: translate(0%, -50%); padding: 10px 8px; border: none; background: none;">
+                        <i class="fa fa-times" style="font-size: 14px;"></i>
+                    </button>
+                </a>
+                {% if item.image != None %}
+                <img src="{{ item.image.image.url }}" alt={{item.user.username}} style="width:100%; height: 170px">
+                {%else%}
+                <br><h5><i></i> No images for this property</h5>
+                {% endif %}
+                <h6 class="w3-left "><br><a href="user/profile/{{item.user.username}}" style="color:black"><img
+                        src="{{ item.user.profile.image.url }}" class="w3-circle" style="width:25%;"/><br><i
+                        class="fa fa-hand-o-right"></i> More about {{item.user.username}} </a></h6>
+                <h5>score: {{ item.score }}</h5>
+                {% if item.like %}
+                <a href="/unlike-picture/{{ item.user.username }}/">
+                    <button class="button" style="background-color:" class="w3-button w3-theme-d1 w3-margin-bottom"
+                            data-user="{{ item.user }}"><i class="fa fa-thumbs-up"></i></button>
+                </a>
+                {% else %}
+                <a href="/like-picture/{{ item.user.username }}/">
+                    <button class="button" style="background-color: #50766650"
+                            class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user.username}}"><i
+                            class="fa fa-thumbs-o-up"></i></button>
+                </a>
+                {% endif %}
+                <br>
+            </div>
+            {%endif%}
+            <br>
+            {%endfor%}
+            <script>
+                            $(document).ready(function() {
+                                $('.close').click(function() {
+                                    var username = $(this).data.feed('username');
+                                    $(this).closest('.card').remove(); // Remove the closest card element
+                                });
+                            });
+
+            </script>
+            {%else%}
+            <br><br>
+            <h4 class>No matching results were found</h4>
+            {%endif%}
+        </div>
+
+
+        {% set_infinite_scroll %}
+        <!-- End Middle Column -->
+    </div>
+
+    <!-- Right Column -->
+    <div class="w3-col m3">
+        <br>
+        <div class="w3-card w3-round w3-white w3-center">
+            <div class="w3-container">
+                <br>
+                <h5>You may also like</h5><br>
+                <div style="column-count: 3;">
+                    {% for user in recommended_roommates|slice:":3" %}
+                    <h8 class="w3-left ">
+                        <a href="user/profile/{{user.username}}">
+                            <img src="{{ user.profile.image.url }}" class="w3-circle" style="width:40%;"/><br>
+                            <a href="/like-picture/{{ user.username }}" data-user="{{ user.username}}"></a>
+                            <a href="user/profile/{{user.username}}" style="color:black">{{user.username}}</a>
+                        </a>
+                    </h8>
+                    {%endfor%}
+                </div>
+                <br>
+            </div>
+        </div>
+        <br>
+        <!-- End Right Column -->
+    </div>
+
+
+    <!-- End Grid -->
+</div>
+<br>
+
+<!-- End Page Container -->
+</div>
+<br>
+{%endblock PageContent%}

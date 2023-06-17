@@ -1,11 +1,25 @@
 {%extends "roomit_app/base.html"%}
 {%load crispy_forms_tags%}
+    <!-- Navbar -->
+{% block Navbar%}
+    <div class="w3-top w3-bar w3-theme-d2 w3-large">
+        <div class="w3-left-align">
+        <!--Unauthenticate Navbar Left Side-->
+        <a class="w3-bar-item w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>ROOMIT</a>
+        </div>
+        <!--Unauthenticate Navbar Right Side -->
+        <div class=" w3-right-align">
+        <a class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" href="{% url 'login' %}">Login</a>
+        <a class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" href="{% url 'register' %}">Register</a>
+        </div>
+    </div>
+{% endblock Navbar%}
 {% block PageContent%}
 <!-- Page Container -->
 <div class="w3-container w3-content " style="max-width:1000px; margin-right:-5%; margin-top:5%;">
-   
     <!-- The Grid -->
     <div class="w2-row-padding">
+
         <!-- Middle Column -->
         <div class=" w3-col m7 mx-auto">
             <div class="w3-container w3-card w3-white w3-round w3-margin"><br>

@@ -1,26 +1,58 @@
-{% extends "users/for_display/display_base.html"%} 
+{% extends "users/for_display/display_base.html"%}
 {% load crispy_forms_tags %}
 {% block MiddleColoumContent%}
-    <head>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-        <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    </head>
-        <h3 class="border-bottom mb-4"> Property Info </h3>
-        <div class="content-section">
-                        <h3 class="border-bottom mb-4">Property Location</h3>
-            <div>
-                <input type="text" id="streetInput" placeholder="Street" />
-                <input type="text" id="houseNumberInput" placeholder="House Number" />
-                <input type="text" id="cityInput" placeholder="City" />
-                <input type="text" id="countryInput" placeholder="Country" />
-                <button id="goButton">Search</button>
-            </div>
-            <div id="map" style="height: 400px;"></div>
-            <script>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    {% block extra_css %}
+    <style>
+        /* Add custom CSS styles */
+        body {
+          padding-top: 50px; /* Add padding to the body to create space for the fixed navigation bar */
+        }
+      
+        .navbar-fixed-top {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+        }
+      
+        #map {
+          margin-top: 50px; /* Add margin to the map to create space for the fixed navigation bar */
+          height: 400px; /* Adjust the height as needed */
+        }
+      </style>
+    </style>
+    {% endblock %}
+</head>
+<h3 class="border-bottom mb-4"> Property Info </h3>
+<div class="content-section">
+    <h3 class="border-bottom mb-4">Property Location</h3>
+    {% if user.username == user_profile.username %}
+    <div>
+        <input type="text" id="streetInput" placeholder="Street"/>
+        <input type="text" id="houseNumberInput" placeholder="House Number"/>
+        <input type="text" id="cityInput" placeholder="City"/>
+        <input type="text" id="countryInput" placeholder="Country"/>
+        <button id="goButton">Search</button>
+    </div>
+
+    {% endif %}
+
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
+    {% if user.username == user_profile.username %}
+    <script>
                 // Initialize the map and set its view
                 var map = L.map('map').setView([31.0461, 34.8516], 8);
 
@@ -29,6 +61,19 @@
                     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
                     maxZoom: 18,
                 }).addTo(map);
+
+                // display saved location value
+                var locationValue = '{{ property_location }}';
+                console.log("locationValue  -  ", locationValue);
+                if(locationValue && locationValue != "None"){
+                    var jsonString = locationValue.replace(/&quot;/g, '"');
+                    console.log("jsonString  -  ", jsonString);
+                    var parsedData = JSON.parse(jsonString);
+                    console.log("parsedData  -  ", parsedData);
+                    var marker = L.marker(parsedData).addTo(map);
+                }
+                var drawnItems = new L.FeatureGroup();
+                map.addLayer(drawnItems);
 
                 var drawnItems = new L.FeatureGroup();
                 map.addLayer(drawnItems);
@@ -109,36 +154,64 @@
                     }
 
                 });
-            </script>
-        </div>
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <fieldset class="form-group">
-                    {% for hidden in property_form.hidden_fields %}
-                        {{ hidden }}
-                    {% endfor %}
-                    {{property_form|crispy}}
-                    <h5> Property's Images</h5>
-                    {% if formset %}
-                        {% for form in formset %}
-                            <img src="{{ form.instance.image.url }}" width="100" >             
-                        {% endfor %}
-                    {% else %}
-                            <p>No images for this property<p>
-                    {% endif %}
-                    <br><br>
-                    {% if user.username == user_profile.username%}
-                        <label for="id_image">Upload Images:</label>
-                        <input type="file" name="image" id="id_image" multiple>
-                    {%endif%}
-                </fieldset>    
-                {% if user.username == user_profile.username %}
-                    <div class="form-group">
-                        <input type="hidden" id="selectedAreaInput" name="selectedArea" />
-                        <button class="btn btn-outline-info" type="submit">Update</button>
-                    </div>
-                {% endif %}
-            </form>
-          </div>
-      <!-- End Middle Column --> 
-    {% endblock MiddleColoumContent%}
+
+
+    </script>
+    {% else %}
+<script>
+                // Initialize the map and set its view
+                var map = L.map('map').setView([31.0461, 34.8516], 8);
+
+                // Add the tile layer from OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                    maxZoom: 18,
+                }).addTo(map);
+
+                // display saved location value
+                var locationValue = '{{ property_location }}';
+                if(locationValue && locationValue != "None"){
+                    var jsonString = locationValue.replace(/&quot;/g, '"');
+                    console.log("jsonString  -  ", jsonString);
+                    var parsedData = JSON.parse(jsonString);
+                    console.log("parsedData  -  ", parsedData);
+                    var marker = L.marker(parsedData).addTo(map);
+
+                }
+
+
+                </script>
+    {% endif %}
+</div>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset class="form-group">
+        {% for hidden in property_form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+        {{property_form|crispy}}
+        <h5> Property's Images</h5>
+        {% if formset %}
+        {% for form in formset %}
+        <img src="{{ form.instance.image.url }}" width="100">
+        {% endfor %}
+        {% else %}
+        <p>No images for this property
+        <p>
+            {% endif %}
+            <br><br>
+            {% if user.username == user_profile.username%}
+            <label for="id_image">Upload Images:</label>
+            <input type="file" name="image" id="id_image" multiple>
+            {%endif%}
+    </fieldset>
+    {% if user.username == user_profile.username %}
+    <div class="form-group">
+        <input type="hidden" id="selectedAreaInput" name="selectedArea"/>
+        <button class="btn btn-outline-info" type="submit">Update</button>
+    </div>
+    {% endif %}
+</form>
+</div>
+<!-- End Middle Column -->
+{% endblock MiddleColoumContent%}

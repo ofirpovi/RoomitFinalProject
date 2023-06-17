@@ -18,15 +18,18 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=30, default='')
     birthdate = models.DateField(null=True, blank=False)
     phone_number = PhoneNumberField(
-        help_text='Enter a valid phone number (e.g. +12125552368)')
+        help_text='Enter a valid phone number (e.g. +972521111111)')
     gender = models.CharField(max_length=10, blank=False, choices=[('F', 'Female'),
                                                                    ('M', 'Male'),
-                                                                   ('N', 'Not Defined'),
+                                                                   ('T', 'Transgender'),
+                                                                   ('NB', 'Non-binary'),
+                                                                   ('GN', 'Gender neutral'),
+                                                                   ('D', "Don't wish to answer"),
                                                                    ])
     occupation = models.CharField(max_length=30,  blank=True, choices=[('F', 'Full-time job'),
                                                                        ('S', 'Student'),
                                                                        ('P', 'Part-time job'),
-                                                                       ('D', "Doesn't matter"),
+                                                                       ('D', "Don't wish to answer"),
                                                                        ])
     smoker = models.CharField(max_length=15, blank=True, choices=[('Yes', 'Yes'),
                                                                   ('No', 'No'),
@@ -34,6 +37,7 @@ class Profile(models.Model):
                                                                    'Occasionally'),
                                                                   ('Socially',
                                                                    'Socially'),
+                                                                  ('D', "Don't wish to answer"),
                                                                   ])
     diet = models.CharField(max_length=15, blank=True, choices=[('Carnivore', 'Carnivore'),
                                                                 ('Pescetarian',
@@ -43,21 +47,25 @@ class Profile(models.Model):
                                                                  'Vegetarian'),
                                                                 ('Raw Veganism',
                                                                  'Raw Veganism'),
+                                                                ('D', "Don't wish to answer"),
                                                                 ])
     status = models.CharField(max_length=20, blank=True, choices=[('Single', 'Single'),
                                                                   ('Married',
                                                                    'Married'),
                                                                   ('In a relationship',
                                                                    'In a relationship'),
-                                                                  ('D', "Doesn't matter"),
+                                                                  ('D', "Don't wish to answer"),
                                                                   ])
 
     hospitality = models.CharField(max_length=15, blank=True, default='', choices=[('L', 'Love'),
-                                                                                        ('N', 'Prefer not'),])
+                                                                                        ('N', 'Prefer not'),
+                                                                                   ('D', "Don't wish to answer"),])
     kosher = models.CharField(max_length=15, blank=True, choices=[('Y', 'Yes'),
-                                                                  ('N', 'No'),])
-    expense_management = models.CharField(max_length=15, blank=True, choices=[('Y', 'Prefer'),
-                                                                              ('N', 'Prefer not'),])
+                                                                  ('N', 'No'),
+                                                                  ('D', "Doesn't matter"),])
+    expense_management = models.CharField(max_length=15, blank=True, choices=[('S', 'Shared'),
+                                                                               ('I', 'Individual'),
+                                                                                ('D', "Doesn't matter"),])
     about_me = models.TextField(max_length=80, default='', blank= True)
 
     def __str__(self):
@@ -69,11 +77,7 @@ class Profile(models.Model):
 
 class PropertyForOffer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='property')
-    # country = models.CharField(max_length=25, default='')
-    # city = models.CharField(max_length=25, default='')
-    # neighborhood = models.CharField(max_length=25, default='')
-    rent = MoneyField(max_digits=14, decimal_places=2, default_currency='ILS')
-
+    rent = models.IntegerField(blank=True, default=None, null=True)
     square_meters = models.FloatField(blank=True, null=True)
     description = models.TextField(blank=True, default='')
     renovated = models.BooleanField(blank=True, default=False)
@@ -81,30 +85,10 @@ class PropertyForOffer(models.Model):
     shelter_nearby = models.BooleanField(blank=True, default=False)
     furnished = models.BooleanField(blank=True, default=False)
     shared_livingroom = models.BooleanField(blank=True, default=False)
-    rooms_number = models.FloatField(max_length=3, choices=[(1.0, '1'),
-                                                            (1.5, '1.5'),
-                                                            (2.0, '2'),
-                                                            (2.5, '2.5'),
-                                                            (3.0, '3'),
-                                                            (3.5, '3.5'),
-                                                            (4.0, '4'),
-                                                            (4.5, '4.5'),
-                                                            (5.0, '5'),], blank=False, default='1')
-    roomates_number = models.IntegerField(choices=[(1, '1'),
-                                                   (2, '2'),
-                                                   (3, '3'),
-                                                   (4, '4'),
-                                                   (5, '5'),], blank=False, default='1')
-    showers_number = models.IntegerField(choices=[(1, '1'),
-                                                  (2, '2'),
-                                                  (3, '3'),
-                                                  (4, '4'),
-                                                  (5, '5'),], blank=False, default='1')
-    toilets_number = models.IntegerField(choices=[(1, '1'),
-                                                  (2, '2'),
-                                                  (3, '3'),
-                                                  (4, '4'),
-                                                  (5, '5'),], blank=False, default='1')
+    rooms_number = models.FloatField(max_length=3, blank=False, default=None)
+    roomates_number = models.IntegerField(blank=False, default=None)
+    showers_number = models.IntegerField(blank=False, default=None)
+    toilets_number = models.IntegerField(blank=False, default=None)
     Location = models.TextField(blank=True)
     # nearby_choices = [('Supermarket','Supermarket'), ('Bakery','Bakery'), ('Synagogue','Synagogue'), ('Clinic','Clinic'), ('Bars','Bars'), ('Restaurants','Restaurants'), ('University','University'), ('School','School'),('Kindergarten','Kindergarten'), ('Shopping center','Shopping center')]
     # available_nearby = ArrayField(models.CharField(max_length=100, choices = nearby_choices, blank=True, null=True), blank=True, null= True)

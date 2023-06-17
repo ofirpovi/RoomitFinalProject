@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 # from django.contrib.postgres.fields import ArrayField
+from djmoney.models.fields import MoneyField
 
 
 class Scores(models.Model):
@@ -27,6 +28,8 @@ class RequirementsP(models.Model):
     # Country = models.CharField(max_length=25, default='', blank=True)
     # City = models.CharField(max_length=25, default='', blank=True)
     # Neighborhood = models.CharField(max_length=25, default='', blank=True)
+    # MinRent = MoneyField(max_digits=14, decimal_places=2, default_currency='ILS',null=True, default=None, blank=True)
+    # MaxRent = MoneyField(max_d אםigits=14, decimal_places=2, default_currency='ILS',null=True, default=None, blank=True)
     MinRent = models.IntegerField(null=True, default=None, blank=True)
     MaxRent = models.IntegerField(null=True, default=None, blank=True)
     MinRooms = models.IntegerField(null=True, default=None, blank=True)
@@ -50,43 +53,48 @@ class RequirementsP(models.Model):
 class RequirementsR(models.Model):
     Requirement_ID = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    Occupation = models.CharField(max_length=30,  blank=True, null=True, default=None, choices=[('F', 'Full-time job'),
+    Occupation = models.CharField(max_length=30, null=True, default='D', choices=[('F', 'Full-time job'),
                                                                                                 ('S', 'Student'),
                                                                                                 ('P', 'Part-time job'),
                                                                                                 ('D', "Doesn't matter"),
                                                                                                 ])
     MinAge = models.IntegerField(null=True, default=None, blank=True)
     MaxAge = models.IntegerField(null=True, default=None, blank=True)
-    Gender = models.CharField(max_length=10, null=True, default=None, blank=True, choices=[('F', 'Female'),
+    Gender = models.CharField(max_length=10, null=True, default='D', choices=[('F', 'Female'),
                                                                                            ('M', 'Male'),
-                                                                                           ('N', 'Not Defined'),
+                                                                                           ('T', 'Transgender'),
+                                                                                           ('NB', 'Non-binary'),
+                                                                                           ('GN', 'Gender neutral'),
                                                                                            ('D', "Doesn't matter"),
                                                                                            ])
-    Smoker = models.CharField(max_length=15, null=True, default=None, blank=True, choices=[('Yes', 'Yes'),
+    Smoker = models.CharField(max_length=15, null=True, default='D', choices=[('Yes', 'Yes'),
                                                                                            ('No','No'),
                                                                                            ('Occasionally','Occasionally'),
                                                                                            ('Socially','Socially'),
+                                                                                           ("D", "Doesn't matter"),
                                                                                            ])
-    Diet = models.CharField(max_length=15, null=True, default=None, blank=True, choices=[('Carnivore', 'Carnivore'),
+    Diet = models.CharField(max_length=15, null=True, default='D', choices=[('Carnivore', 'Carnivore'),
                                                                                          ('Pescetarian','Pescetarian'),
                                                                                          ('Vegan','Vegan'),
                                                                                          ('Vegetarian','Vegetarian'),
                                                                                          ('Raw Veganism','Raw Veganism'),
                                                                                          ('D', "Doesn't matter"),
                                                                                          ])
-    Kosher = models.CharField(max_length=15, null=True, default=None, blank=True, choices=[('Y', 'Yes'),
-                                                                                           ('N', 'No'),])
-    Status = models.CharField(max_length=20, null=True, default=None, blank=True, choices=[('Single', 'Single'),
+    Kosher = models.CharField(max_length=15, null=True, default='D', choices=[('Y', 'Yes'),
+                                                                                           ('N', 'No'),
+                                                                                            ('D', "Doesn't matter"),])
+    Status = models.CharField(max_length=20, null=True, default='D', choices=[('Single', 'Single'),
                                                                                            ('Married',
                                                                                             'Married'),
                                                                                            ('In a relationship',
                                                                                             'In a relationship'),
                                                                                            ('D', "Doesn't matter"),])
     Weight = Weight = models.FloatField(null=True, default=100, blank=True)
-    Expense_Management = models.CharField(max_length=15, default='P', choices=[('L', 'Love'),
-                                                                               ('P', 'Prefer not')])
-    Hospitality = models.CharField(max_length=15, blank=True, default='empty', choices=[('L', 'Love'),
-                                                                                        ('N', 'Prefer not'),])
+    Expense_Management = models.CharField(max_length=15, default='D', choices=[('S', 'Shared'),
+                                                                               ('I', 'Individual'),
+                                                                                ('D', "Doesn't matter")])
+    Hospitality = models.CharField(max_length=15, default='D', choices=[('L', 'Love'),
+                                                                                        ('N', 'Prefer not'), ('D', "Doesn't matter")])
 
     def save(self, *args, **kwargs):
         super(RequirementsR, self).save(*args, **kwargs)
