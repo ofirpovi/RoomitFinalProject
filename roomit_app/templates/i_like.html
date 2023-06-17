@@ -14,7 +14,7 @@
         {% for item in list_items %}
           <br>
           {% if request.user == item.item.Username_insert %}
-            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
+            <div class="card" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
                 <img  src="{{ item.item.Username_enter.profile.image.url }}" alt={{item.item.Username_enter}} style="width:100%">
                 <h5 class="w3-left "><a  style="color:black" href="/user/profile/{{item.item.Username_enter}}" ><br><i class="fa fa-hand-o-right"></i> {{item.item.Username_enter}} </a></h5>
                 <h5>score: {{ item.item.Insert_score }} </h5>
@@ -24,7 +24,7 @@
                 <br>
             </div>
           {%else%}
-            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
+            <div class="card" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
               {% if item.image != None %}
                   <img src="{{ item.image.image.url }}" alt={{item.item.Username_insert}} style="width:100%;">
               {%else%}
@@ -43,7 +43,7 @@
 
 
           {% comment %} {% if request.user.profile.profile_status == "StatusEnter" %}
-            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
+            <div class="card" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
               <img src="{{ user.User_insert.profile.image.url }}" alt="{{ user.User_insert.username }}" style="width:100%">
               <h5>{{ user.User_insert.username }}</h5>
             </div>

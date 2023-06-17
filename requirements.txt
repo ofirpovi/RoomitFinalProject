@@ -17,3 +17,4 @@ pytest
 parameterized
 shapely
 gunicorn
+whitenoise
