@@ -11,26 +11,26 @@ import axios from "axios"
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 async function getCsrfToken() {
-  const loginResponse = await axios.get('http://192.168.1.119:8000/user/get-csrf-token/');
+  const loginResponse = await axios.get('http://10.100.102.11:8000/user/get-csrf-token/');
   const csrfTokenHeader = loginResponse.headers['set-cookie']
     .find(cookie => cookie.startsWith('csrftoken'));
   if (csrfTokenHeader) {
     const csrfToken = csrfTokenHeader.split('=')[1].split(';')[0];
-    setCsrfToken(csrfToken);
+    return csrfToken;
   }
 }
 
 const genderOptions = [
-  { label: 'Female', value: 'Female' },
-  { label: 'Male', value: 'Male' },
-  { label: 'Not Defined', value: 'Not Defined' },
+  { label: 'Female', value: 'F' },
+  { label: 'Male', value: 'M' },
+  { label: 'Not Defined', value: 'N' },
 ];
 
 const occupationOptions = [
-  { label: 'Full-time job', value: 'Full-time job' },
-  { label: 'Part-time job', value: 'Part-time job' },
-  { label: 'Student', value: 'Student' },
-  { label: 'Doesn\'t matter', value: 'Doesn\'t matter' },
+  { label: 'Full-time job', value: 'F' },
+  { label: 'Part-time job', value: 'P' },
+  { label: 'Student', value: 'S' },
+  { label: 'Doesn\'t matter', value: 'D' },
 ];
 
 const smokerOptions = [
@@ -52,22 +52,22 @@ const statusOptions = [
   { label: 'Single', value: 'Single' },
   { label: 'Married', value: 'Married' },
   { label: 'In a relationship', value: 'In a relationship' },
-  { label: 'Doesn\'t matter', value: 'Doesn\'t matter' },
+  { label: 'Doesn\'t matter', value: 'D' },
 ];
 
 const hospitalityOptions = [
-  { label: 'Love', value: 'Love' },
-  { label: 'Prefer Not', value: 'Prefer Not' },
+  { label: 'Love', value: 'L' },
+  { label: 'Prefer Not', value: 'N' },
 ];
 
 const kosherOptions = [
-  { label: 'Yes', value: 'Yes' },
-  { label: 'No', value: 'No' },
+  { label: 'Yes', value: 'Y' },
+  { label: 'No', value: 'N' },
 ];
 
 const expenseManagementOptions = [
-  { label: 'Prefer', value: 'Prefer' },
-  { label: 'Prefer Not', value: 'Prefer Not' },
+  { label: 'Prefer', value: 'L' },
+  { label: 'Prefer Not', value: 'P' },
 ];
 
 
@@ -115,7 +115,7 @@ const PersonalInfoScreen = ({ navigation }) => {
 
   const csrfToken = useContext(CsrfTokenContext);
 
-  const server_url = "http://192.168.1.119:8000/user/register";
+  const server_url = "http://10.100.102.11:8000/user/fill_info/noale/";
 
 
   const handleImageSelect = async () => {
@@ -135,10 +135,10 @@ const PersonalInfoScreen = ({ navigation }) => {
 
   const handleNext = async () => {
     const formData = new FormData();
-    formData.append('firstName', firstName);
-    formData.append('lastName', lastName);
-    formData.append('phoneNumber', phoneNumber);
-    formData.append('birthdate', birthdate);
+    formData.append('first_name', firstName);
+    formData.append('last_name', lastName);
+    formData.append('phone_number', phoneNumber);
+    formData.append('birthdate', birthdate.toISOString().split('T')[0]);
     formData.append('gender', gender);
     formData.append('selectedImage', selectedImage);
     formData.append('aboutMe', aboutMe);
@@ -152,7 +152,7 @@ const PersonalInfoScreen = ({ navigation }) => {
 
     await axios.post(server_url, formData, {
       headers: {
-        'X-CSRFToken': getCsrfToken(),
+        'X-CSRFToken': await getCsrfToken(),
         'Content-Type': 'application/json',
       },
     })
@@ -165,25 +165,25 @@ const PersonalInfoScreen = ({ navigation }) => {
         console.log("error: ", error.response.data.errors);
         const errors = JSON.parse(error.response.data.errors);
 
-        if (errors.firstName == undefined)
+        if (errors.first_name == undefined)
           setFirstNameError(undefined);
         else
-          setFirstNameError(errors.firstName[0].message);
+          setFirstNameError(errors.first_name[0].message);
 
-        if (errors.lastName == undefined)
+        if (errors.last_name == undefined)
           setLastNameError(undefined);
         else
-          setLastNameError(errors.lastName[0].message);
+          setLastNameError(errors.last_name[0].message);
 
-        if (errors.phoneNumber == undefined)
+        if (errors.phone_number == undefined)
           setPhoneNumberError(undefined);
         else
-          setPhoneNumberError(errors.phoneNumber[0].message);
+          setPhoneNumberError(errors.phone_number[0].message);
 
-        if (errors.birthdateDate == undefined)
+        if (errors.birthdate == undefined)
           setBirthdateError(undefined);
         else
-          setBirthdateError(errors.birthdateDate[0].message);
+          setBirthdateError(errors.birthdate[0].message);
 
         if (errors.gender == undefined)
           setGenderError(undefined);
@@ -276,7 +276,8 @@ const PersonalInfoScreen = ({ navigation }) => {
           <Text style={styles.label}>Birthdate:                </Text>
           <DateTimePicker
             value={birthdate}
-            onChange={(dateStr, date)=> {console.log(); setBirthdate(date);}}
+            dateFormat='YYYY-MM-DD'
+            onChange={(dateStr, date)=> {console.log(dateStr); setBirthdate(date);}}
           />
 
           {/* <TextInput

@@ -16,7 +16,7 @@ const SignUpScreen = ({ navigation }) => {
   const [verifyPasswordError, setVerifyPasswordError] = useState(undefined);
   const csrfToken = useContext(CsrfTokenContext);
 
-  const server_url = "http://192.168.1.119:8000/user/register/";
+  const server_url = "http://10.100.102.11:8000/user/register/";
 
   const handleSignUp = async () => {
     const formData = new FormData();

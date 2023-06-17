@@ -28,7 +28,7 @@ const Navigator = () => {
   const [csrfToken, setCsrfToken] = useState();
   useEffect(() => {
     async function getCsrfToken() {
-      const loginResponse = await axios.get('http://192.168.1.119:8000/user/get-csrf-token/');
+      const loginResponse = await axios.get('http://10.100.102.11:8000/user/get-csrf-token/');
       const csrfTokenHeader = loginResponse.headers['set-cookie']
         .find(cookie => cookie.startsWith('csrftoken'));
       if (csrfTokenHeader) {

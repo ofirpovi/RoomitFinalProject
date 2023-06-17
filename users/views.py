@@ -81,22 +81,23 @@ def info(request, username):
     if request.method == 'POST':
         print(request.POST)
         print(request.FILES)
-        print(request.user.profile)
+        print(request.user)
         p_form = ProfileUpdateForm(request.POST,
                                    request.FILES,
                                    instance=request.user.profile)
         if p_form.is_valid():
             p_form.save()
             messages.success(request, "Your personal details have been saved and your profile has been created. You can see your profile and edit it at any time by clicking on the 'profile' tab on the top right of the screen.")
-            return render(request, 'users/choose_status.html')
-
+            return JsonResponse({}, status=200)
+        else:
+                return JsonResponse({"errors":p_form.errors.as_json()}, status=500)
     else:
         p_form = ProfileUpdateForm(instance=request.user.profile)
 
     context = {
         'p_form': p_form
     }
-    return render(request, 'users/fill_info.html', context)
+    return JsonResponse({'message': 'Unknown error occured'})
 
 
 @login_required
