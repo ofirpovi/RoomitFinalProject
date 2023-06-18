@@ -98,13 +98,13 @@ def likes_me(request):
                 score = Scores.objects.get(Username_enter = user, Username_insert = item.User_insert)
                 prop = PropertyForOffer.objects.get(user = item.User_insert)
                 image = Image.objects.filter(property = prop).first()
-                items_to_return.append(Posts(score, image, True))
+                items_to_return.append(Posts(score, prop, image, True))
         else:
             list_items = list_items.filter(User_insert=user)
             list_items = list_items.filter(enter_likes_insert=True)
             for item in list_items:
                 score = Scores.objects.get(Username_insert = user, Username_enter = item.User_enter)
-                items_to_return.append(Posts(score, None, True))
+                items_to_return.append(Posts(score, None, None, True))
         return render(request, 'likes_me.html', {"list_items": items_to_return})
     except Exception as e:
         return render(request, 'likes_me.html', {"list_items": None})
@@ -125,13 +125,13 @@ def i_like(request):
                 score = Scores.objects.get(Username_enter = user, Username_insert = item.User_insert)
                 prop = PropertyForOffer.objects.get(user = item.User_insert)
                 image = Image.objects.filter(property = prop).first()
-                items_to_return.append(Posts(score, image, True))
+                items_to_return.append(Posts(score, prop, image, True))
         else:
             list_items = list_items.filter(User_insert=request.user)
             list_items = list_items.filter(insert_likes_enter=True)
             for item in list_items:
                 score = Scores.objects.get(Username_insert = user, Username_enter = item.User_enter)
-                items_to_return.append(Posts(score, None, True))
+                items_to_return.append(Posts(score, None, None, True))
         return render(request, 'i_like.html', {"list_items": items_to_return})
     except Exception as e:
         return render(request, 'i_like.html', {"list_items": None})
