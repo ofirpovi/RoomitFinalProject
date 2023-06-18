@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from djmoney.models.fields import MoneyField
+# from djmoney.models.fields import MoneyField
 from phonenumber_field.modelfields import PhoneNumberField
 from functools import partial
 
