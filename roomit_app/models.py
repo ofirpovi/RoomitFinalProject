@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 # from django.contrib.postgres.fields import ArrayField
-from djmoney.models.fields import MoneyField
+# from djmoney.models.fields import MoneyField
 
 
 class Scores(models.Model):
