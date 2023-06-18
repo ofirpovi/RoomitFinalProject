@@ -107,7 +107,7 @@ def likes_me(request):
                 items_to_return.append(Posts(score, None, True))
         return render(request, 'likes_me.html', {"list_items": items_to_return})
     except Exception as e:
-        return render(request, 'likes_me.html', {"list_items": []})
+        return render(request, 'likes_me.html', {"list_items": None})
 
 
 @login_required
@@ -134,7 +134,7 @@ def i_like(request):
                 items_to_return.append(Posts(score, None, True))
         return render(request, 'i_like.html', {"list_items": items_to_return})
     except Exception as e:
-        return render(request, 'i_like.html', {"list_items": []})
+        return render(request, 'i_like.html', {"list_items": None})
 
 @login_required
 def more(request):
