@@ -9,37 +9,57 @@
   <div class="w2-row">
 
     <!-- Middle Column -->
-    <div class="w3-col" style="display: flex; justify-content: center;">
-      <div class="item-box">
-        {% for item in list_items %}
-          <br>
-          {% if request.user == item.item.Username_insert %}
-            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
-                <img  src="{{ item.item.Username_enter.profile.image.url }}" alt={{item.item.Username_enter}} style="width:100%">
-                <h5 class="w3-left "><a  style="color:black" href="/user/profile/{{item.item.Username_enter}}" ><br><i class="fa fa-hand-o-right"></i> {{item.item.Username_enter}} </a></h5>
-                <h5>score: {{ item.item.Insert_score }} </h5>
-                <a href="/unlike-picture/{{ item.item.Username_enter }}/">
-                    <button onclick="removeItem()" class="button"  style="background-color: #50766650" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.item.Username_enter }}"><i class="fa fa-thumbs-down "></i> Unlike</button>
-                </a>
-                <br>
-            </div>
-          {%else%}
-            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
-              {% if item.image != None %}
-                  <img src="{{ item.image.image.url }}" alt={{item.item.Username_insert}} style="width:100%;">
-              {%else%}
-                  <br><h7> <i class="fa fa-close"></i> No images for this property</h7>
-              {% endif %}<br>
-              <i class="border-bottom"></i>
-              <h5 class="w3-left "><br><a style="color:black" href="/user/profile/{{item.item.Username_insert}}" ><img src="{{ item.item.Username_insert.profile.image.url }}" class ="w3-circle" style="width:25%;" /><br><i class="fa fa-hand-o-right"></i> {{item.item.Username_insert}} </a></h5>
-              <h5>score: {{ item.item.Enter_score }} </h5>
-              <a href="/unlike-picture/{{ item.item.Username_insert }}/">
-                  <button class="button"  style="background-color: #50766650" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.item.Username_insert }}"><i class="fa fa-thumbs-down "></i> Unlike</button>
-              </a>
-              <br>
-            </div>
-          {%endif%}<br>
-        {%endfor%}
+             <div class="w3-col m6" style="display: flex; justify-content: center;">
+                <div class="item-box">
+                {%if data.feed%}
+                    {% for item in data.feed %}
+                    <br>
+                        {% if request.user.profile.profile_status == "StatusInsert" %}
+                            <div class="card" style:"max-width: 200px; margin: auto; text-align: center;">
+                                <img  src="{{ item.user.profile.image.url }}" alt={{item.user.username}} style="width: 100% ">
+                                <h6 class="w3-left "><a href="user/profile/{{item.user.username}}" style="color:black"><br><i class="fa fa-hand-o-right"></i> More about {{item.user.username}} </a></h6>
+                                <h5>score: {{ item.score }} </h5>
+                                {% if item.like %}
+                                    <a href="/unlike-picture/{{ item.user.username }}/">
+                                        <button class="button"  style="background-color: #50766650" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user }}"><i class="fa fa-thumbs-down "></i> Unlike</button>
+                                    </a>
+                                {% else %}
+                                    <a href="/like-picture/{{ item.user.username }}/">
+                                        <button class="button" style="background-color: #50766650 " class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user.username }}"><i class="fa fa-thumbs-up"></i> Like</button>
+                                    </a>
+                                {% endif %}
+                                <br>
+                            </div>
+
+                        {%else%}
+                            <div class="card" style:"max-width: 100px; margin: auto; text-align: center;">
+                                {% if item.image != None %}
+                                    <img src="{{ item.image.image.url }}" alt={{item.user.username}} style="width:100%; height: 170px">
+                                {%else%}
+                                    <br><h5> <i class="fa fa-close"></i> No images for this property</h5>
+                                {% endif %}
+                                <h6 class="w3-left "><br><a href="user/profile/{{item.user.username}}" style="color:black"><img src="{{ item.user.profile.image.url }}" class ="w3-circle" style="width:25%;" /><br><i class="fa fa-hand-o-right"></i> More about {{item.user.username}} </a></h6>
+                                <h5>score: {{ item.score }}</h5>
+                                {% if item.like %}
+                                    <a href="/unlike-picture/{{ item.user.username }}/">
+                                        <button class="button"  style="background-color: #50766650" class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user }}"><i class="fa fa-thumbs-down "></i> Unlike</button>
+                                    </a>
+                                {% else %}
+                                    <a href="/like-picture/{{ item.user.username }}/">
+                                        <button class="button" style="background-color: #50766650 " class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.user.username}}"><i class="fa fa-thumbs-up"></i> Like</button>
+                                    </a>
+                                {% endif %}
+                                <br>
+                            </div>
+                        {%endif%}
+                        <br>
+                        {%endfor%}
+                
+                {%else%}
+                <br><br>
+                    <h4 class>No matching results were found</h4> 
+                {%endif%}
+
       </div>
     {% set_infinite_scroll %}
     <!-- End Middle Column --> 
