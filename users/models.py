@@ -12,7 +12,7 @@ def image_upload_path(instance, filename, flag):
     
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(help_text='Choose your profile-picture', default='default_for_profile.jpg', upload_to= partial(image_upload_path, flag=1))
+    image = models.ImageField(help_text='Choose your profile-picture', default='default_for_profile', upload_to= partial(image_upload_path, flag=1))
     profile_status = models.CharField(max_length=15, default=' ', help_text='What you are looking for', choices=[('StatusInsert', 'insert in'),                                                                                                   ('StatusEnter', 'enter in'),])
     first_name = models.CharField(max_length=30, default='')
     last_name = models.CharField(max_length=30, default='')
@@ -101,7 +101,7 @@ class PropertyForOffer(models.Model):
 
 class Image(models.Model):
     property = models.ForeignKey(PropertyForOffer, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(default='default_for_property.jpg', upload_to= partial(image_upload_path, flag=0))
+    image = models.ImageField(default='default_for_property', upload_to= partial(image_upload_path, flag=0))
 
     def save(self, *args, **kwargs):
         super(Image, self).save(*args, **kwargs)
