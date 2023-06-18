@@ -1,6 +1,6 @@
 import math
 
-from djmoney.templatetags import djmoney
+# from djmoney.templatetags import djmoney
 
 from .Requirement import Requirement
 # from geopy.geocoders import Nominatim
@@ -35,11 +35,11 @@ class RangeReq(Requirement):
             # print("3")
             return self._weight / 2
         # check that answer is a number
-        elif type(answer) is not int and type(answer) is not float and type(answer) is not djmoney.Money:
+        elif type(answer) is not int and type(answer) is not float:
             # print("4")
             raise TypeError("Answer should be a number, got -- ", answer, " of type -- ", type(answer))
         # check that answer is a non-negative number
-        elif type(answer) is not djmoney.Money and answer < 0:
+        elif answer < 0:
             # print("5")
             raise ValueError("Answer should be a non-negative number")
         # print("6")
