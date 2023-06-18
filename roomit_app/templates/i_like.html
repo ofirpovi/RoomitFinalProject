@@ -59,22 +59,7 @@
                 <br><br>
                     <h4 class>Nothing to show</h4> 
                 {%endif%}
-                </div>
 
-          {% comment %} {% if request.user.profile.profile_status == "StatusEnter" %}
-            <div class="card" style:"box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);max-width: 100px; margin: auto; text-align: center;">
-              <img src="{{ user.User_insert.profile.image.url }}" alt="{{ user.User_insert.username }}" style="width:100%">
-              <h5>{{ user.User_insert.username }}</h5>
-            </div>
-
-          {% else %}
-            <div>
-              <img src="{{ user.User_enter.profile.image.url }}" alt="{{ user.User_enter.username }}">
-              <h2>{{ user.User_enter.username }}</h2>
-            </div>
-          {% endif %}
-          <br>
-      {% endfor %} {% endcomment %}
       </div>
     {% set_infinite_scroll %}
     <!-- End Middle Column --> 
