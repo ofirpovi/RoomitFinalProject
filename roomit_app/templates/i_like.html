@@ -35,7 +35,7 @@
                         {%else%}
                             <div class="card" style:"max-width: 100px; margin: auto; text-align: center;">
                                 {% if item.image != None %}
-                                    <img src="media/property_pics/{{ item.image.image.url }}" alt={{item.user.username}} style="width:100%; height: 170px">
+                                    <img src="media/property_pics/{{item.user.username}}/{{ item.image.image.url }}" alt={{item.user.username}} style="width:100%; height: 170px">
                                 {%else%}
                                     <br><h5> <i class="fa fa-close"></i> No images for this property</h5>
                                 {% endif %}
