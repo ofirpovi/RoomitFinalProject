@@ -20,21 +20,21 @@
                 <br>
                 {% if request.user.profile.profile_status == "StatusInsert" %}
                 <div class="card">
-                    <img src="{{ item.prop.user.profile.image.url }}" alt={{item.prop.user.username}} style="width: 100% ">
-                    <h6 class="w3-left "><a href="user/profile/{{item.prop.user.username}}" style="color:black"><br><i
-                            class="fa fa-hand-o-right"></i> More about {{item.prop.user.username}} </a></h6>
+                    <img src="{{ item.item.Username_enter.profile.image.url }}" alt={{item.item.Username_enter.username}} style="width: 100% ">
+                    <h6 class="w3-left "><a href="user/profile/{{item.item.Username_enter.username}}" style="color:black"><br><i
+                            class="fa fa-hand-o-right"></i> More about {{item.item.Username_enter.username}} </a></h6>
                     <h5>score: {{ item.score }} </h5>
                     {% if item.like %}
-                    <a href="/unlike-picture/{{ item.prop.user.username }}/">
+                    <a href="/unlike-picture/{{ item.item.Username_enter.username }}/">
                         <button class="button" style="background-color: #50766650"
-                                class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.prop.user }}"><i
+                                class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.item.Username_enter }}"><i
                                 class="fa fa-thumbs-down "></i> Unlike
                         </button>
                     </a>
                     {% else %}
-                    <a href="/like-picture/{{ item.prop.user.username }}/">
+                    <a href="/like-picture/{{ item.item.Username_enter.username }}/">
                         <button class="button" style="background-color: #50766650 "
-                                class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.prop.user.username }}"><i
+                                class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.item.Username_enter.username }}"><i
                                 class="fa fa-thumbs-up"></i> Like
                         </button>
                     </a>
@@ -45,23 +45,23 @@
                 {%else%}
                 <div class="card">
                     {% if item.image != None %}
-                    <img src="{{ item.image.image.url }}" alt={{item.prop.user.username}} style="width:100%; height: 170px">
+                    <img src="{{ item.image.image.url }}" alt={{item.item.Username_insert.username}} style="width:100%; height: 170px">
                     {%else%}
                     <br><h5><i></i> No images for this property</h5>
                     {% endif %}
-                    <h6 class="w3-left "><br><a href="user/profile/{{item.prop.user.username}}" style="color:black"><img
-                            src="{{ item.prop.user.profile.image.url }}" class="w3-circle" style="width:25%;"/><br><i
-                            class="fa fa-hand-o-right"></i> More about {{item.prop.user.username}} </a></h6>
+                    <h6 class="w3-left "><br><a href="user/profile/{{item.item.Username_insert.username}}" style="color:black"><img
+                            src="{{ item.item.Username_insert.profile.image.url }}" class="w3-circle" style="width:25%;"/><br><i
+                            class="fa fa-hand-o-right"></i> More about {{item.item.Username_insert.username}} </a></h6>
                     <h5>score: {{ item.score }}</h5>
                     {% if item.like %}
-                    <a href="/unlike-picture/{{ item.prop.user.username }}/">
+                    <a href="/unlike-picture/{{ item.item.Username_insert.username }}/">
                         <button class="button" style="background-color:" class="w3-button w3-theme-d1 w3-margin-bottom"
-                                data-user="{{ item.prop.user }}"><i class="fa fa-thumbs-up"></i></button>
+                                data-user="{{ item.item.Username_insert }}"><i class="fa fa-thumbs-up"></i></button>
                     </a>
                     {% else %}
-                    <a href="/like-picture/{{ item.prop.user.username }}/">
+                    <a href="/like-picture/{{ item.item.Username_insert.username }}/">
                         <button class="button" style="background-color: #50766650"
-                                class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.prop.user.username}}"><i
+                                class="w3-button w3-theme-d1 w3-margin-bottom" data-user="{{ item.item.Username_insert.username}}"><i
                                 class="fa fa-thumbs-o-up"></i></button>
                     </a>
                     {% endif %}
@@ -73,7 +73,7 @@
 
                 {%else%}
                 <br><br>
-                <h4><br> Nothing to show</h4>
+                <h4><br>We couldn't find any matches for you :\</h4>
 
                 {%endif%}
             </div>
