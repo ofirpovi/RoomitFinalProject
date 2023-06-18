@@ -15,7 +15,7 @@
         <!-- Middle Column -->
         <div class="w3-col m6" style="display: flex; justify-content: center;">
             <div class="item-box">
-                {%if feed%}
+                {%if list_items%}
                 {% for item in list_items %}
                 <br>
                 {% if request.user.profile.profile_status == "StatusInsert" %}

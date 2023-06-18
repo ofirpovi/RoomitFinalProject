@@ -15,7 +15,7 @@
         <!-- Middle Column -->
         <div class="w3-col m6" style="display: flex; justify-content: center;">
             <div class="item-box">
-                {%if feed%}
+                {%if list_items%}
                 {% for item in list_items %}
                 <br>
                 {% if request.user.profile.profile_status == "StatusInsert" %}
@@ -73,7 +73,7 @@
 
                 {%else%}
                 <br><br>
-                <h4><br>We couldn't find any matches for you :\</h4>
+                <h4><br> Nothing to show</h4>
 
                 {%endif%}
             </div>
