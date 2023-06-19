@@ -19,10 +19,15 @@ def update_scores(request):
         reqP = make_requirementsP(request.user)
         for user in potential_profiles:
             score_enter = round(update_scores_enter(reqR, reqP, user.user))
-            requirement = make_requirementsR(user.user)
-            score_insert = round(update_scores_insert(
-                requirement, online_user))
-            score = Scores(Username_enter=online_user, Username_insert=user.user,
+            if score_enter == -1:
+                score_insert = -1
+                score = Scores(Username_enter=online_user, Username_insert=user.user,
+                           Enter_score=score_enter, Insert_score=score_insert)
+            else:
+                requirement = make_requirementsR(user.user)
+                score_insert = round(update_scores_insert(
+                    requirement, online_user))
+                score = Scores(Username_enter=online_user, Username_insert=user.user,
                            Enter_score=score_enter, Insert_score=score_insert)
             score.save()
     else:
@@ -31,8 +36,13 @@ def update_scores(request):
             reqP = make_requirementsP(user.user)
             score_enter = round(update_scores_enter(
                 requirement, reqP, online_user))
-            score_insert = round(update_scores_insert(reqR, user.user))
-            score = Scores(Username_enter=user.user, Username_insert=online_user,
+            if score_enter == -1:
+                score_insert = -1
+                score = Scores(Username_enter=online_user, Username_insert=user.user,
+                           Enter_score=score_enter, Insert_score=score_insert)
+            else:
+                score_insert = round(update_scores_insert(reqR, user.user))
+                score = Scores(Username_enter=user.user, Username_insert=online_user,
                            Enter_score=score_enter, Insert_score=score_insert)
             score.save()
 
@@ -42,6 +52,8 @@ def update_scores_enter(requirementsR, requirementsP, user):
         return 100
     elif requirementsR is None:
         personal_scoreP = calculate_score(requirementsP, user)
+        if personal_scoreP == -1:
+            return -1
         return (personal_scoreP + 100) / 2
     elif requirementsP is None:
         personal_score = calculate_score(requirementsR, user)
@@ -49,6 +61,8 @@ def update_scores_enter(requirementsR, requirementsP, user):
     else:
         personal_scoreR = calculate_score(requirementsR, user)
         personal_scoreP = calculate_score(requirementsP, user)
+        if personal_scoreP == -1:
+            return -1
         personal_score = (personal_scoreR + personal_scoreP)/2
         return personal_score
 

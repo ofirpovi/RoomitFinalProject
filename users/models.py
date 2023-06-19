@@ -66,7 +66,7 @@ class Profile(models.Model):
     expense_management = models.CharField(max_length=15, blank=True, choices=[('S', 'Shared'),
                                                                                ('I', 'Individual'),
                                                                                 ('D', "Doesn't matter"),])
-    about_me = models.TextField(max_length=80, default='', blank= True)
+    about_me = models.TextField(max_length=250, default='', blank= True)
 
     def __str__(self):
         return "{} Profile".format(self.user.username)

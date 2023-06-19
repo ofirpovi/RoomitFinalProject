@@ -32,8 +32,21 @@ class LocationReq(Requirement):
 
         if is_within_area:
             return self._weight
-        else:
+        elif area.boundary.distance(point) <= 10:
+            return 0.5 * self._weight
+        elif area.boundary.distance(point) <= 20:
             return 0
+        else:
+            return -1
 
     def convert_answer_to_str(self, answer):
         return answer
+
+    def calculate_distance_to_area(self, point, area):
+        # # Create a Polygon object from the area coordinates
+        # area = Polygon(area_coordinates)
+
+        # Calculate the distance between the point and the area boundary
+        distance = area.boundary.distance(point)
+
+        return distance

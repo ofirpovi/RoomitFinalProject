@@ -43,6 +43,7 @@
             <div class="item-box">
                 {%if feed%}
                 {% for item in feed %}
+                {% if item.score > -1 %}
                 <br>
                 {% if request.user.profile.profile_status == "StatusInsert" %}
                 <div class="card">
@@ -107,6 +108,7 @@
                 </div>
                 {%endif%}
                 <br>
+                {%endif%}
                 {%endfor%}
                 <script>
                             $(document).ready(function() {

@@ -15,67 +15,50 @@ class RangeReq(Requirement):
         self._distance = distance
         self._address = address
 
-# todo : add distribution calc
     def calculate_score(self, answer):
-        # print(answer)
-        # print(type(answer))
-        # print("Range - \n\tanswer  -\t", answer, "\n\tdesired answer: min  -\t", self._min, "max  -\t", self._max)
         # if age requirement calculate age from birthdate
-        # print("1")
         if self._text == "birthdate":
             answer = self.calculate_age(answer)
-        # if self._text == "rent" and type(answer) is djmoney.Money:
-        #     print("answer  -  ", answer)
-        #     print("answer type  -  ", type(answer))
-        #     answer = answer
-        #     print("answer  -  ", answer)
-        # print("2")
         # if there is a desired answer for the requirement but there is no answer
         if answer is None:
-            # print("3")
             return self._weight / 2
         # check that answer is a number
         elif type(answer) is not int and type(answer) is not float:
-            # print("4")
             raise TypeError("Answer should be a number, got -- ", answer, " of type -- ", type(answer))
         # check that answer is a non-negative number
         elif answer < 0:
-            # print("5")
             raise ValueError("Answer should be a non-negative number")
-        # print("6")
         # if there is no desired answer
         if self._max is None and self._min is None:
-            # print("7")
             return None
         # if there is no desired max
         elif self._max is None:
-            # print("8")
             # if answer is equal to or greater than the desired min
             if self._min <= answer:
-                # print("9")
                 return self._weight
             # if answer is less than desired min
             else:
-                # print("10")
                 return 0
         # if there is no desired min
         elif self._min is None:
-            # print("11")
             # if answer is equal to or less than desired max
             if self._max >= answer:
-                # print("12")
                 return self._weight
             # if answer is greater than desired max
             else:
-                # print("13")
-                return 0
+                if self._text == "rent":
+                    calc = int(100 * (1 - ((answer - self._max) / self._max)))
+                    return min(0, calc)
+                else:
+                    return 0
         # if answer is in desired range
         elif answer in range(self._min, self._max + 1):
-            # print("14")
             return self._weight
+        elif self._text == "rent" and self._max < answer:
+            calc = int(100 * (1 - ((answer - self._max) / self._max)))
+            return min(0, calc)
         # if there is a desired range but answer is not in range
         else:
-            # print("15")
             return 0
 
     def calculate_age(self, dob):
