@@ -1,12 +1,15 @@
 import React from 'react';
 import { View, StyleSheet, Text, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import axios from "axios";
 
-const RegistrationSuccess = () => {
-  const navigation = useNavigation();
+const RegistrationSuccess = ({ navigation, route }) => {
+  console.log("RegistrationSuccess");
+  console.log(route.params.username);
+  const username = route.params.username;
 
   const handleGoBack = () => {
-    navigation.navigate('MainPage_ForARoomate');
+    navigation.navigate('MainPage_ForARoomate', {username: username});
   };
 
   return (

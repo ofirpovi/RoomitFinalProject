@@ -7,7 +7,7 @@ import UploadPhoto from './UploadPhoto';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { CsrfTokenContext } from "./CsrfTokenContext";
-import axios from "axios"
+import axios from "axios";
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 async function getCsrfToken() {
@@ -109,7 +109,7 @@ const PersonalInfoScreen = ({ navigation, route }) => {
   const [kosherError, setKosherError] = useState(undefined);
   const [expenseManagementError, setExpenseManagementError] = useState(undefined);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(birthdate);
   }, [birthdate])
 
@@ -159,7 +159,7 @@ const PersonalInfoScreen = ({ navigation, route }) => {
       .then((response) => {
         console.log(response.data);
         console.log('Sign up successful');
-        navigation.navigate('Selection');
+        navigation.navigate('Selection', {username: route.params.username});
       })
       .catch((error) => {
         console.log("error: ", error.response.data.errors);
@@ -242,45 +242,51 @@ const PersonalInfoScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <ScrollView>
-        <TextInput
-          label="First Name"
-          value={firstName}
-          onChangeText={setFirstName}
-          style={styles.input}
-        />
-        {
-          firstNameError && <Text style={{ color: 'red' }}>{firstNameError}</Text>
-        }
-        <TextInput
-          label="Last Name"
-          value={lastName}
-          onChangeText={setLastName}
-          style={styles.input}
-        />
-        {
-          lastNameError && <Text style={{ color: 'red' }}>{lastNameError}</Text>
-        }
-
-        <PhoneInput
-          initialCountry="us"
-          value={phoneNumber}
-          onChangePhoneNumber={setPhoneNumber}
-          textStyle={styles.phoneInput}
-          style={styles.input}
-        />
-        {
-          phoneNumberError && <Text style={{ color: 'red' }}>{phoneNumberError}</Text>
-        }
-
-        <View style={styles.dateContainer}>
-          <Text style={styles.label}>Birthdate:                </Text>
-          <DateTimePicker
-            value={birthdate}
-            dateFormat='YYYY-MM-DD'
-            onChange={(dateStr, date)=> {console.log(dateStr); setBirthdate(date);}}
+        <View style={styles.inputContainer}>
+          <TextInput
+            label="First Name"
+            value={firstName}
+            onChangeText={setFirstName}
+            style={styles.input}
           />
+          {
+            firstNameError && <Text style={{ color: 'red' }}>{firstNameError}</Text>
+          }
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            label="Last Name"
+            value={lastName}
+            onChangeText={setLastName}
+            style={styles.input}
+          />
+          {
+            lastNameError && <Text style={{ color: 'red' }}>{lastNameError}</Text>
+          }
+        </View>
+        <View style={styles.inputContainer}>
+          <PhoneInput
+            initialCountry="us"
+            value={phoneNumber}
+            onChangePhoneNumber={setPhoneNumber}
+            textStyle={styles.phoneInput}
+            style={styles.input}
+          />
+          {
+            phoneNumberError && <Text style={{ color: 'red' }}>{phoneNumberError}</Text>
+          }
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={styles.dateContainer}>
+            <Text style={styles.label}>Birthdate:                </Text>
+            <DateTimePicker
+              value={birthdate}
+              dateFormat='YYYY-MM-DD'
+              onChange={(dateStr, date) => { console.log(dateStr); setBirthdate(date); }}
+            />
 
-          {/* <TextInput
+
+            {/* <TextInput
             label="YYYY"
             value={birthdateYear}
             onChangeText={setBirthdateYear}
@@ -307,26 +313,27 @@ const PersonalInfoScreen = ({ navigation, route }) => {
             keyboardType="numeric"
           /> */}
 
-          {
-            birthdateError && <Text style={{ color: 'red' }}>{birthdateError}</Text>
-          }
-        </View>
-
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Gender:</Text>
-          <View style={[styles.picker, gender && styles.pickerSelected]}>
-            <Picker selectedValue={gender} onValueChange={setGender}>
-              <Picker.Item label="Select gender" value="" />
-              {genderOptions.map((item, index) => (
-                <Picker.Item key={index} label={item.label} value={item.value} />
-              ))}
-            </Picker>
+            {
+              birthdateError && <Text style={{ color: 'red' }}>{birthdateError}</Text>
+            }
           </View>
         </View>
-        {
-          genderError && <Text style={{ color: 'red' }}>{genderError}</Text>
-        }
-
+        <View style={styles.inputContainer}>
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Gender:</Text>
+            <View style={[styles.picker, gender && styles.pickerSelected]}>
+              <Picker selectedValue={gender} onValueChange={setGender}>
+                <Picker.Item label="Select gender" value="" />
+                {genderOptions.map((item, index) => (
+                  <Picker.Item key={index} label={item.label} value={item.value} />
+                ))}
+              </Picker>
+            </View>
+          </View>
+          {
+            genderError && <Text style={{ color: 'red' }}>{genderError}</Text>
+          }
+        </View>
         <View style={styles.rowContainer}>
           <Text style={styles.label}>About Me:</Text>
           <TextInput
@@ -530,6 +537,9 @@ const styles = StyleSheet.create({
   },
   pickerSelected: {
     backgroundColor: '#EBE2EF',
+  },
+  inputContainer: {
+    marginBottom: 16,
   },
 });
 
