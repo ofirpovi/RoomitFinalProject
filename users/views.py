@@ -90,7 +90,7 @@ def info(request, username):
             messages.success(request, "Your personal details have been saved and your profile has been created. You can see your profile and edit it at any time by clicking on the 'profile' tab on the top right of the screen.")
             return JsonResponse({}, status=200)
         else:
-                return JsonResponse({"errors":p_form.errors.as_json()}, status=500)
+            return JsonResponse({"errors":p_form.errors.as_json()}, status=500)
     else:
         p_form = ProfileUpdateForm(instance=request.user.profile)
 
@@ -106,6 +106,7 @@ def create_property_offer_view(request, username):
     ImageFormSet = inlineformset_factory(
         PropertyForOffer, Image, fields=('image',))
     if request.method == 'POST':
+        print(request.POST)
         pOffer_form = OfferPropertyForm(request.POST)
         if pOffer_form.is_valid():
             # selectedArea = request.POST.get('selectedArea')
@@ -135,7 +136,11 @@ def create_property_offer_view(request, username):
             messages.success(request, "Your property info has been saved")
             update_scores(request)
             # Redirect to the property detail page
-            return redirect('requirementsR', request.user)
+            return JsonResponse({}, status=200)
+        
+        else:
+            return JsonResponse({"errors":pOffer_form.errors.as_json()}, status=500)
+        
     else:
         image_form = None
         try:
@@ -146,14 +151,14 @@ def create_property_offer_view(request, username):
         except:
             pOffer_form = OfferPropertyForm()
             formset = ImageFormSet()
-
+        print("Heiiiiiiiiiiiiiiiiiiiiiiiii nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
         context = {
             'user_profile': user,
             'pOffer_form': pOffer_form,
             'formset': formset,
             'image_form': image_form,
         }
-    return render(request, 'users/property_offer.html', context)
+    return JsonResponse({'message': 'Unknown error occured'})
 
 
 @login_required

@@ -8,6 +8,7 @@ import axios from "axios";
 
 // Import the necessary dependencies from React Navigation
 import { useNavigation } from '@react-navigation/native';
+import { tokenGenerator } from './tokenGenerator';
 
 const countryList = [
   { label: 'Select country', value: '' },
@@ -289,7 +290,8 @@ const SuccessRoommate = ({ navigation, route }) => {
   const [rooms, setRooms] = useState('');
   const [photos, setPhotos] = useState([]);
   const [isRenovated, setIsRenovated] = useState('');
-  const [shelter, setShelter] = useState('');
+  const [shelterInside, setShelterInside] = useState('');
+  const [shelterNearby, setShelterNearby] = useState('');
   const [isFurnished, setIsFurnished] = useState('');
   const [hasLivingRoom, setHasLivingRoom] = useState('');
   const [numberOfRooms, setNumberOfRooms] = useState('');
@@ -341,7 +343,19 @@ const SuccessRoommate = ({ navigation, route }) => {
     'Kindergarten',
     'Mall/Shopping Center',
   ];
-  
+
+
+  const [descriptionError, setDescriptionError] = useState(undefined);
+  const [isRenovatedError, setIsRenovatedError] = useState(undefined);
+  const [shelterInsideError, setShelterInsideError] = useState(undefined);
+  const [shelterNearbyError, setShelterNearbyError] = useState(undefined);
+  const [isFurnishedError, setIsFurnishedError] = useState(undefined);
+  const [hasLivingRoomError, setHasLivingRoomError] = useState(undefined);
+  const [numberOfRoomsError, setNumberOfRoomsError] = useState(undefined);
+  const [numberOfRoommatesError, setNumberOfRoommatesError] = useState(undefined);
+  const [numberOfShowersError, setNumberOfShowersError] = useState(undefined);
+  const [numberOfToiletsError, setNumberOfToiletsError] = useState(undefined);
+
   const server_url = `http://192.168.1.171:8000/user/property-offer-create/${username}/`;
 
   const handleAddPhoto = (selectedImage) => {
@@ -375,30 +389,89 @@ const SuccessRoommate = ({ navigation, route }) => {
     setCity(value);
   };
 
-  const handleSubmit = () => {
-    // Log the data to the console
-    console.log('Submitted Data:');
-    console.log('Country:', country);
-    console.log('City:', city);
-    // console.log('Neighborhood:', neighborhood);
-    console.log('Street:', street);
-    console.log('House Number:', houseNumber);
-    // console.log('Floor Number:', floorNumber);
-    console.log('Description:', description);
-    console.log('Rent:', rent);
-    console.log('Rooms Number:', rooms);
-    console.log('Photos:', photos);
-    console.log('Is the property renovated?', isRenovated);
-    console.log('Is there a shelter?', shelter);
-    console.log('Is there a property furnished?', isFurnished);
-    console.log('Is there a shared living room?', hasLivingRoom);
-    console.log('Number of rooms:', numberOfRooms);
-    console.log('Number of showers:', numberOfShowers);
-    console.log('Number of roommates:', numberOfRoommates);
-    console.log('Number of toilets:', numberOfToilets);
-    console.log('Nearby options:', nearbyOptions);
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append('rent', Number.parseFloat(rent));
+    formData.append('description', description);
+    formData.append('renovated', isRenovated);
+    formData.append('shelter_inside', shelterInside);
+    formData.append('shelter_nearby', shelterNearby);
+    formData.append('furnished', isFurnished);
+    formData.append('shared_livingroom', hasLivingRoom);
+    formData.append('rooms_number', Number.parseFloat(numberOfRooms).toFixed(1));
+    formData.append('roomates_number', numberOfRoommates);
+    formData.append('showers_number', numberOfShowers);
+    formData.append('toilets_number', numberOfToilets);
 
-    navigation.navigate('IdealRoommate', {username: username}); // Navigate to the IdealRoommate screen
+
+    await axios.post(server_url, formData, {
+      headers: {
+        'X-CSRFToken': await tokenGenerator.getCsrfToken(),
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        console.log(response.data);
+        navigation.navigate('IdealRoommate', { username: username });
+      })
+      .catch((error) => {
+        console.log("error: ", error.response.data.errors);
+        if (Object.keys(JSON.parse(error.response.data.errors)).length == 1){
+          navigation.navigate('IdealRoommate', { username: username });
+        }
+        const errors = JSON.parse(error.response.data.errors);
+        if (errors.description == undefined)
+          setDescriptionError(undefined);
+        else
+          setDescriptionError(errors.description[0].message);
+
+        if (errors.renovated == undefined)
+          setIsRenovatedError(undefined);
+        else
+          setIsRenovatedError(errors.renovated[0].message);
+
+        if (errors.shelter_inside == undefined)
+          setShelterInsideError(undefined);
+        else
+          setShelterInsideError(errors.shelter_inside[0].message);
+
+        if (errors.shelter_nearby == undefined)
+          setShelterNearbyError(undefined);
+        else
+          setShelterNearbyError(errors.shelter_nearby[0].message);
+
+        if (errors.furnished == undefined)
+          setIsFurnishedError(undefined);
+        else
+          setIsFurnishedError(errors.furnished[0].message);
+
+        if (errors.shared_livingroom == undefined)
+          setHasLivingRoomError(undefined);
+        else
+          setHasLivingRoomError(errors.shared_livingroom[0].message);
+
+        if (errors.rooms_number == undefined)
+          setNumberOfRoomsError(undefined);
+        else
+          setNumberOfRoomsError(errors.rooms_number[0].message);
+
+        if (errors.roomates_number == undefined)
+          setNumberOfRoommatesError(undefined);
+        else
+          setNumberOfRoommatesError(errors.roomates_number[0].message);
+
+        if (errors.showers_number == undefined)
+          setNumberOfShowersError(undefined);
+        else
+          setNumberOfShowersError(errors.showers_number[0].message);
+
+        if (errors.toilets_number == undefined)
+          setNumberOfToiletsError(undefined);
+        else
+          setNumberOfToiletsError(errors.toilets_number[0].message);
+      }
+      );
+
   };
 
   const handleNearbyOptionChange = (option) => {
@@ -518,7 +591,7 @@ const SuccessRoommate = ({ navigation, route }) => {
 
         <Text style={styles.label}>Is there a shelter inside?</Text>
         <View style={styles.inputContainer}>
-          <Picker style={styles.picker} itemStyle={styles.pickerItem} selectedValue={shelter} onValueChange={setShelter}>
+          <Picker style={styles.picker} itemStyle={styles.pickerItem} selectedValue={shelterInside} onValueChange={setShelterInside}>
             <Picker.Item label="Yes" value="yes" />
             <Picker.Item label="No" value="no" />
           </Picker>
@@ -526,7 +599,7 @@ const SuccessRoommate = ({ navigation, route }) => {
 
         <Text style={styles.label}>Is there a shelter nearby?</Text>
         <View style={styles.inputContainer}>
-          <Picker style={styles.picker} itemStyle={styles.pickerItem} selectedValue={shelter} onValueChange={setShelter}>
+          <Picker style={styles.picker} itemStyle={styles.pickerItem} selectedValue={shelterNearby} onValueChange={setShelterNearby}>
             <Picker.Item label="Yes" value="yes" />
             <Picker.Item label="No" value="no" />
           </Picker>
@@ -558,6 +631,8 @@ const SuccessRoommate = ({ navigation, route }) => {
             </Picker>
           </View>
 
+          {numberOfRoomsError && <Text style={styles.errorText}>{numberOfRoomsError}</Text>}
+
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Number of roommates:</Text>
             <Picker style={styles.picker} itemStyle={styles.pickerItem} selectedValue={numberOfRoommates} onValueChange={setNumberOfRoommates}>
@@ -566,6 +641,7 @@ const SuccessRoommate = ({ navigation, route }) => {
               ))}
             </Picker>
           </View>
+          {numberOfRoommatesError && <Text style={styles.errorText}>{numberOfRoommatesError}</Text>}
 
         </View>
 
@@ -579,6 +655,8 @@ const SuccessRoommate = ({ navigation, route }) => {
             </Picker>
           </View>
 
+          {numberOfToiletsError && <Text style={styles.errorText}>{numberOfToiletsError}</Text>}
+
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Number of showers:</Text>
             <Picker style={styles.picker} itemStyle={styles.pickerItem} selectedValue={numberOfShowers} onValueChange={setNumberOfShowers}>
@@ -587,6 +665,7 @@ const SuccessRoommate = ({ navigation, route }) => {
               ))}
             </Picker>
           </View>
+          {numberOfShowersError && <Text style={styles.errorText}>{numberOfShowersError}</Text>}
         </View>
 
         <Text style={styles.nearbyOptionsLabel}>What is available near the apartment?</Text>

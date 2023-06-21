@@ -109,9 +109,6 @@ const PersonalInfoScreen = ({ navigation, route }) => {
   const [kosherError, setKosherError] = useState(undefined);
   const [expenseManagementError, setExpenseManagementError] = useState(undefined);
 
-  useEffect(() => {
-    console.log(birthdate);
-  }, [birthdate])
 
   const csrfToken = useContext(CsrfTokenContext);
 
@@ -140,7 +137,7 @@ const PersonalInfoScreen = ({ navigation, route }) => {
     formData.append('phone_number', phoneNumber);
     formData.append('birthdate', birthdate.toISOString().split('T')[0]);
     formData.append('gender', gender);
-    formData.append('selectedImage', selectedImage);
+    formData.append('image', selectedImage);
     formData.append('aboutMe', aboutMe);
     formData.append('occupation', occupation);
     formData.append('smoker', smoker);
@@ -153,7 +150,7 @@ const PersonalInfoScreen = ({ navigation, route }) => {
     await axios.post(server_url, formData, {
       headers: {
         'X-CSRFToken': await getCsrfToken(),
-        'Content-Type': 'application/json',
+        'Content-Type': 'text/html; charset=utf-8',
       },
     })
       .then((response) => {
@@ -282,7 +279,7 @@ const PersonalInfoScreen = ({ navigation, route }) => {
             <DateTimePicker
               value={birthdate}
               dateFormat='YYYY-MM-DD'
-              onChange={(dateStr, date) => { console.log(dateStr); setBirthdate(date); }}
+              onChange={(dateStr, date) => { setBirthdate(date); }}
             />
 
 

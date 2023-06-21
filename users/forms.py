@@ -41,6 +41,7 @@ class OfferPropertyForm(forms.ModelForm):
         exclude = ['user', 'Location']
 
         description = forms.TextInput(attrs={'size': '10'})
+        rent = forms.NumberInput()
         renovated = forms.BooleanField(label='Is the property renovated?')
         shelter_inside = forms.BooleanField(label='Is there a shelter inside?')
         shelter_nearby = forms.BooleanField(label='Is there a shelter nearby?')

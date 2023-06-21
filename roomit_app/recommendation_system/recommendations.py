@@ -57,7 +57,12 @@ def compare_users(user1, user2):
         reqP_score, fields_in_reqP = 0, 0
 
     # get roommate requirements similarity score
-    reqR1, reqR2 = RequirementsR.objects.get(user=user1), RequirementsR.objects.get(user=user2)
+    try:
+        reqR1, reqR2 = RequirementsR.objects.get(user=user1), RequirementsR.objects.get(user=user2)
+    except RequirementsR.DoesNotExist:
+        reqR1, reqR2 = RequirementsR(user=user1), RequirementsR(user=user2)
+        
+
     reqR_score, fields_in_reqR = compare_reqR(reqR1, reqR2)
     # print("reqR :  \t", reqR_score, fields_in_reqR)
 

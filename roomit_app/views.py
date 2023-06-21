@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from infscroll.utils import get_pagination
@@ -59,13 +60,17 @@ def requirementsR(request, username):
             if form.is_valid():
                 form.save()
                 messages.success(request, f'Your Requirements have been saved!')
+                print('Your Requirements have been saved!')
                 update_scores(request)
-            return redirect('profile', user)
+                return JsonResponse({}, status=200)
+            # return redirect('profile', user)
+            else:
+                return JsonResponse({"errors":form.errors.as_json()}, status=500)
         else:
             form = UpdateRequirementsRForm(instance=requirements)
-        return render(request, 'status/requirementsR.html', {'form': form, 'user_profile': username})
+        return JsonResponse({'message': 'Error'}, status=500)
     except Exception as e:
-        return e
+        return JsonResponse({'message': 'unkown error occured'}, status=500)
 
 @login_required
 def likes_me(request):
@@ -139,6 +144,7 @@ def post_list(request):
 
     if request.method == 'GET':
         context ={}
+        print("ASDASDASDASDASDASD")
         if request.user.profile.profile_status == 'StatusEnter':
             not_display = Likes.objects.filter(User_enter=request.user, enter_likes_insert=False)
             not_display = [like.User_insert.username for like in not_display] 
@@ -157,7 +163,9 @@ def post_list(request):
         }
         data.update(paginated)
         context['data']= data
+        print(request.user)
         context['recommended_roommates'] = rec_sys.recommend_roommates(request.user)
+        print(context)
         return context
         # return render(request, 'tests_templates/post_list_test.html', data)
 

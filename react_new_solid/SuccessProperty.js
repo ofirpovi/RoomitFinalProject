@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, Text, TextInput, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
 import { Button } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import UploadPhotoComp from './UploadPhotoComp';
+import { CsrfTokenContext } from "./CsrfTokenContext";
+import axios from "axios";
 
 // Import the necessary dependencies from React Navigation
 import { useNavigation } from '@react-navigation/native';
@@ -296,9 +298,12 @@ const cityList = [
 ];
 
 
-const SuccessProperty = () => {
-  const navigation = useNavigation(); // Hook to access navigation object
-
+const SuccessProperty = ({ navigation, route }) => {
+  // const navigation = useNavigation(); // Hook to access navigation object
+  console.log("SuccessRoommate");
+  console.log(route.params.username);
+  const username = route.params.username;
+  const csrfToken = useContext(CsrfTokenContext);
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
   const [neighborhood, setNeighborhood] = useState('');
@@ -402,7 +407,7 @@ const SuccessProperty = () => {
     console.log('Number of toilets:', numberOfToilets);
     console.log('Nearby options:', nearbyOptions);
 
-    navigation.navigate('IdealRoommate'); // Navigate to the IdealRoommate screen
+    navigation.navigate('IdealRoommate', {username: username}); // Navigate to the IdealRoommate screen
   };
 
   const handleNearbyOptionChange = (option) => {
