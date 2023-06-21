@@ -16,21 +16,22 @@ const DATA = [
 
 
 const MyScreen = ({ navigation, route }) => {
-    username = route.params.username;
-    const navigateToAnotherScreen = () => {
-      navigation.navigate('ViewProfile', {username: username});
-    };
-  
-    const renderItem = ({ item }) => {
-        return (
-            <View style={styles.container}>
-                <View style={styles.item}>
-                    <Image source={item.image} style={styles.image} />
-                    <View style={styles.textContainer}>
-                    <Text style={styles.title}>{item.title}</Text>
-                    <Text style={styles.description}>{item.description}</Text>
-                    <View style={styles.allIconsContainter}>
-                    {/* <View style={styles.infoContainer}>
+  username = route.params.username;
+  console.log(username);
+  const navigateToAnotherScreen = () => {
+    navigation.navigate('ViewProfile', { username: username });
+  };
+
+  const renderItem = ({ item }) => {
+    return (
+      <View style={styles.container}>
+        <View style={styles.item}>
+          <Image source={item.image} style={styles.image} />
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.description}>{item.description}</Text>
+            <View style={styles.allIconsContainter}>
+              {/* <View style={styles.infoContainer}>
                         <Icon
                         name="phone"
                         type="font-awesome"
@@ -52,75 +53,75 @@ const MyScreen = ({ navigation, route }) => {
                         />
                         <Text style={styles.infoText}>yoav.magrisso@gmail.com</Text>
                     </View> */}
-                    </View>
-                    </View>
-                </View>
             </View>
-        );
-      };
-  
-    return (
-      <View style={styles.screen}>
-        <FlatList
-          data={DATA}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          horizontal={false}
-        />
+          </View>
+        </View>
       </View>
     );
   };
 
+  return (
+    <View style={styles.screen}>
+      <FlatList
+        data={DATA}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        horizontal={false}
+      />
+    </View>
+  );
+};
+
 
 const styles = StyleSheet.create({
-    screen: {
-      flex: 1,
-    },
-    container: {
-        flex: 1,
-        textAlign: 'center',
-        alignItems: 'center',
-      },
-    item: {
-      flex: 1,
-      flexDirection: 'column',
-      alignItems: 'center',
-      marginVertical: 7,
-    },
-    image: {
-      width: 420,
-      height: 280,
-      resizeMode: 'cover',
-      borderRadius: 20,
-    },
-    textContainer: {
-      flex: 1,
-      paddingTop: 20,
-      width: '100%',
-    },
-    title: {
-      fontSize: 25,
-      fontWeight: 'bold',
-      marginBottom: 5,
-    },
-    description: {
-      fontSize: 14,
-    },
-    infoContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginVertical: 20,
-    },
-    infoText: {
-      fontSize: 16,
-      marginLeft: 10,
-      fontWeight: 'bold',
-    },
-    allIconsContainter: {
-        marginLeft: 10,
-        paddingTop: 40,
-      },
-  });
+  screen: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    textAlign: 'center',
+    alignItems: 'center',
+  },
+  item: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginVertical: 7,
+  },
+  image: {
+    width: 420,
+    height: 280,
+    resizeMode: 'cover',
+    borderRadius: 20,
+  },
+  textContainer: {
+    flex: 1,
+    paddingTop: 20,
+    width: '100%',
+  },
+  title: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  description: {
+    fontSize: 14,
+  },
+  infoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  infoText: {
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: 'bold',
+  },
+  allIconsContainter: {
+    marginLeft: 10,
+    paddingTop: 40,
+  },
+});
 
 export default MyScreen;
 
