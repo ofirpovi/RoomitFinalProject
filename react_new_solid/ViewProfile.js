@@ -15,9 +15,10 @@ const DATA = [
 ];
 
 
-const MyScreen = ({ navigation }) => {
+const MyScreen = ({ navigation, route }) => {
+    username = route.params.username;
     const navigateToAnotherScreen = () => {
-      navigation.navigate('ViewProfile');
+      navigation.navigate('ViewProfile', {username: username});
     };
   
     const renderItem = ({ item }) => {

@@ -64,55 +64,60 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-        error={emailError}
-      />
-      {
-        emailError && <Text style={{ color: 'red' }}>{emailError}</Text>
-      }
-      <TextInput
-        label="Username"
-        value={username}
-        onChangeText={setUsername}
-        style={styles.input}
-        error={usernameError}
-      />
-      {
-        usernameError && <Text style={{ color: 'red' }}>{usernameError}</Text>
-      }
-      <TextInput
-        label="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-        error={passwordError}
-      />
-      {
-        passwordError && <Text style={{ color: 'red' }}>{passwordError}</Text>
-      }
-      <TextInput
-        label="Verify Password"
-        value={verifyPassword}
-        onChangeText={setVerifyPassword}
-        secureTextEntry
-        style={styles.input}
-        error={verifyPasswordError}
-      />
-      {
-        verifyPasswordError && <Text style={{ color: 'red' }}>{verifyPasswordError}</Text>
-      }
-
-
+      <View style={styles.inputContainer}>
+        <TextInput
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+          error={emailError}
+        />
+        {emailError && <Text style={styles.errorText}>{emailError}</Text>}
+      </View>
+  
+      <View style={styles.inputContainer}>
+        <TextInput
+          label="Username"
+          value={username}
+          onChangeText={setUsername}
+          style={styles.input}
+          error={usernameError}
+        />
+        {usernameError && <Text style={styles.errorText}>{usernameError}</Text>}
+      </View>
+  
+      <View style={styles.inputContainer}>
+        <TextInput
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input}
+          error={passwordError}
+        />
+        {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
+      </View>
+  
+      <View style={styles.inputContainer}>
+        <TextInput
+          label="Verify Password"
+          value={verifyPassword}
+          onChangeText={setVerifyPassword}
+          secureTextEntry
+          style={styles.input}
+          error={verifyPasswordError}
+        />
+        {verifyPasswordError && (
+          <Text style={styles.errorText}>{verifyPasswordError}</Text>
+        )}
+      </View>
+  
       <Button mode="contained" onPress={handleSignUp} style={styles.button}>
         Next
       </Button>
     </View>
   );
+  
 }
 
 const styles = StyleSheet.create({
@@ -121,8 +126,15 @@ const styles = StyleSheet.create({
     padding: 16,
     justifyContent: 'center',
   },
-  input: {
+  inputContainer: {
     marginBottom: 16,
+  },
+  input: {
+    marginBottom: 8,
+  },
+  errorText: {
+    color: 'red',
+    marginLeft: 12,
   },
   button: {
     marginTop: 16,

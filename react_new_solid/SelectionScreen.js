@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Button } from 'react-native-paper';
 
-const SelectionScreen = ({ navigation }) => {
+const SelectionScreen = ({ navigation, route }) => {
+  console.log("SelectionScreen");
+  console.log(route.params.username);
   const [selectedOption, setSelectedOption] = useState('');
+  const username = route.params.username;
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
@@ -11,9 +14,10 @@ const SelectionScreen = ({ navigation }) => {
 
   const handleSubmit = () => {
     if (selectedOption === 'Looking for a Roommate') {
-      navigation.navigate('SuccessRoommate');
+      console.log("SuccessRoommateFromSelection");
+      navigation.navigate('SuccessRoommate', {username: username});
     } else if (selectedOption === 'Looking for a Property') {
-      navigation.navigate('SuccessProperty');
+      navigation.navigate('SuccessProperty', {username: username});
     }
   };
 

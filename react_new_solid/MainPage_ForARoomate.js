@@ -117,6 +117,7 @@
 
 import React from 'react';
 import { FlatList, Image, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import axios from "axios";
 
 const DATA = [
   {
@@ -141,7 +142,7 @@ const DATA = [
 ];
 
 const MyComponent = ({username}) => {
-  const dataFromServer = axios.post(server_url).then((result)=>{return result;})
+  // const dataFromServer = axios.post(server_url).then((result)=>{return result;})
   
   const renderItem = ({ item }) => {
     return (
@@ -171,12 +172,15 @@ const MyComponent = ({username}) => {
 };
 
 const MyScreen = ({ navigation, route }) => {
+  console.log("MainPage_ForARoommate");
+  console.log(route.params.username);
+  const username = route.params.username;
   const navigateToViewProfile = () => {
-    navigation.navigate('ViewProfile');
+    navigation.navigate('ViewProfile', {username: username});
   };
 
   const navigateToAnotherScreen = () => {
-    navigation.navigate('InboxPage');
+    navigation.navigate('InboxPage', {username: username});
   };
 
 
