@@ -140,7 +140,9 @@ const DATA = [
   // Add more images here...
 ];
 
-const MyComponent = () => {
+const MyComponent = ({username}) => {
+  const dataFromServer = axios.post(server_url).then((result)=>{return result;})
+  
   const renderItem = ({ item }) => {
     return (
         <View style={styles.item}>
@@ -168,7 +170,7 @@ const MyComponent = () => {
   );
 };
 
-const MyScreen = ({ navigation }) => {
+const MyScreen = ({ navigation, route }) => {
   const navigateToViewProfile = () => {
     navigation.navigate('ViewProfile');
   };
@@ -176,6 +178,9 @@ const MyScreen = ({ navigation }) => {
   const navigateToAnotherScreen = () => {
     navigation.navigate('InboxPage');
   };
+
+
+  const server_url = `http://192.168.1.171:8000/requirementsR/${route.params.username}/`;
 
   return (
     <View style={styles.screen}>
@@ -187,7 +192,7 @@ const MyScreen = ({ navigation }) => {
           <Image source={require('./assets/yoav_square.jpg')} style={styles.profileIcon} />
         </TouchableOpacity>
       </View>
-      <MyComponent />
+      <MyComponent username={route.params.username} />
     </View>
   );
 };

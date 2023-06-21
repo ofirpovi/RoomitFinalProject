@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Screen1 from './Screen1';
+import Roomit from './Roomit';
 import Screen2 from './Screen2';
 import Screen3 from './Screen3';
 import SignIn from './SignIn';
@@ -28,7 +28,7 @@ const Navigator = () => {
   const [csrfToken, setCsrfToken] = useState();
   useEffect(() => {
     async function getCsrfToken() {
-      const loginResponse = await axios.get('http://10.100.102.11:8000/user/get-csrf-token/');
+      const loginResponse = await axios.get('http://192.168.1.171:8000/user/get-csrf-token/');
       const csrfTokenHeader = loginResponse.headers['set-cookie']
         .find(cookie => cookie.startsWith('csrftoken'));
       if (csrfTokenHeader) {
@@ -43,7 +43,7 @@ const Navigator = () => {
     <CsrfTokenContext.Provider value={csrfToken}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="Screen1" component={Screen1} />
+          <Stack.Screen name="Roomit" component={Roomit} />
           <Stack.Screen name="Screen2" component={Screen2} />
           <Stack.Screen name="Screen3" component={Screen3} />
           <Stack.Screen name="SignIn" component={SignIn} />

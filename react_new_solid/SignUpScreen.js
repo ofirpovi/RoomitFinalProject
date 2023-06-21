@@ -16,7 +16,7 @@ const SignUpScreen = ({ navigation }) => {
   const [verifyPasswordError, setVerifyPasswordError] = useState(undefined);
   const csrfToken = useContext(CsrfTokenContext);
 
-  const server_url = "http://10.100.102.11:8000/user/register/";
+  const server_url = "http://192.168.1.171:8000/user/register/";
 
   const handleSignUp = async () => {
     const formData = new FormData();
@@ -35,7 +35,7 @@ const SignUpScreen = ({ navigation }) => {
       .then((response) => {
         console.log(response.data);
         console.log('Sign up successful');
-        navigation.navigate('PersonalInfo');
+        navigation.navigate('PersonalInfo', {username: username});
       })
       .catch((error) => {
         console.log("error: ", error.response.data.errors);

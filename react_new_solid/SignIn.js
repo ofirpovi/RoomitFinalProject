@@ -100,7 +100,7 @@ const SignIn = ({ navigation }) => {
       value={inputTextPassword}
       secureTextEntry={true}
     />
-    <TouchableOpacity style={styles.logInButton} onPress={() => navigation.navigate('MainPage_ForARoomate')}>
+    <TouchableOpacity style={styles.logInButton} onPress={() => navigation.navigate('MainPage_ForARoomate', {username: inputTextEmail})}>
         <Text style={styles.logInButtonText}>LOG IN</Text>
     </TouchableOpacity>
     <ForgotPasswordButton onPress={handleForgotPassword} />

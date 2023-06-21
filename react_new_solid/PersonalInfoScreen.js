@@ -11,7 +11,7 @@ import axios from "axios"
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 async function getCsrfToken() {
-  const loginResponse = await axios.get('http://10.100.102.11:8000/user/get-csrf-token/');
+  const loginResponse = await axios.get('http://192.168.1.171:8000/user/get-csrf-token/');
   const csrfTokenHeader = loginResponse.headers['set-cookie']
     .find(cookie => cookie.startsWith('csrftoken'));
   if (csrfTokenHeader) {
@@ -71,7 +71,7 @@ const expenseManagementOptions = [
 ];
 
 
-const PersonalInfoScreen = ({ navigation }) => {
+const PersonalInfoScreen = ({ navigation, route }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -115,7 +115,7 @@ const PersonalInfoScreen = ({ navigation }) => {
 
   const csrfToken = useContext(CsrfTokenContext);
 
-  const server_url = "http://10.100.102.11:8000/user/fill_info/noale/";
+  const server_url = `http://192.168.1.171:8000/user/fill_info/${route.params.username}/`;
 
 
   const handleImageSelect = async () => {
