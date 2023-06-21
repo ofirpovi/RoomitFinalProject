@@ -158,7 +158,7 @@ def post_list(request):
         data.update(paginated)
         context['data']= data
         context['recommended_roommates'] = rec_sys.recommend_roommates(request.user)
-        return render(request, 'post_list.html', context)
+        return context
         # return render(request, 'tests_templates/post_list_test.html', data)
 
  
